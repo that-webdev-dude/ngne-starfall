@@ -1,0 +1,28 @@
+{
+  "history": [
+    {
+      "ready": "true",
+      "screen": "title",
+      "label": "Starfall. title. Enter or click Launch Campaign to begin. FPS 60. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+      "error": ""
+    },
+    {
+      "ready": "true",
+      "screen": "playing",
+      "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.1. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 240.0, 206.0. FPS 135. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+      "error": ""
+    },
+    {
+      "ready": "true",
+      "screen": "paused",
+      "label": "Starfall. paused. Stage 1: ORBITAL BREAKWATER. Time 0.6. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 240.0, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+      "error": ""
+    },
+    {
+      "ready": "true",
+      "screen": "playing",
+      "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 1.1. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 240.0, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+      "error": ""
+    }
+  ]
+}

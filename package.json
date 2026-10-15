@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
-  "dependencies": { "@ngne/core": "0.2.1" },
+  "dependencies": { "@ngne/core": "0.2.2" },
   "devDependencies": { "typescript": "5.9.3", "vite": "7.3.1" },
   "engines": { "node": ">=24" }
 }

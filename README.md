@@ -1,6 +1,6 @@
 # Starfall
 
-A standalone full-window arcade shoot-em-up built with **@ngne/core 0.2.1** and TypeScript. Three authored sectors lead from Orbital Breakwater through Furnace Belt to Midnight Citadel, with distinct bosses, destructible machinery, bullet patterns, mines and charged beams.
+A standalone full-window arcade shoot-em-up built with **@ngne/core 0.2.2** and TypeScript. Three authored sectors lead from Orbital Breakwater through Furnace Belt to Midnight Citadel, with distinct bosses, destructible machinery, bullet patterns, mines and charged beams.
 
 ## Run
 

@@ -1,0 +1,20 @@
+export declare const QUAD_FIELDS: {
+    readonly tx: 0;
+    readonly ty: 1;
+    readonly ix: 2;
+    readonly iy: 3;
+    readonly jx: 4;
+    readonly jy: 5;
+    readonly u0: 6;
+    readonly v0: 7;
+    readonly du: 8;
+    readonly dv: 9;
+    readonly r: 10;
+    readonly g: 11;
+    readonly b: 12;
+    readonly a: 13;
+};
+export declare const QUAD_STRIDE = 14;
+export declare const BYTES_PER_QUAD: number;
+export declare const QUAD_INSTANCE_BUFFER_LAYOUT: GPUVertexBufferLayout;
+export declare const QUAD_CORNER_BUFFER_LAYOUT: GPUVertexBufferLayout;

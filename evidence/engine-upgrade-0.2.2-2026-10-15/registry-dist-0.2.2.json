@@ -1,0 +1,23 @@
+{
+  "shasum": "f3a37469230d152950745581f586fcc29123e550",
+  "tarball": "https://registry.npmjs.org/@ngne/core/-/core-0.2.2.tgz",
+  "fileCount": 56,
+  "integrity": "sha512-/Fiv0H+VmJk2K+LbqFJrayDrjoC9s3hWPeBYfO8IIcKtrKvzeKZkAg/X1SATtP/f/DmPTssZM/aEVzYLr+um3Q==",
+  "signatures": [
+    {
+      "sig": "MEQCIH4FsfqAgQv5lHCNRDJLh8WwhUg/P+xMApdPIs8I39SWAiBKKRF8VawNdT8hkxwnGRdkq9XB86k77a6uEdPEiGROtA==",
+      "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+    },
+    {
+      "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+      "sig": "MEUCIQDe+O3F/xxBThdHB4YkAomrxAJS01ccnttaXZit5obr3AIgC7RhXEb2v4Zh3EZGrPfWoxp4RWBNms36/O3CxaYDvGw="
+    }
+  ],
+  "attestations": {
+    "url": "https://registry.npmjs.org/-/npm/v1/attestations/@ngne%2fcore@0.2.2",
+    "provenance": {
+      "predicateType": "https://slsa.dev/provenance/v1"
+    }
+  },
+  "unpackedSize": 344109
+}

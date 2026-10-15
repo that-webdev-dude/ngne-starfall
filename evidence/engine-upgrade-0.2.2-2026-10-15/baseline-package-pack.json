@@ -1,0 +1,291 @@
+[
+  {
+    "id": "@ngne/core@0.2.1",
+    "name": "@ngne/core",
+    "version": "0.2.1",
+    "size": 84815,
+    "unpackedSize": 321210,
+    "shasum": "c6261fb6528dea69eb181d3837f5e27d812cd6a8",
+    "integrity": "sha512-jbpqa9x4NWuUs8IoTJKdfQeUoo+Xb3OT3Xc3utSvZ7igC5XpVJY3i5WGBTlSY6YrH46BmjFqjwiY2KR2ApeX0g==",
+    "filename": "ngne-core-0.2.1.tgz",
+    "files": [
+      {
+        "path": "LICENSE",
+        "size": 1073,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 6145,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/assets.d.ts",
+        "size": 2258,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/assets.js",
+        "size": 11014,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/audio.d.ts",
+        "size": 1358,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/audio.js",
+        "size": 9091,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/browser.d.ts",
+        "size": 1706,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/browser.js",
+        "size": 12016,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/ecs.d.ts",
+        "size": 6397,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/ecs.js",
+        "size": 26396,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/gpu-context.d.ts",
+        "size": 625,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/gpu-context.js",
+        "size": 4243,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/index.d.ts",
+        "size": 1210,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/index.js",
+        "size": 405,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/input.d.ts",
+        "size": 1301,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/input.js",
+        "size": 6857,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/inspection.d.ts",
+        "size": 440,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/inspection.js",
+        "size": 1131,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/primitives.d.ts",
+        "size": 1628,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/primitives.js",
+        "size": 4671,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/quad-layout.d.ts",
+        "size": 547,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/quad-layout.js",
+        "size": 1114,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/quad-renderer.d.ts",
+        "size": 790,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/quad-renderer.js",
+        "size": 12252,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/quad-shader.d.ts",
+        "size": 960,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/quad-shader.js",
+        "size": 3752,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/renderer-host.d.ts",
+        "size": 236,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/renderer-host.js",
+        "size": 290,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/renderer.d.ts",
+        "size": 1015,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/renderer.js",
+        "size": 2883,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/resource-inspection.d.ts",
+        "size": 679,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/resource-inspection.js",
+        "size": 11,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/resource-registry.d.ts",
+        "size": 412,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/resource-registry.js",
+        "size": 1624,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/scene.d.ts",
+        "size": 6822,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/scene.js",
+        "size": 27689,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/texture-assets.d.ts",
+        "size": 98,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/texture-assets.js",
+        "size": 1503,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/webgpu-renderer.d.ts",
+        "size": 1379,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/webgpu-renderer.js",
+        "size": 1704,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/webgpu-runtime.d.ts",
+        "size": 2015,
+        "mode": 420
+      },
+      {
+        "path": "dist/engine/webgpu-runtime.js",
+        "size": 21172,
+        "mode": 420
+      },
+      {
+        "path": "dist/preview/browser.js",
+        "size": 13998,
+        "mode": 420
+      },
+      {
+        "path": "dist/preview/cli.js",
+        "size": 699,
+        "mode": 420
+      },
+      {
+        "path": "dist/preview/host.js",
+        "size": 4464,
+        "mode": 420
+      },
+      {
+        "path": "dist/preview/index.html",
+        "size": 12968,
+        "mode": 420
+      },
+      {
+        "path": "dist/preview/inspection.js",
+        "size": 641,
+        "mode": 420
+      },
+      {
+        "path": "dist/preview/model.js",
+        "size": 6224,
+        "mode": 420
+      },
+      {
+        "path": "dist/preview/playback.js",
+        "size": 1968,
+        "mode": 420
+      },
+      {
+        "path": "docs/contracts/browser-and-presentation.md",
+        "size": 23897,
+        "mode": 420
+      },
+      {
+        "path": "docs/contracts/NGNE.md",
+        "size": 4055,
+        "mode": 420
+      },
+      {
+        "path": "docs/contracts/ownership-and-inspection.md",
+        "size": 13801,
+        "mode": 420
+      },
+      {
+        "path": "docs/contracts/simulation.md",
+        "size": 15988,
+        "mode": 420
+      },
+      {
+        "path": "docs/guide.md",
+        "size": 30303,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 3292,
+        "mode": 420
+      }
+    ],
+    "entryCount": 55,
+    "bundled": []
+  }
+]

@@ -1,0 +1,772 @@
+{
+  "environment": {
+    "at": "2026-10-15T16:12:51.855Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "release": "10.0.26200",
+    "cpu": "12th Gen Intel(R) Core(TM) i7-12650H",
+    "flags": [
+      "--headless=new",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--enable-unsafe-webgpu",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--window-size=960,540"
+    ],
+    "viewport": {
+      "width": 960,
+      "height": 540,
+      "deviceScaleFactor": 1
+    },
+    "method": "Three paired AB/BA/AB runs; 600 warmup + 1200 sampled frames; fixed 1/60 timestamps; existing campaign bot seed17; real WebGPU assets/rendering; no GPU timestamps; CPU BrowserGame frameMs excludes bot/DOM observer"
+  },
+  "runs": [
+    {
+      "id": "baseline-r1",
+      "variant": "baseline",
+      "repeat": 1,
+      "version": "0.2.1",
+      "seed": 17,
+      "width": 480,
+      "height": 270,
+      "frames": 1800,
+      "warmup": 600,
+      "tick": 1799,
+      "state": {
+        "stageIndex": 0,
+        "entryScore": 0,
+        "phase": "waves",
+        "seconds": 29.86666666666625,
+        "score": 5700,
+        "hull": 5,
+        "combo": 4,
+        "comboTimer": 0.7500000000000028,
+        "nova": 0.5577777777777773,
+        "invulnerable": 0,
+        "shotTimer": 0.09333333333334165,
+        "waveIndex": 9,
+        "x": 156.80635557562914,
+        "y": 201.31199870248443,
+        "bossHealth": 0,
+        "bossMax": 1,
+        "kills": 19,
+        "shake": 0,
+        "flash": 0,
+        "effectClock": 29.94999999999958,
+        "banner": "ORBITAL BREAKWATER",
+        "bannerTime": 0,
+        "finishTimer": 0,
+        "finished": false,
+        "nextId": 30,
+        "scorePops": [],
+        "bossLeft": 35,
+        "bossRight": 35,
+        "bulletSpawns": 0,
+        "novaRing": 8.466666666666667,
+        "bossDeathX": 240,
+        "bossDeathY": 67,
+        "sections": [
+          55,
+          55,
+          55
+        ],
+        "bossPhase": 1
+      },
+      "progress": {
+        "best": 0,
+        "runs": 0
+      },
+      "history": [
+        {
+          "event": "phase",
+          "screen": "title"
+        },
+        {
+          "event": "stage-start",
+          "stage": 0,
+          "entryScore": 0
+        },
+        {
+          "event": "phase",
+          "stage": 0,
+          "phase": "waves",
+          "screen": "playing",
+          "seconds": 0,
+          "score": 0,
+          "hull": 5
+        }
+      ],
+      "errors": [],
+      "complete": false,
+      "frameHash": "4106e847",
+      "frameCount": 891,
+      "summary": {
+        "frameCPU": {
+          "mean": 0.5645000009983778,
+          "p50": 0.5,
+          "p95": 0.800000011920929,
+          "min": 0.19999998807907104,
+          "max": 2.199999988079071
+        },
+        "updateCPU": {
+          "mean": 0.20700000087420145,
+          "p50": 0.19999998807907104,
+          "p95": 0.3999999761581421,
+          "min": 0,
+          "max": 1.699999988079071
+        },
+        "renderCPU": {
+          "mean": 0.3575000001241763,
+          "p50": 0.3999999761581421,
+          "p95": 0.5,
+          "min": 0.09999999403953552,
+          "max": 1.2000000178813934
+        },
+        "sprites": {
+          "mean": 909.8541666666666,
+          "p50": 902,
+          "p95": 1033,
+          "min": 839,
+          "max": 1256
+        },
+        "drawCalls": {
+          "mean": 7.1425,
+          "p50": 7,
+          "p95": 9,
+          "min": 5,
+          "max": 10
+        },
+        "droppedTicks": {
+          "mean": 0,
+          "p50": 0,
+          "p95": 0,
+          "min": 0,
+          "max": 0
+        }
+      }
+    },
+    {
+      "id": "candidate-r1",
+      "variant": "candidate",
+      "repeat": 1,
+      "version": "0.2.2",
+      "seed": 17,
+      "width": 480,
+      "height": 270,
+      "frames": 1800,
+      "warmup": 600,
+      "tick": 1799,
+      "state": {
+        "stageIndex": 0,
+        "entryScore": 0,
+        "phase": "waves",
+        "seconds": 29.86666666666625,
+        "score": 5700,
+        "hull": 5,
+        "combo": 4,
+        "comboTimer": 0.7500000000000028,
+        "nova": 0.5577777777777773,
+        "invulnerable": 0,
+        "shotTimer": 0.09333333333334165,
+        "waveIndex": 9,
+        "x": 156.80635557562914,
+        "y": 201.31199870248443,
+        "bossHealth": 0,
+        "bossMax": 1,
+        "kills": 19,
+        "shake": 0,
+        "flash": 0,
+        "effectClock": 29.94999999999958,
+        "banner": "ORBITAL BREAKWATER",
+        "bannerTime": 0,
+        "finishTimer": 0,
+        "finished": false,
+        "nextId": 30,
+        "scorePops": [],
+        "bossLeft": 35,
+        "bossRight": 35,
+        "bulletSpawns": 0,
+        "novaRing": 8.466666666666667,
+        "bossDeathX": 240,
+        "bossDeathY": 67,
+        "sections": [
+          55,
+          55,
+          55
+        ],
+        "bossPhase": 1
+      },
+      "progress": {
+        "best": 0,
+        "runs": 0
+      },
+      "history": [
+        {
+          "event": "phase",
+          "screen": "title"
+        },
+        {
+          "event": "stage-start",
+          "stage": 0,
+          "entryScore": 0
+        },
+        {
+          "event": "phase",
+          "stage": 0,
+          "phase": "waves",
+          "screen": "playing",
+          "seconds": 0,
+          "score": 0,
+          "hull": 5
+        }
+      ],
+      "errors": [],
+      "complete": false,
+      "frameHash": "4106e847",
+      "frameCount": 891,
+      "summary": {
+        "frameCPU": {
+          "mean": 0.5514166666815679,
+          "p50": 0.5,
+          "p95": 0.8999999761581421,
+          "min": 0.19999998807907104,
+          "max": 2.300000011920929
+        },
+        "updateCPU": {
+          "mean": 0.19999999990065892,
+          "p50": 0.19999998807907104,
+          "p95": 0.4000000059604645,
+          "min": 0,
+          "max": 1.7000000178813934
+        },
+        "renderCPU": {
+          "mean": 0.3514166667809089,
+          "p50": 0.30000001192092896,
+          "p95": 0.5999999940395355,
+          "min": 0.09999999403953552,
+          "max": 1.699999988079071
+        },
+        "sprites": {
+          "mean": 909.8541666666666,
+          "p50": 902,
+          "p95": 1033,
+          "min": 839,
+          "max": 1256
+        },
+        "drawCalls": {
+          "mean": 7.1425,
+          "p50": 7,
+          "p95": 9,
+          "min": 5,
+          "max": 10
+        },
+        "droppedTicks": {
+          "mean": 0,
+          "p50": 0,
+          "p95": 0,
+          "min": 0,
+          "max": 0
+        }
+      }
+    },
+    {
+      "id": "candidate-r2",
+      "variant": "candidate",
+      "repeat": 2,
+      "version": "0.2.2",
+      "seed": 17,
+      "width": 480,
+      "height": 270,
+      "frames": 1800,
+      "warmup": 600,
+      "tick": 1799,
+      "state": {
+        "stageIndex": 0,
+        "entryScore": 0,
+        "phase": "waves",
+        "seconds": 29.86666666666625,
+        "score": 5700,
+        "hull": 5,
+        "combo": 4,
+        "comboTimer": 0.7500000000000028,
+        "nova": 0.5577777777777773,
+        "invulnerable": 0,
+        "shotTimer": 0.09333333333334165,
+        "waveIndex": 9,
+        "x": 156.80635557562914,
+        "y": 201.31199870248443,
+        "bossHealth": 0,
+        "bossMax": 1,
+        "kills": 19,
+        "shake": 0,
+        "flash": 0,
+        "effectClock": 29.94999999999958,
+        "banner": "ORBITAL BREAKWATER",
+        "bannerTime": 0,
+        "finishTimer": 0,
+        "finished": false,
+        "nextId": 30,
+        "scorePops": [],
+        "bossLeft": 35,
+        "bossRight": 35,
+        "bulletSpawns": 0,
+        "novaRing": 8.466666666666667,
+        "bossDeathX": 240,
+        "bossDeathY": 67,
+        "sections": [
+          55,
+          55,
+          55
+        ],
+        "bossPhase": 1
+      },
+      "progress": {
+        "best": 0,
+        "runs": 0
+      },
+      "history": [
+        {
+          "event": "phase",
+          "screen": "title"
+        },
+        {
+          "event": "stage-start",
+          "stage": 0,
+          "entryScore": 0
+        },
+        {
+          "event": "phase",
+          "stage": 0,
+          "phase": "waves",
+          "screen": "playing",
+          "seconds": 0,
+          "score": 0,
+          "hull": 5
+        }
+      ],
+      "errors": [],
+      "complete": false,
+      "frameHash": "4106e847",
+      "frameCount": 891,
+      "summary": {
+        "frameCPU": {
+          "mean": 0.5066666667660077,
+          "p50": 0.5,
+          "p95": 0.800000011920929,
+          "min": 0.19999998807907104,
+          "max": 4.199999988079071
+        },
+        "updateCPU": {
+          "mean": 0.17941666652758917,
+          "p50": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "min": 0,
+          "max": 3
+        },
+        "renderCPU": {
+          "mean": 0.3272500002384186,
+          "p50": 0.30000001192092896,
+          "p95": 0.5,
+          "min": 0.09999999403953552,
+          "max": 1.699999988079071
+        },
+        "sprites": {
+          "mean": 909.8541666666666,
+          "p50": 902,
+          "p95": 1033,
+          "min": 839,
+          "max": 1256
+        },
+        "drawCalls": {
+          "mean": 7.1425,
+          "p50": 7,
+          "p95": 9,
+          "min": 5,
+          "max": 10
+        },
+        "droppedTicks": {
+          "mean": 0,
+          "p50": 0,
+          "p95": 0,
+          "min": 0,
+          "max": 0
+        }
+      }
+    },
+    {
+      "id": "baseline-r2",
+      "variant": "baseline",
+      "repeat": 2,
+      "version": "0.2.1",
+      "seed": 17,
+      "width": 480,
+      "height": 270,
+      "frames": 1800,
+      "warmup": 600,
+      "tick": 1799,
+      "state": {
+        "stageIndex": 0,
+        "entryScore": 0,
+        "phase": "waves",
+        "seconds": 29.86666666666625,
+        "score": 5700,
+        "hull": 5,
+        "combo": 4,
+        "comboTimer": 0.7500000000000028,
+        "nova": 0.5577777777777773,
+        "invulnerable": 0,
+        "shotTimer": 0.09333333333334165,
+        "waveIndex": 9,
+        "x": 156.80635557562914,
+        "y": 201.31199870248443,
+        "bossHealth": 0,
+        "bossMax": 1,
+        "kills": 19,
+        "shake": 0,
+        "flash": 0,
+        "effectClock": 29.94999999999958,
+        "banner": "ORBITAL BREAKWATER",
+        "bannerTime": 0,
+        "finishTimer": 0,
+        "finished": false,
+        "nextId": 30,
+        "scorePops": [],
+        "bossLeft": 35,
+        "bossRight": 35,
+        "bulletSpawns": 0,
+        "novaRing": 8.466666666666667,
+        "bossDeathX": 240,
+        "bossDeathY": 67,
+        "sections": [
+          55,
+          55,
+          55
+        ],
+        "bossPhase": 1
+      },
+      "progress": {
+        "best": 0,
+        "runs": 0
+      },
+      "history": [
+        {
+          "event": "phase",
+          "screen": "title"
+        },
+        {
+          "event": "stage-start",
+          "stage": 0,
+          "entryScore": 0
+        },
+        {
+          "event": "phase",
+          "stage": 0,
+          "phase": "waves",
+          "screen": "playing",
+          "seconds": 0,
+          "score": 0,
+          "hull": 5
+        }
+      ],
+      "errors": [],
+      "complete": false,
+      "frameHash": "4106e847",
+      "frameCount": 891,
+      "summary": {
+        "frameCPU": {
+          "mean": 0.5198333335419496,
+          "p50": 0.5,
+          "p95": 0.7000000178813934,
+          "min": 0.19999998807907104,
+          "max": 2.100000023841858
+        },
+        "updateCPU": {
+          "mean": 0.19141666683057945,
+          "p50": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "min": 0,
+          "max": 1.600000023841858
+        },
+        "renderCPU": {
+          "mean": 0.32841666671137015,
+          "p50": 0.30000001192092896,
+          "p95": 0.5,
+          "min": 0.09999999403953552,
+          "max": 0.800000011920929
+        },
+        "sprites": {
+          "mean": 909.8541666666666,
+          "p50": 902,
+          "p95": 1033,
+          "min": 839,
+          "max": 1256
+        },
+        "drawCalls": {
+          "mean": 7.1425,
+          "p50": 7,
+          "p95": 9,
+          "min": 5,
+          "max": 10
+        },
+        "droppedTicks": {
+          "mean": 0,
+          "p50": 0,
+          "p95": 0,
+          "min": 0,
+          "max": 0
+        }
+      }
+    },
+    {
+      "id": "baseline-r3",
+      "variant": "baseline",
+      "repeat": 3,
+      "version": "0.2.1",
+      "seed": 17,
+      "width": 480,
+      "height": 270,
+      "frames": 1800,
+      "warmup": 600,
+      "tick": 1799,
+      "state": {
+        "stageIndex": 0,
+        "entryScore": 0,
+        "phase": "waves",
+        "seconds": 29.86666666666625,
+        "score": 5700,
+        "hull": 5,
+        "combo": 4,
+        "comboTimer": 0.7500000000000028,
+        "nova": 0.5577777777777773,
+        "invulnerable": 0,
+        "shotTimer": 0.09333333333334165,
+        "waveIndex": 9,
+        "x": 156.80635557562914,
+        "y": 201.31199870248443,
+        "bossHealth": 0,
+        "bossMax": 1,
+        "kills": 19,
+        "shake": 0,
+        "flash": 0,
+        "effectClock": 29.94999999999958,
+        "banner": "ORBITAL BREAKWATER",
+        "bannerTime": 0,
+        "finishTimer": 0,
+        "finished": false,
+        "nextId": 30,
+        "scorePops": [],
+        "bossLeft": 35,
+        "bossRight": 35,
+        "bulletSpawns": 0,
+        "novaRing": 8.466666666666667,
+        "bossDeathX": 240,
+        "bossDeathY": 67,
+        "sections": [
+          55,
+          55,
+          55
+        ],
+        "bossPhase": 1
+      },
+      "progress": {
+        "best": 0,
+        "runs": 0
+      },
+      "history": [
+        {
+          "event": "phase",
+          "screen": "title"
+        },
+        {
+          "event": "stage-start",
+          "stage": 0,
+          "entryScore": 0
+        },
+        {
+          "event": "phase",
+          "stage": 0,
+          "phase": "waves",
+          "screen": "playing",
+          "seconds": 0,
+          "score": 0,
+          "hull": 5
+        }
+      ],
+      "errors": [],
+      "complete": false,
+      "frameHash": "4106e847",
+      "frameCount": 891,
+      "summary": {
+        "frameCPU": {
+          "mean": 0.562749999910593,
+          "p50": 0.4000000059604645,
+          "p95": 1.399999976158142,
+          "min": 0.19999998807907104,
+          "max": 3.5
+        },
+        "updateCPU": {
+          "mean": 0.1807499995827675,
+          "p50": 0.19999998807907104,
+          "p95": 0.4000000059604645,
+          "min": 0,
+          "max": 2.0999999940395355
+        },
+        "renderCPU": {
+          "mean": 0.38200000032782555,
+          "p50": 0.30000001192092896,
+          "p95": 1,
+          "min": 0,
+          "max": 2.2999999821186066
+        },
+        "sprites": {
+          "mean": 909.8541666666666,
+          "p50": 902,
+          "p95": 1033,
+          "min": 839,
+          "max": 1256
+        },
+        "drawCalls": {
+          "mean": 7.1425,
+          "p50": 7,
+          "p95": 9,
+          "min": 5,
+          "max": 10
+        },
+        "droppedTicks": {
+          "mean": 0,
+          "p50": 0,
+          "p95": 0,
+          "min": 0,
+          "max": 0
+        }
+      }
+    },
+    {
+      "id": "candidate-r3",
+      "variant": "candidate",
+      "repeat": 3,
+      "version": "0.2.2",
+      "seed": 17,
+      "width": 480,
+      "height": 270,
+      "frames": 1800,
+      "warmup": 600,
+      "tick": 1799,
+      "state": {
+        "stageIndex": 0,
+        "entryScore": 0,
+        "phase": "waves",
+        "seconds": 29.86666666666625,
+        "score": 5700,
+        "hull": 5,
+        "combo": 4,
+        "comboTimer": 0.7500000000000028,
+        "nova": 0.5577777777777773,
+        "invulnerable": 0,
+        "shotTimer": 0.09333333333334165,
+        "waveIndex": 9,
+        "x": 156.80635557562914,
+        "y": 201.31199870248443,
+        "bossHealth": 0,
+        "bossMax": 1,
+        "kills": 19,
+        "shake": 0,
+        "flash": 0,
+        "effectClock": 29.94999999999958,
+        "banner": "ORBITAL BREAKWATER",
+        "bannerTime": 0,
+        "finishTimer": 0,
+        "finished": false,
+        "nextId": 30,
+        "scorePops": [],
+        "bossLeft": 35,
+        "bossRight": 35,
+        "bulletSpawns": 0,
+        "novaRing": 8.466666666666667,
+        "bossDeathX": 240,
+        "bossDeathY": 67,
+        "sections": [
+          55,
+          55,
+          55
+        ],
+        "bossPhase": 1
+      },
+      "progress": {
+        "best": 0,
+        "runs": 0
+      },
+      "history": [
+        {
+          "event": "phase",
+          "screen": "title"
+        },
+        {
+          "event": "stage-start",
+          "stage": 0,
+          "entryScore": 0
+        },
+        {
+          "event": "phase",
+          "stage": 0,
+          "phase": "waves",
+          "screen": "playing",
+          "seconds": 0,
+          "score": 0,
+          "hull": 5
+        }
+      ],
+      "errors": [],
+      "complete": false,
+      "frameHash": "4106e847",
+      "frameCount": 891,
+      "summary": {
+        "frameCPU": {
+          "mean": 0.5692500002185503,
+          "p50": 0.5,
+          "p95": 0.800000011920929,
+          "min": 0.20000001788139343,
+          "max": 2.800000011920929
+        },
+        "updateCPU": {
+          "mean": 0.2149999996771415,
+          "p50": 0.19999998807907104,
+          "p95": 0.3999999761581421,
+          "min": 0,
+          "max": 2.300000011920929
+        },
+        "renderCPU": {
+          "mean": 0.35425000054140887,
+          "p50": 0.30000001192092896,
+          "p95": 0.5,
+          "min": 0.09999999403953552,
+          "max": 1.7000000178813934
+        },
+        "sprites": {
+          "mean": 909.8541666666666,
+          "p50": 902,
+          "p95": 1033,
+          "min": 839,
+          "max": 1256
+        },
+        "drawCalls": {
+          "mean": 7.1425,
+          "p50": 7,
+          "p95": 9,
+          "min": 5,
+          "max": 10
+        },
+        "droppedTicks": {
+          "mean": 0,
+          "p50": 0,
+          "p95": 0,
+          "min": 0,
+          "max": 0
+        }
+      }
+    }
+  ],
+  "exactStateAndFrameMatch": true
+}

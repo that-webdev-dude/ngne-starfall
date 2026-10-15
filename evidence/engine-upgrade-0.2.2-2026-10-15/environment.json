@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-15T16:12:51.855Z",
+  "node": "v24.15.0",
+  "platform": "win32",
+  "release": "10.0.26200",
+  "cpu": "12th Gen Intel(R) Core(TM) i7-12650H",
+  "flags": [
+    "--headless=new",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--enable-unsafe-webgpu",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=960,540"
+  ],
+  "viewport": {
+    "width": 960,
+    "height": 540,
+    "deviceScaleFactor": 1
+  },
+  "method": "Three paired AB/BA/AB runs; 600 warmup + 1200 sampled frames; fixed 1/60 timestamps; existing campaign bot seed17; real WebGPU assets/rendering; no GPU timestamps; CPU BrowserGame frameMs excludes bot/DOM observer"
+}

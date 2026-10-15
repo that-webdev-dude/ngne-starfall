@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "phase": "DELIVERY",
+  "status": "COMPLETE",
+  "brief": {
+    "idea": "Rebuild the NGNE demo as Starfall: a beautiful full-screen arcade shooter with at least three levels and NEOGEO-inspired art and effects",
+    "engine": {
+      "name": "@ngne/core",
+      "versionOrRevision": "0.2.1",
+      "repository": "C:/Users/jfabi/Documents/Projects/tests/ngne"
+    },
+    "target": "web",
+    "desktopOS": null,
+    "intent": "engine-exercise",
+    "requiredCapabilities": [
+      "NGNE ECS",
+      "WebGPU sprites",
+      "Fixed-step simulation",
+      "Camera and interpolation",
+      "Scene transitions and cleanup",
+      "Asset ownership",
+      "Input",
+      "Scoped audio",
+      "Hit-stop"
+    ],
+    "scope": [
+      "Three authored stages and bosses",
+      "Original NEOGEO-inspired art",
+      "Combat juice",
+      "Canvas game UI",
+      "Retry and campaign ending",
+      "Standalone modular TypeScript consumer",
+      "Animated player sprite banking left/right on directional input",
+      "Player movement with friction-based deceleration",
+      "Chaotic gameplay with distinct enemy roles, challenging readable bullet patterns and strong combat feedback",
+      "Manual straight-up fire while left mouse or Space is held; combined inputs share cadence; B Nova"
+    ],
+    "exclusions": [
+      "Multiplayer",
+      "Online services",
+      "Desktop packaging",
+      "Engine edits",
+      "Publication"
+    ],
+    "resourceLimits": "Bounded campaign with one player ship and approximately five enemy families; representative art and playable slice before full production"
+  },
+  "approvals": {
+    "concept": {
+      "date": "2026-10-06",
+      "artifact": "starfall-concept.json",
+      "revision": "concept-v1",
+      "sha256": "f2f749c15ad33d3580a84e250d4de8fa26832ebda4183014c21d38c7daeb3af5",
+      "humanMessage": "concept is approved. only constraint I really want: tell the artist to make the spaceship player an animated sprite with a slight axial tilt when left/right are pressed to emphasize the act of flying. tell developer to implement a slight movement with friction and not hard-stops on input released.",
+      "additions": [
+        "Animated player sprite with authored left/right axial banking on directional input",
+        "Responsive acceleration and friction-based deceleration; no hard stop on input release"
+      ]
+    },
+    "art": {
+      "date": "2026-10-06",
+      "artifact": "artifacts/art-v1/candidate-manifest.json",
+      "revision": "art-candidate-v1",
+      "sha256": "9e305a5358d246665624b420b4f711d0beae8443ff31afa8d9a5645544803dc1",
+      "humanMessage": "approved. make sure gameplay is chaotic and full of juice. ensure different enemies and challenging bullet patterns."
+    },
+    "slice": {
+      "date": "2026-10-06",
+      "artifact": "artifacts/slice-v1/candidate-manifest.json",
+      "revision": "slice-v1",
+      "sha256": "6c66ac82efa7ca9f69b0c141703b279b2453ff4c2d4b4673afbfa5e5dc771600",
+      "humanMessage": "playtest looks good. one game mechanic to change: make the player shooting straight only. remove the auto aiming and the shooting diagonally to enemies, like a proper shoot-em-up game. let the user press the left mouse button or space to shoot. when both pressed player shoots repeatedly",
+      "requestedAdjustment": "Straight-up manual repeated fire; implemented as holding either left mouse or Space, combined inputs share cadence. Nova moved to B.",
+      "adjustmentEvidence": "artifacts/shooting-v2/verification.json",
+      "note": "User accepted the playtested slice with a requested shooting adjustment. No claim of subsequent human playtest of the adjusted mechanic.",
+      "productionConfirmation": {
+        "date": "2026-10-06",
+        "humanMessage": "approved",
+        "context": "User explicitly approves completing stages two and three, campaign progression/ending and full-game validation after clarification that prior delivery was a slice."
+      }
+    }
+  },
+  "artifacts": {
+    "concept": {
+      "path": "starfall-concept.json",
+      "revision": "concept-v1",
+      "sha256": "f2f749c15ad33d3580a84e250d4de8fa26832ebda4183014c21d38c7daeb3af5"
+    },
+    "art": {
+      "revision": "art-candidate-v1",
+      "manifest": "artifacts/art-v1/candidate-manifest.json",
+      "sha256": "9e305a5358d246665624b420b4f711d0beae8443ff31afa8d9a5645544803dc1",
+      "metadata": "src/assets/art-gate.json",
+      "artistHandoff": "art/artist-handoff.json",
+      "prompts": "art/generation-prompts.json",
+      "measurements": "art/measured-assets.json",
+      "runtimeVisualReview": "art/runtime-visual-review.json",
+      "preview": "artifacts/art-v1/preview.jpg",
+      "url": "http://127.0.0.1:4173/",
+      "productionBundle": "dist/assets/index-CrQ4TL0q.js"
+    },
+    "slice": {
+      "revision": "slice-v1",
+      "manifest": "artifacts/slice-v1/candidate-manifest.json",
+      "sha256": "6c66ac82efa7ca9f69b0c141703b279b2453ff4c2d4b4673afbfa5e5dc771600",
+      "archive": "artifacts/slice-v1/starfall-slice-v1.zip",
+      "url": "http://127.0.0.1:4173/",
+      "productionBundle": "dist/assets/index-Cx-76QgB.js"
+    },
+    "shootingRevision": {
+      "revision": "shooting-v2",
+      "verification": "artifacts/shooting-v2/verification.json",
+      "sha256": "40544e959431056cef3a1064665bcaa78b4a90b5cbe0295d3ca650619be391e7",
+      "productionBundle": "dist/assets/index-DdeLStg9.js",
+      "url": "http://127.0.0.1:4173/"
+    },
+    "final": {
+      "revision": "campaign-v1",
+      "manifest": "artifacts/final/manifest.json",
+      "sha256": "b2bfcee7f1a581d8a9697876a7919a28fb9939a5c8adb28de02eee88771f1d7e",
+      "archive": "artifacts/final/starfall-web.zip",
+      "productionBundle": "dist/assets/index-CQu0T89Q.js",
+      "url": "http://127.0.0.1:4173/"
+    },
+    "finalReport": "GAMEDEV-REPORT.md"
+  },
+  "remainingWork": [],
+  "evidence": [
+    {
+      "kind": "inspection",
+      "date": "2026-10-06",
+      "detail": "Designer inspected original demo rules; developer inspected public exports, current guide and presentation contracts. No material engine blocker identified at concept stage."
+    },
+    {
+      "kind": "registry",
+      "date": "2026-10-06",
+      "command": "npm.cmd view @ngne/core@0.2.1 version dist.integrity --json --fetch-retries=0 --fetch-timeout=10000",
+      "version": "0.2.1",
+      "integrity": "sha512-jbpqa9x4NWuUs8IoTJKdfQeUoo+Xb3OT3Xc3utSvZ7igC5XpVJY3i5WGBTlSY6YrH46BmjFqjwiY2KR2ApeX0g==",
+      "detail": "Read-only registry check succeeded outside sandbox after sandbox DNS failure. No package installation or runtime validation yet."
+    },
+    {
+      "kind": "automated",
+      "date": "2026-10-06",
+      "detail": "Developer: npm.cmd run build passed; npm.cmd test passed 3 tests including an NGNE integration regression for directional taps and release friction."
+    },
+    {
+      "kind": "source-review",
+      "date": "2026-10-06",
+      "detail": "Independent tester reviewed velocity integration, authored bank selection, pivots, UVs, animation timing and asset declarations; no actionable defects. This review was not a browser test."
+    },
+    {
+      "kind": "observed-runtime",
+      "date": "2026-10-06",
+      "detail": "Lead inspected production build in Codex in-app browser at1280x720. Left/neutral/right bank screenshots, exhaust playback and explosion sequence observed. Demo release samples show continued movement at zero input then settling. Fixed short taps verified moving x155.8 to158.5 with released vx8.5, then settled x159.5. Demo-to-manual takeover verified. No captured warnings/errors. No physical keyboard hold, physical gamepad, audio, mobile, full campaign, or human art acceptance claim.",
+      "files": [
+        "artifacts/art-v1/motion-observations.json",
+        "artifacts/art-v1/manual-input.json",
+        "artifacts/art-v1/demo-takeover.json",
+        "artifacts/art-v1/browser-logs.json"
+      ]
+    },
+    {
+      "kind": "visual-review",
+      "date": "2026-10-06",
+      "detail": "Artist inspected runtime bank screenshots; pose/faction readability adequate for user review. High-resolution generated PNG sources have soft effect halos and some fine-detail speckling at logical resolution. Not layered/native pixel source documents."
+    },
+    {
+      "kind": "automated",
+      "date": "2026-10-06",
+      "detail": "Full suite passed 15 tests before final menu fix. Final focused lifecycle/combat suite passed 8, including new menu regression; 16 distinct tests now have passing evidence. Final TypeScript/Vite build passed. Independent tester evidence records 11 combat/geometry checks and 3 normal-rules headless clears; no human difficulty acceptance.",
+      "file": "artifacts/slice-v1/tester-evidence.json"
+    },
+    {
+      "kind": "observed-runtime",
+      "date": "2026-10-06",
+      "detail": "Lead browser verified full-canvas title/controls/settings, movement, waves, Nova, damage/repairs, boss entry, death, retry and pause. Final patched pause-to-title path reports title correctly; error panel empty. Browser win and audible mix quality not claimed. Earlier combat observations remain applicable because final patch only guards pause cleanup.",
+      "files": [
+        "artifacts/slice-v1/browser-evidence.json",
+        "artifacts/slice-v1/title-return-check.json"
+      ]
+    },
+    {
+      "kind": "focused-revision",
+      "date": "2026-10-06",
+      "detail": "Manual straight-up shooting implemented following positive human slice playtest. Build passes, full suite21/21 passes, browser Space/mouse shots and B Nova observed. Sustained/combined triggers covered by actual-system fixtures. Full campaign not yet implemented.",
+      "file": "artifacts/shooting-v2/verification.json"
+    },
+    {
+      "kind": "complete-campaign",
+      "date": "2026-10-06",
+      "detail": "Three-stage implementation complete. 32 tests pass; three normal-rules headless campaigns clear. Real-time BrowserGame campaign using production composition/media reaches final ending with no diagnostics; final visual fixes separately checked and production entry point smoke passes.",
+      "files": [
+        "artifacts/campaign-testing/tester-evidence.json",
+        "artifacts/campaign-testing/headless-final.json",
+        "artifacts/final/browser-campaign-result.json",
+        "artifacts/final/browser-verification.json",
+        "artifacts/final/production-smoke.json"
+      ]
+    }
+  ],
+  "blocker": null,
+  "nextAction": "Local game complete. User can play the full campaign at4173 or serve packaged static site. No further approval or implementation gate; hosting not requested."
+}

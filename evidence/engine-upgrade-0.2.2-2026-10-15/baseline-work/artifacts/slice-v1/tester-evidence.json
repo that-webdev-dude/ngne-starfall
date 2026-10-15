@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-10-06",
+  "artifact": "Starfall slice-v1 independent tester evidence",
+  "workspace": "C:/Users/jfabi/Documents/Projects/tests/ngne-starfall",
+  "sourceScope": "First playable Orbital Breakwater slice, final tuning reviewed in this session; no commit or file hash captured.",
+  "recordedFromAcceptedRuns": true,
+  "retestedForThisRecord": false,
+  "tuning": {
+    "bossHp": 480,
+    "randomRepairDropProbability": 0.04,
+    "curtainRowOffsetsLogicalPixels": [
+      0,
+      12
+    ],
+    "curtainCenterExclusionLogicalPixels": 64
+  },
+  "tests": {
+    "evidenceClass": "Headless actual-system fixtures and pure geometry regression checks",
+    "command": "node --experimental-strip-types --test tests/combat-integration.test.ts tests/patterns.test.ts",
+    "exitCode": 0,
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "durationMs": 345.7647,
+    "files": [
+      "tests/combat-integration.test.ts",
+      "tests/patterns.test.ts"
+    ],
+    "coverage": [
+      "Actual stageScene: simultaneous bullets apply one hit; invulnerability blocks additional hits and damage resumes afterward.",
+      "Nova clears hostile shots, preserves friendly shots, suppresses shots due later in its tick and respects recharge.",
+      "Three enemy families emit distinct actual 1/5/3-shot patterns with expected speeds.",
+      "86-second warning retires wave enemies/hostile bullets; carrier and two turrets arrive at the 90-second transition.",
+      "Boss low-health phase changes rings from 14 to 18 shots; destroyed left turret suppresses its fan.",
+      "Turret damage transfers to core, destruction persists, carrier defeat removes threats and dispatches progress once; destruction cascade clear cue occurs once.",
+      "Actual pause menu blocks combat/effects clocks and entity changes; death result retries into fresh full-hull stage with old scene disposed and correct asset claims.",
+      "Fan center/symmetry/speed and traversable spacing across angle wrap; ring uniform spacing across closing seam.",
+      "Curtain rows stagger 0/12 pixels while preserving 64-pixel center exclusion and shared corridor at least 51 pixels wide after player/bullet collision radii.",
+      "Swept collision catches tunneling, tangency and stationary overlap; rejects near misses and extension-only intersections."
+    ],
+    "fixtureLimits": [
+      "Integration tests explicitly seed enemies, bullets, health/timing and run state to reach branches; these fixtures do not establish natural campaign reachability.",
+      "Use public NGNE Game with actual production stageScene/menuScene systems, counted fixture asset and stub sound.",
+      "No browser, WebGPU rendering, physical input device, decoded production asset or audible-output validation.",
+      "Only subsequent test-file edit was indentation; no subsequent behavior change was made by tester."
+    ]
+  },
+  "normalRulesBot": {
+    "evidenceClass": "Headless normal-rules complete first-stage reachability",
+    "command": "@'\nimport { Game, emptyInput } from '@ngne/core';\nimport { stageScene } from './src/scenes/stage.ts';\nimport { Flight } from './src/components/flight.ts';\nimport { Bullet, Enemy, Pose } from './src/components/combat.ts';\nimport { COMBAT } from './src/config/encounters.ts';\nconst sound = Object.fromEntries(['update','shoot','enemyShot','hit','kill','nova','damage','boss','clear','death'].map(k => [k,()=>{}]));\nconst moves = [-1,0,1].flatMap(x=>[-1,0,1].map(y=>{const n=Math.max(1,Math.hypot(x,y));return[x/n,y/n]}));\nfor (const seed of [17,41,83]) {\n const session={settings:{music:0,effects:0,muted:true,reducedMotion:false},screen:'title',best:0,ready:true};\n const game=new Game({seed,state:{best:0,runs:0},transition:(s,c)=>({best:Math.max(s.best,c.score),runs:s.runs+1})});\n let world;\n const original=stageScene(session,{assets:[],sound:()=>sound,take:()=>undefined});\n await game.start(await game.prepare({...original,setup(s){original.setup(s);world=s.world}},{key:'normal-stage'}));\n let move=[0,0],maxBullets=0,bossStart=null,novas=0;\n for(let tick=0;tick<18000;tick++) {\n  const run=session.run;\n  if(run.phase==='clear'||run.phase==='dead')break;\n  if(run.phase==='boss'&&bossStart===null)bossStart=run.seconds;\n  const shots=[];world.query(Pose,Bullet).eachChunk(({views:v,count})=>{for(let i=0;i<count;i++)if(v.bullet.team[i]&&v.bullet.active[i])shots.push({x:v.pose.x[i],y:v.pose.y[i],vx:v.bullet.vx[i],vy:v.bullet.vy[i],r:6.5})});\n  maxBullets=Math.max(maxBullets,shots.length);\n  let vx=0,vy=0;world.query(Flight).eachChunk(({views:v})=>{vx=v.flight.vx[0];vy=v.flight.vy[0]});\n  if(tick%6===0) {\n   const threats=[...shots];\n   world.query(Pose,Enemy).eachChunk(({views:v,count})=>{for(let i=0;i<count;i++)if(v.enemy.active[i])threats.push({x:v.pose.x[i],y:v.pose.y[i],vx:(v.pose.x[i]-v.pose.px[i])*60,vy:(v.pose.y[i]-v.pose.py[i])*60,r:v.enemy.radius[i]+4})});\n   let best=Infinity;\n   for(const candidate of moves) {\n    let x=run.x,y=run.y,dx=vx,dy=vy,cost=0;\n    for(let step=1;step<=8;step++) {\n     for(const [axis,input] of candidate.entries()) {\n      const response=input===0?8:14,target=input*135;\n      if(axis===0)dx=target+(dx-target)*Math.exp(-response*.1);else dy=target+(dy-target)*Math.exp(-response*.1);\n     }\n     x=Math.max(18,Math.min(462,x+dx*.1));y=Math.max(43,Math.min(239,y+dy*.1));\n     const t=step*.1;\n     for(const b of threats){const d=Math.hypot(x-b.x-b.vx*t,y-b.y-b.vy*t)-b.r;cost+=(d<1?2000:200*Math.exp(-d*d/180))/(step*.15+1)}\n     cost+=(y-196)**2*.0004+(x-240)**2*.00001;\n    }\n    cost+=Math.hypot(candidate[0]-move[0],candidate[1]-move[1])*.08;\n    if(cost<best){best=cost;move=candidate}\n   }\n  }\n  const near=shots.some(b=>Math.hypot(run.x-b.x,run.y-b.y)<36);\n  const nova=run.nova>=.999&&(near||shots.length>35||(run.phase==='boss'&&run.bossHealth<60));\n  if(nova)novas++;\n  game.tick({...emptyInput(),axes:move,pressed:nova?['Space']:[]});\n }\n console.log(JSON.stringify({seed,bossHp:COMBAT.bossHp,outcome:session.run.phase,seconds:+session.run.seconds.toFixed(2),hull:session.run.hull,kills:session.run.kills,score:session.run.score,bossHealth:session.run.bossHealth,bossStart,maxBullets,novas}));\n game.dispose();\n}\n'@ | node --experimental-strip-types --input-type=module",
+    "shell": "PowerShell",
+    "exitCode": 0,
+    "results": [
+      {
+        "seed": 17,
+        "bossHp": 480,
+        "outcome": "clear",
+        "seconds": 121.48,
+        "hull": 4,
+        "kills": 96,
+        "score": 67350,
+        "bossHealth": 0,
+        "bossStart": 90.01666666666284,
+        "maxBullets": 70,
+        "novas": 5
+      },
+      {
+        "seed": 41,
+        "bossHp": 480,
+        "outcome": "clear",
+        "seconds": 121.48,
+        "hull": 4,
+        "kills": 96,
+        "score": 67650,
+        "bossHealth": 0,
+        "bossStart": 90.01666666666284,
+        "maxBullets": 70,
+        "novas": 5
+      },
+      {
+        "seed": 83,
+        "bossHp": 480,
+        "outcome": "clear",
+        "seconds": 121.48,
+        "hull": 4,
+        "kills": 96,
+        "score": 67650,
+        "bossHealth": 0,
+        "bossStart": 90.01666666666284,
+        "maxBullets": 70,
+        "novas": 5
+      }
+    ],
+    "method": "Actual stageScene and normal encounter schedule from initial state. Bot reads public ECS observations, forecasts threat motion up to 0.8 seconds and sends ordinary movement axes and Space inputs. No run/enemy/health/invulnerability/timing mutations and no skipped encounters.",
+    "limitations": [
+      "Predictive bot has exact position/velocity observations and is not a human player; clears demonstrate reachability, not fair difficulty, fun, readability or user acceptance.",
+      "Headless asset list is empty, sound is stubbed and scene-candidate take returns undefined. Run ends at clear/dead phase, not through browser result navigation.",
+      "Game rendering is not exercised by these bot runs.",
+      "Reported seconds are simulation time, not wall time; wall time is not a performance benchmark.",
+      "Three seeds are a small sample and shared authored encounters produce similar outcomes.",
+      "No bot script file was saved during execution; the exact PowerShell invocation is retained here."
+    ]
+  },
+  "browserEvidence": {
+    "performedByThisTester": false,
+    "owner": "Lead agent",
+    "note": "Lead browser/GPU, visible art/juice, production launch/pause/retry and any audio evidence must be reported separately."
+  },
+  "unresolvedActionableFailuresFromTheseChecks": [],
+  "productionChangesByTester": false
+}

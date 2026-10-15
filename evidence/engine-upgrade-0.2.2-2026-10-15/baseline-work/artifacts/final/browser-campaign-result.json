@@ -1,0 +1,141 @@
+{
+ "status": "COMPLETE",
+ "stage": 3,
+ "screen": "clear",
+ "phase": "clear",
+ "seconds": "179.1",
+ "hull": 4,
+ "score": 191550,
+ "boss": "0",
+ "fps": 144,
+ "errors": [],
+ "history": [
+  {
+   "event": "phase",
+   "screen": "title"
+  },
+  {
+   "event": "stage-start",
+   "stage": 0,
+   "entryScore": 0
+  },
+  {
+   "event": "phase",
+   "stage": 0,
+   "phase": "waves",
+   "screen": "playing",
+   "seconds": 0,
+   "score": 0,
+   "hull": 5
+  },
+  {
+   "event": "phase",
+   "stage": 0,
+   "phase": "boss",
+   "screen": "playing",
+   "seconds": 90.01666666666284,
+   "score": 46700,
+   "hull": 5
+  },
+  {
+   "event": "phase",
+   "stage": 0,
+   "phase": "clear",
+   "screen": "playing",
+   "seconds": 160.5666666666866,
+   "score": 57500,
+   "hull": 3
+  },
+  {
+   "event": "phase",
+   "stage": 0,
+   "phase": "clear",
+   "screen": "clear",
+   "seconds": 160.5666666666866,
+   "score": 57500,
+   "hull": 3
+  },
+  {
+   "event": "stage-start",
+   "stage": 1,
+   "entryScore": 57500
+  },
+  {
+   "event": "phase",
+   "stage": 1,
+   "phase": "waves",
+   "screen": "playing",
+   "seconds": 0,
+   "score": 57500,
+   "hull": 5
+  },
+  {
+   "event": "phase",
+   "stage": 1,
+   "phase": "boss",
+   "screen": "playing",
+   "seconds": 100.01666666666227,
+   "score": 94100,
+   "hull": 5
+  },
+  {
+   "event": "phase",
+   "stage": 1,
+   "phase": "clear",
+   "screen": "playing",
+   "seconds": 193.65000000004625,
+   "score": 110800,
+   "hull": 4
+  },
+  {
+   "event": "phase",
+   "stage": 1,
+   "phase": "clear",
+   "screen": "clear",
+   "seconds": 193.65000000004625,
+   "score": 110800,
+   "hull": 4
+  },
+  {
+   "event": "stage-start",
+   "stage": 2,
+   "entryScore": 110800
+  },
+  {
+   "event": "phase",
+   "stage": 2,
+   "phase": "waves",
+   "screen": "playing",
+   "seconds": 0,
+   "score": 110800,
+   "hull": 5
+  },
+  {
+   "event": "phase",
+   "stage": 2,
+   "phase": "boss",
+   "screen": "playing",
+   "seconds": 110.0166666666617,
+   "score": 167550,
+   "hull": 5
+  },
+  {
+   "event": "phase",
+   "stage": 2,
+   "phase": "clear",
+   "screen": "playing",
+   "seconds": 179.083333333368,
+   "score": 191550,
+   "hull": 4
+  },
+  {
+   "event": "phase",
+   "stage": 2,
+   "phase": "clear",
+   "screen": "clear",
+   "seconds": 179.083333333368,
+   "score": 191550,
+   "hull": 4
+  }
+ ]
+}

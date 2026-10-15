@@ -1,0 +1,1 @@
+Verified 189 archived files byte-for-byte against pre-upgrade manifest; readonly=True

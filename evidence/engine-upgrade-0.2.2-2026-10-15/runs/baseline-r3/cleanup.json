@@ -1,0 +1,10 @@
+[
+  {
+    "step": "profile process verification",
+    "pids": []
+  },
+  {
+    "step": "profile remove",
+    "status": "passed"
+  }
+]

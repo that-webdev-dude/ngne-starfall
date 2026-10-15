@@ -1,0 +1,7 @@
+
+DevTools listening on ws://127.0.0.1:64312/devtools/browser/aac9dce2-ff5b-4fdd-9666-3ce75892a659
+[12240:43644:1015/171252.108:ERROR:chrome\browser\extensions\external_registry_loader_win.cc:147] Missing value path for key Software\Google\Chrome\Extensions\dngcpimnedloihjnnfngkgjoidhnaolf.
+[12240:43644:1015/171252.108:ERROR:chrome\browser\extensions\external_registry_loader_win.cc:147] Missing value path for key Software\Google\Chrome\Extensions\fcoeoabgfenejglbffodgkkbkcdhcgfn.
+[12240:43572:1015/171255.586:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[12240:43572:1015/171255.646:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[12240:43572:1015/171255.711:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR

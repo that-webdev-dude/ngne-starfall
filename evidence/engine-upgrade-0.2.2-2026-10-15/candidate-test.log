@@ -1,0 +1,44 @@
+
+> starfall@0.1.0 test
+> node --experimental-strip-types --test tests/*.test.ts
+
+✔ each stage awards its clear and hull bonuses exactly once through actual boss death (99.9555ms)
+✔ real result menus carry score across three stages, retry restores entry score, final replay starts fresh (40.9544ms)
+✔ later-stage pause freezes beams and resume or title replacement releases correct scene resources (5.12ms)
+✔ later enemy families differ: delayed mine versus charged lane, with delayed beam damage and Nova cancellation (24.2392ms)
+✔ mines damage on contact, can be shot down, and Nova suppresses a due detonation (7.0369ms)
+✔ expired beams and charging beams at stage clear release their entities (2.582ms)
+✔ Kiln sections are destructible, transfer core damage and suppress their contribution to future rings (7.9227ms)
+✔ Starfall Engine has three health phases and increasing charged lanes; emitters reduce late ring density (5.7116ms)
+✔ Starfall Engine emitter collision uses its measured sprite socket and transfers damage to the core (3.1209ms)
+✔ actual collision system applies one hit for simultaneous bullets and restores damage after iFrames (34.7698ms)
+✔ Nova clears hostile shots, preserves friendly shots, suppresses due enemy fire, and respects recharge (155.4443ms)
+✔ three enemy families emit distinct actual patterns (4.7977ms)
+✔ boss warning retires wave enemies and bullets before carrier and two turrets arrive (23.6794ms)
+✔ actual boss phase changes ring density and destroyed turret suppresses its fan (5.9926ms)
+✔ turret damage transfers to the core, turret destruction persists, and carrier defeat finishes once (21.5253ms)
+✔ actual pause blocks simulation; death result retries into a clean stage and releases old scene claims (10.0111ms)
+✔ idle flight never fires even with an enemy available to target (7.513ms)
+✔ held fire triggers share one cadence and always shoot straight up regardless of possible aim targets (39.4445ms)
+✔ fire taps captured between simulation ticks produce one volley and do not latch (10.9087ms)
+✔ long idle does not accumulate cooldown debt or produce a catch-up burst (21.9114ms)
+✔ B and Pad0 trigger Nova independently without firing a normal volley (3.0279ms)
+✔ a directional tap between ticks takes manual control and retains release drift (6.4838ms)
+✔ pause cleanup restores play on resume but preserves title on replacement (17.5301ms)
+✔ release preserves momentum then settles smoothly (1.4955ms)
+✔ acceleration is responsive, symmetric and fixed-step independent (0.3245ms)
+✔ aimed fans keep a center shot and symmetric traversable lanes even across the angle wrap (22.5518ms)
+✔ carrier rings have uniform spacing through the closing seam and do not duplicate a shot (4.0961ms)
+✔ curtains retain their 64px center exclusion and a traversable corridor after collision radii (5.8235ms)
+✔ swept collision catches tunneling and tangency but rejects near misses and extension-only hits (0.519ms)
+✔ stage 1 audio replaces music scopes, throttles cues and disposes owned voices (3.3181ms)
+✔ stage 2 audio replaces music scopes, throttles cues and disposes owned voices (1.1544ms)
+✔ stage 3 audio replaces music scopes, throttles cues and disposes owned voices (0.6151ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1331.9327

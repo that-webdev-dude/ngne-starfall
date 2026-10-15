@@ -1,0 +1,43 @@
+{
+  "revision": "campaign-art-v1",
+  "date": "2026-10-06",
+  "source": "Original built-in image_gen PNG-only generated raster in approved industrial arcade style; not native-grid authored layered sprite documents.",
+  "contract": "src/assets/campaign-art.json",
+  "prompts": "art/campaign-generation-prompts.json",
+  "measurements": "art/campaign-measured-assets.json",
+  "delivered": {
+    "backgrounds": [
+      "furnace-background.png: copper asteroids, furnaces, ruined mining infrastructure, dark open play area",
+      "citadel-background.png: violet fortress bastions around dark open space and distant eclipsed luminous star"
+    ],
+    "bosses": [
+      "kiln-head.png: copper articulated mining head with cutters, drill and furnace eye",
+      "kiln-segment.png: separate repeatable armored vertebra; top/bottom couplings",
+      "starfall-engine.png: violet crown-like final boss with two side magenta emitters, lower emitter, central gold-white reactor"
+    ],
+    "enemies": [
+      "minelayer.png: oxidized green square mine dispenser with visible mine magazine and claws",
+      "warden.png: violet/crimson elite with gold-edged scythe wings"
+    ]
+  },
+  "verified": [
+    "All metadata dimensions agree with actual PNG dimensions",
+    "All frame rectangles lie inside source image and UVs stay0..1",
+    "All sprites actual RGBA with transparent backgrounds; opaque RGB backgrounds",
+    "Silhouettes inspected in generated original outputs; distinct roles and palettes"
+  ],
+  "integration": [
+    "Sprites keep measured source aspect ratios. Engine core is pivot, emitters logical offsets relative to it.",
+    "Final boss includes lower emitter artwork as well as two side emitters; lower socket optional for core-phase visuals.",
+    "Kiln head/body separate assets allow actual articulation/destructible ECS sections.",
+    "Backgrounds nonseamless; center rocks in Furnace plate are scenery, not collision geometry."
+  ],
+  "limits": [
+    "High-resolution pixel-styled raster; fine detail may collapse at480x270, as with approved assets",
+    "Sprites contain many partial-alpha pixels; no alpha cleanup or native-grid claim",
+    "Actual campaign engine playback/weakpoint placement not inspected in this handoff",
+    "Kiln head has small but measured transparent edge margin, occupied alpha>128 bounds8..1462 within1470; no occupied silhouette clipping"
+  ],
+  "preserved": "Approved player animation, exhaust, first-stage art and combat-art metadata unchanged.",
+  "next": "Integrate and inspect real NGNE stage2/3 screenshots and motion; no new routine art approval requested."
+}

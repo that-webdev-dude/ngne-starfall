@@ -1,0 +1,69 @@
+{
+    "name": "@ngne/core",
+    "version": "0.2.1",
+    "type": "module",
+    "files": [
+        "dist/engine",
+        "dist/preview",
+        "docs/guide.md",
+        "docs/contracts"
+    ],
+    "scripts": {
+        "clean": "node -e \"for (const dir of ['out', 'dist', 'dist-browser', '.test-output']) require('node:fs').rmSync(dir, { recursive: true, force: true })\"",
+        "dev": "vite --host 127.0.0.1",
+        "build": "tsc --noEmit && tsc -p tests/tsconfig.browser.json && tsc -p tooling/suites/verification/browser/tsconfig.json && tsc -p tooling/suites/benchmarks/rendering/browser/tsconfig.json && tsc -p tsconfig.lib.json && tsc -p tests/tsconfig.api.json && vite build",
+        "build:browser": "vite build --mode browser --outDir dist-browser",
+        "typecheck": "tsc --noEmit",
+        "test": "tsx --test tests/*.test.ts demo/tests/*.test.ts examples/*/tests/*.test.ts tooling/tests/*.test.ts",
+        "test:browser": "tsx tooling/commands/browser-ci.ts",
+        "bench": "tsx tooling/suites/benchmarks/cpu/benchmark.ts",
+        "bench:all": "tsx tooling/commands/benchmark-all.ts",
+        "bench:compare": "tsx tooling/commands/compare-benchmarks.ts",
+        "format": "prettier --write src demo examples tests tooling docs .agents .vscode \"./*.{ts,md,json,html}\"",
+        "format:check": "prettier --check src demo examples tests tooling docs .agents .vscode \"./*.{ts,md,json,html}\"",
+        "preview": "vite preview --host 127.0.0.1",
+        "bench:content": "tsx tooling/commands/benchmark.ts",
+        "bench:engine-content": "tsx tooling/commands/benchmark.ts",
+        "test:installed": "tsx tooling/commands/verify.ts",
+        "typecheck:tooling": "tsc -p tooling/tsconfig.node.json && tsc -p tooling/tsconfig.benchmarks.json && tsc -p tooling/preview/tsconfig.node.json --noEmit && tsc -p tooling/preview/tsconfig.check.json",
+        "build:package": "tsx tooling/commands/prepare.ts build",
+        "prepare:package": "tsx tooling/commands/prepare.ts prepare",
+        "check:prepared": "tsx tooling/commands/prepare.ts verify",
+        "verify:installed": "tsx tooling/commands/verify.ts",
+        "verify:preview": "tsx tooling/commands/verify-preview.ts",
+        "check:browser-transport": "tsx tooling/commands/check-browser-transport.ts",
+        "verify:compatibility": "tsx tooling/commands/compatibility.ts",
+        "verify:engine": "tsx tooling/commands/verify-engine.ts"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/engine/index.d.ts",
+            "import": "./dist/engine/index.js"
+        }
+    },
+    "bin": {
+        "ngne-preview": "dist/preview/cli.js"
+    },
+    "devDependencies": {
+        "@types/node": "24.13.6",
+        "@webgpu/types": "0.1.72",
+        "prettier": "3.9.6",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3",
+        "vite": "^7.3.1"
+    },
+    "description": "A TypeScript 2D sprite engine with a playable retro showcase and zero runtime dependencies.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/that-webdev-dude/ngne.git"
+    },
+    "engines": {
+        "node": ">=24"
+    },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/",
+        "access": "public",
+        "tag": "latest"
+    }
+}

@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="dark" />
+        <title>NGNE sprite inspection</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                font:
+                    14px/1.5 system-ui,
+                    sans-serif;
+                margin: 0;
+                padding: 20px;
+                height: 100dvh;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                background: #14171d;
+                color: #e7eaf0;
+                overflow: hidden;
+            }
+            header {
+                flex: 0 1 auto;
+                min-height: 0;
+                overflow: auto;
+            }
+            .titlebar,
+            .selection-heading {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px 20px;
+            }
+            .brand,
+            .group-title {
+                color: #9faabc;
+                font-size: 11px;
+                font-weight: 650;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+            }
+            h1 {
+                font-size: 22px;
+                letter-spacing: -0.025em;
+                margin: 2px 0 0;
+            }
+            h2,
+            p {
+                margin: 0;
+                overflow-wrap: anywhere;
+            }
+            #status {
+                color: #b9d8cf;
+                font-size: 12px;
+                padding: 5px 10px;
+                border: 1px solid #354b47;
+                border-radius: 6px;
+            }
+            #controls {
+                display: grid;
+                grid-template-columns: minmax(0, 1.7fr) auto minmax(205px, 1fr);
+                gap: 20px;
+                min-width: 0;
+                margin: 18px 0 16px;
+                padding: 14px 16px;
+                background: #20252e;
+                border: 1px solid #343c49;
+                border-radius: 10px;
+            }
+            .control-group,
+            label {
+                min-width: 0;
+            }
+            .group-title {
+                margin-bottom: 8px;
+            }
+            .selection-controls,
+            .view-controls {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                align-items: end;
+                gap: 10px;
+            }
+            label {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                color: #b6c0cf;
+                font-size: 12px;
+            }
+            button,
+            select {
+                min-width: 0;
+                max-width: 100%;
+                height: 36px;
+                font:
+                    13px system-ui,
+                    sans-serif;
+                padding: 0 10px;
+                background: #2b3340;
+                color: #edf0f5;
+                border: 1px solid #485364;
+                border-radius: 6px;
+            }
+            select {
+                width: 100%;
+                text-overflow: ellipsis;
+            }
+            button,
+            select,
+            summary {
+                cursor: pointer;
+            }
+            button:hover:enabled,
+            select:hover:enabled {
+                background: #374354;
+                border-color: #8093ac;
+            }
+            button:disabled,
+            select:disabled {
+                color: #9ca6b6;
+                background: #242a33;
+                border-color: #38414e;
+                cursor: default;
+            }
+            :focus-visible {
+                outline: 2px solid #a4caff;
+                outline-offset: 3px;
+            }
+            .buttons {
+                display: flex;
+                gap: 6px;
+                padding-top: 23px;
+            }
+            #play {
+                min-width: 66px;
+            }
+            #play:enabled {
+                color: #142130;
+                background: #a4caff;
+                border-color: #a4caff;
+                font-weight: 650;
+            }
+            #play:hover:enabled {
+                background: #c3dcff;
+            }
+            .selection-heading h2 {
+                display: inline;
+                font-size: 17px;
+                font-weight: 650;
+            }
+            #playback-state {
+                display: inline-block;
+                margin-left: 8px;
+                padding: 2px 7px;
+                border-radius: 4px;
+                background: #29323e;
+                color: #c0cbdc;
+                font-size: 11px;
+                vertical-align: middle;
+            }
+            #selection-summary,
+            #sprite-size,
+            footer {
+                color: #aab5c6;
+                font-size: 12px;
+            }
+            #selection-summary {
+                margin-top: 4px;
+            }
+            canvas {
+                position: absolute;
+                display: block;
+                image-rendering: pixelated;
+                max-width: none;
+                outline: 1px solid #718198;
+            }
+            #stage {
+                position: relative;
+                flex: 1 0 96px;
+                min-height: 96px;
+                overflow: clip;
+                contain: size layout paint;
+                background: #191e26;
+                border: 1px solid #343c49;
+                border-radius: 10px;
+                cursor: grab;
+                touch-action: none;
+                user-select: none;
+            }
+            #stage:focus-visible {
+                outline-offset: -3px;
+            }
+            #stage::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                z-index: 1;
+                border-radius: inherit;
+                box-shadow: inset 0 0 0 1px #718198;
+                pointer-events: none;
+            }
+            #stage:focus-visible::after {
+                box-shadow: inset 0 0 0 2px #a4caff;
+            }
+            #stage.dragging {
+                cursor: grabbing;
+            }
+            #error {
+                margin-top: 10px;
+                padding: 10px 12px;
+                color: #ffd0d0;
+                background: #40242b;
+                border: 1px solid #a15d6b;
+                border-radius: 6px;
+                white-space: pre-wrap;
+            }
+            #error:empty {
+                display: none;
+            }
+            footer {
+                flex: 0 1 auto;
+                min-height: 24px;
+                max-height: 30vh;
+                overflow: auto;
+            }
+            .footer-hint {
+                float: right;
+                margin-left: 12px;
+            }
+            details + details {
+                margin-top: 5px;
+            }
+            summary {
+                width: fit-content;
+                color: #bec9d9;
+            }
+            details p,
+            pre {
+                margin: 8px 0;
+            }
+            pre {
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+                font-size: 12px;
+            }
+            @media (max-width: 800px) {
+                body {
+                    padding: 12px;
+                    gap: 10px;
+                }
+                #controls {
+                    grid-template-columns: auto minmax(0, 1fr);
+                    gap: 12px 20px;
+                    padding: 12px;
+                    margin: 12px 0;
+                }
+                .selection-group {
+                    grid-column: 1 / -1;
+                }
+            }
+            @media (max-width: 480px) {
+                h1 {
+                    font-size: 19px;
+                }
+                #status {
+                    border: 0;
+                    padding: 0;
+                }
+                #controls {
+                    grid-template-columns: minmax(0, 1fr);
+                    gap: 12px;
+                }
+                .buttons {
+                    padding-top: 0;
+                }
+                .buttons button {
+                    flex: 1;
+                }
+                .footer-hint {
+                    display: none;
+                }
+            }
+        </style>
+        <script type="importmap">
+            { "imports": { "@ngne/core": "/engine/index.js" } }
+        </script>
+        <script type="module" src="/browser.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="titlebar">
+                <div>
+                    <p class="brand">NGNE · Asset preview</p>
+                    <h1>Sprite inspection</h1>
+                </div>
+                <p id="status" role="status">Loading adapter and images…</p>
+            </div>
+            <p id="error" role="alert"></p>
+            <fieldset id="controls" disabled aria-label="Sprite controls">
+                <div
+                    class="control-group selection-group"
+                    role="group"
+                    aria-labelledby="selection-label"
+                >
+                    <h2 id="selection-label" class="group-title">Selection</h2>
+                    <div class="selection-controls">
+                        <label
+                            >Frame
+                            <select id="frames"></select
+                        ></label>
+                        <label
+                            >Animation
+                            <select id="animations"></select
+                        ></label>
+                    </div>
+                </div>
+                <div class="control-group" role="group" aria-labelledby="playback-label">
+                    <h2 id="playback-label" class="group-title">Playback</h2>
+                    <div class="buttons">
+                        <button id="previous" type="button" disabled>Previous</button>
+                        <button id="play" type="button" disabled>Play</button>
+                        <button id="next" type="button" disabled>Next</button>
+                    </div>
+                </div>
+                <div class="control-group" role="group" aria-labelledby="view-label">
+                    <h2 id="view-label" class="group-title">View</h2>
+                    <div class="view-controls">
+                        <label
+                            >Zoom
+                            <select id="magnification">
+                                <option value="1">1× baseline</option>
+                                <option value="2">2×</option>
+                                <option value="4">4×</option>
+                                <option value="8">8×</option>
+                            </select></label
+                        >
+                        <button
+                            id="baseline"
+                            type="button"
+                            title="Reset zoom to 1× and center the canvas"
+                        >
+                            Baseline (1×)
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="selection-heading">
+                <div>
+                    <h2 id="selection-name">Preview</h2>
+                    <span id="playback-state">Loading</span>
+                    <p id="selection-summary">Waiting for artwork</p>
+                </div>
+                <p id="sprite-size"></p>
+            </div>
+        </header>
+        <div
+            id="stage"
+            tabindex="0"
+            role="region"
+            aria-label="Sprite inspection viewport"
+            aria-describedby="pan-help"
+        >
+            <canvas id="canvas" aria-label="Sprite preview"></canvas>
+        </div>
+        <footer>
+            <p class="footer-hint">Drag to pan · Wheel to zoom</p>
+            <details id="help">
+                <summary>Pan &amp; zoom help</summary>
+                <p id="pan-help">
+                    Left-click and drag to pan · wheel up to zoom in, down to zoom out (1×, 2×, 4×,
+                    8×) · focus viewport and use arrow keys to pan (Shift: faster). Zoom magnifies
+                    rendered pixels and keeps the inspected center; Baseline restores 1× and center.
+                    Ctrl/Command-wheel stays available to the browser.
+                </p>
+            </details>
+            <details id="rendering-details">
+                <summary>Rendering details</summary>
+                <p>Set browser zoom to 100% for review; DPR cannot identify browser zoom.</p>
+                <p id="entry"></p>
+                <pre id="details"></pre>
+            </details>
+        </footer>
+    </body>
+</html>
