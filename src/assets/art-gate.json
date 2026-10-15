@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 1,
+  "revision": "art-candidate-v1",
+  "status": "candidate-awaiting-runtime-and-human-review",
+  "coordinateConvention": "rect=[x,y,width,height] source pixels; pivot=[x,y] relative to rect top left; drawSize=[width,height] logical pixels; uv=[u0,v0,u1,v1]. Position is invariant hull pivot; source rasters are generated at high resolution, not native pixel grids.",
+  "logicalResolution": [
+    480,
+    270
+  ],
+  "assets": {
+    "player": {
+      "path": "./player-bank.png",
+      "imageSize": [
+        1882,
+        836
+      ],
+      "drawSize": [
+        34,
+        44.88
+      ],
+      "frames": [
+        {
+          "name": "bank-left",
+          "rect": [
+            40,
+            85,
+            500,
+            660
+          ],
+          "pivot": [
+            250,
+            340
+          ],
+          "uv": [
+            0.021253985122210415,
+            0.10167464114832536,
+            0.2869287991498406,
+            0.8911483253588517
+          ]
+        },
+        {
+          "name": "neutral",
+          "rect": [
+            693,
+            85,
+            500,
+            660
+          ],
+          "pivot": [
+            250,
+            340
+          ],
+          "uv": [
+            0.36822529224229544,
+            0.10167464114832536,
+            0.6339001062699257,
+            0.8911483253588517
+          ]
+        },
+        {
+          "name": "bank-right",
+          "rect": [
+            1348,
+            85,
+            500,
+            660
+          ],
+          "pivot": [
+            250,
+            340
+          ],
+          "uv": [
+            0.7162592986184909,
+            0.10167464114832536,
+            0.9819341126461212,
+            0.8911483253588517
+          ]
+        }
+      ],
+      "animation": {
+        "type": "input-pose",
+        "order": [
+          "bank-left",
+          "neutral",
+          "bank-right"
+        ],
+        "transitionMs": 65
+      },
+      "exhaustSockets": {
+        "bank-left": [
+          [
+            -5.2,
+            16.3
+          ],
+          [
+            4.5,
+            17.6
+          ]
+        ],
+        "neutral": [
+          [
+            -4.6,
+            17.7
+          ],
+          [
+            4.6,
+            17.7
+          ]
+        ],
+        "bank-right": [
+          [
+            -4.5,
+            17.6
+          ],
+          [
+            5.2,
+            16.3
+          ]
+        ]
+      }
+    },
+    "exhaust": {
+      "path": "./exhaust.png",
+      "imageSize": [
+        1536,
+        1024
+      ],
+      "drawSize": [
+        7,
+        20.5625
+      ],
+      "frames": [
+        {
+          "name": "short",
+          "rect": [
+            256,
+            112,
+            256,
+            752
+          ],
+          "pivot": [
+            128,
+            28
+          ],
+          "uv": [
+            0.16666666666666666,
+            0.109375,
+            0.3333333333333333,
+            0.84375
+          ]
+        },
+        {
+          "name": "medium",
+          "rect": [
+            640,
+            112,
+            256,
+            752
+          ],
+          "pivot": [
+            128,
+            28
+          ],
+          "uv": [
+            0.4166666666666667,
+            0.109375,
+            0.5833333333333334,
+            0.84375
+          ]
+        },
+        {
+          "name": "long",
+          "rect": [
+            1024,
+            112,
+            256,
+            752
+          ],
+          "pivot": [
+            128,
+            28
+          ],
+          "uv": [
+            0.6666666666666666,
+            0.109375,
+            0.8333333333333334,
+            0.84375
+          ]
+        }
+      ],
+      "animation": {
+        "type": "loop",
+        "order": [
+          "short",
+          "medium",
+          "long",
+          "medium"
+        ],
+        "durationsMs": [
+          80,
+          80,
+          80,
+          80
+        ]
+      }
+    },
+    "enemy": {
+      "path": "./interceptor.png",
+      "imageSize": [
+        1360,
+        1156
+      ],
+      "drawSize": [
+        40,
+        33.273
+      ],
+      "frames": [
+        {
+          "name": "interceptor",
+          "rect": [
+            128,
+            80,
+            1100,
+            915
+          ],
+          "pivot": [
+            550,
+            457.5
+          ],
+          "uv": [
+            0.09411764705882353,
+            0.06920415224913495,
+            0.9029411764705882,
+            0.860726643598616
+          ]
+        }
+      ]
+    },
+    "explosion": {
+      "path": "./explosion.png",
+      "imageSize": [
+        1536,
+        1024
+      ],
+      "drawSize": [
+        56,
+        56
+      ],
+      "frames": [
+        {
+          "name": "explosion-0",
+          "rect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "pivot": [
+            256,
+            256
+          ],
+          "uv": [
+            0,
+            0,
+            0.3333333333333333,
+            0.5
+          ]
+        },
+        {
+          "name": "explosion-1",
+          "rect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "pivot": [
+            256,
+            256
+          ],
+          "uv": [
+            0.3333333333333333,
+            0,
+            0.6666666666666666,
+            0.5
+          ]
+        },
+        {
+          "name": "explosion-2",
+          "rect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "pivot": [
+            256,
+            256
+          ],
+          "uv": [
+            0.6666666666666666,
+            0,
+            1,
+            0.5
+          ]
+        },
+        {
+          "name": "explosion-3",
+          "rect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "pivot": [
+            256,
+            256
+          ],
+          "uv": [
+            0,
+            0.5,
+            0.3333333333333333,
+            1
+          ]
+        },
+        {
+          "name": "explosion-4",
+          "rect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "pivot": [
+            256,
+            256
+          ],
+          "uv": [
+            0.3333333333333333,
+            0.5,
+            0.6666666666666666,
+            1
+          ]
+        },
+        {
+          "name": "explosion-5",
+          "rect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "pivot": [
+            256,
+            256
+          ],
+          "uv": [
+            0.6666666666666666,
+            0.5,
+            1,
+            1
+          ]
+        }
+      ],
+      "animation": {
+        "type": "once",
+        "order": [
+          "explosion-0",
+          "explosion-1",
+          "explosion-2",
+          "explosion-3",
+          "explosion-4",
+          "explosion-5"
+        ],
+        "durationsMs": [
+          45,
+          50,
+          65,
+          65,
+          65,
+          75
+        ]
+      }
+    },
+    "background": {
+      "path": "./orbital-breakwater.png",
+      "imageSize": [1672, 941],
+      "drawSize": [
+        480,
+        270
+      ],
+      "frames": [{"name":"orbital-breakwater","rect":[0,0,1672,941],"pivot":[836,470.5],"uv":[0,0,1,1]}],
+      "pending": false,
+      "seamless": false
+    }
+  }
+}

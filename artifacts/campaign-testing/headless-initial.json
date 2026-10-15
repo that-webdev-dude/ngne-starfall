@@ -1,0 +1,86 @@
+{
+  "evidenceClass": "Headless normal-rules campaign run using actual production stage and menu systems",
+  "command": "node --experimental-strip-types tests/run-campaign-bot.ts artifacts/campaign-testing/headless-initial.json 17",
+  "stageConfig": [
+    {
+      "id": "orbital-breakwater",
+      "bossAt": 90,
+      "bossHp": 480
+    },
+    {
+      "id": "furnace-belt",
+      "bossAt": 100,
+      "bossHp": 540
+    },
+    {
+      "id": "midnight-citadel",
+      "bossAt": 110,
+      "bossHp": 600
+    }
+  ],
+  "results": [
+    {
+      "seed": 17,
+      "outcome": "campaign-clear",
+      "stages": [
+        {
+          "stageIndex": 0,
+          "stage": "orbital-breakwater",
+          "outcome": "clear",
+          "seconds": 152.4,
+          "hull": 4,
+          "kills": 92,
+          "entryScore": 0,
+          "score": 58000,
+          "bossHealth": 0,
+          "bossStart": 90.017,
+          "maxBullets": 70,
+          "novas": 9
+        },
+        {
+          "stageIndex": 1,
+          "stage": "furnace-belt",
+          "outcome": "clear",
+          "seconds": 189.233,
+          "hull": 5,
+          "kills": 84,
+          "entryScore": 58000,
+          "score": 112250,
+          "bossHealth": 0,
+          "bossStart": 100.017,
+          "maxBullets": 67,
+          "novas": 12
+        },
+        {
+          "stageIndex": 2,
+          "stage": "midnight-citadel",
+          "outcome": "clear",
+          "seconds": 176.683,
+          "hull": 5,
+          "kills": 108,
+          "entryScore": 112250,
+          "score": 192550,
+          "bossHealth": 0,
+          "bossStart": 110.017,
+          "maxBullets": 65,
+          "novas": 12
+        }
+      ],
+      "terminalScreen": "clear",
+      "stageIndex": 2,
+      "progress": {
+        "best": 192550,
+        "runs": 3
+      },
+      "diagnostics": [],
+      "sceneCountBeforeDispose": 2
+    }
+  ],
+  "limitations": [
+    "No browser/GPU, decoded production assets or audible sound: empty fixture assets and stub sound.",
+    "Bot reads exact public ECS observations and predicts threats; this is reachability evidence, not human difficulty/fun acceptance.",
+    "Only ordinary held Space, arrows, KeyB and menu Enter inputs; no gameplay HP, timer, invulnerability, encounter or AI mutations.",
+    "Menu candidate preparation is a headless adapter matching production route semantics; actual stage/menu systems execute.",
+    "Simulation time is not a wall-time performance benchmark."
+  ]
+}

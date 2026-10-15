@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 1,
+  "revision": "campaign-art-v1",
+  "coordinateConvention": "rect/pivot source pixels; drawSize logical pixels; uv normalized u0,v0,u1,v1; sockets logical offsets from hull pivot.",
+  "assets": {
+    "furnaceBackground": {
+      "path": "./furnace-background.png",
+      "imageSize": [
+        1672,
+        941
+      ],
+      "drawSize": [
+        480,
+        270
+      ],
+      "seamless": false,
+      "frames": [
+        {
+          "name": "furnaceBackground",
+          "rect": [
+            0,
+            0,
+            1672,
+            941
+          ],
+          "pivot": [
+            836,
+            470.5
+          ],
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    "citadelBackground": {
+      "path": "./citadel-background.png",
+      "imageSize": [
+        1672,
+        941
+      ],
+      "drawSize": [
+        480,
+        270
+      ],
+      "seamless": false,
+      "frames": [
+        {
+          "name": "citadelBackground",
+          "rect": [
+            0,
+            0,
+            1672,
+            941
+          ],
+          "pivot": [
+            836,
+            470.5
+          ],
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    "kilnHead": {
+      "path": "./kiln-head.png",
+      "imageSize": [
+        1470,
+        1070
+      ],
+      "drawSize": [
+        66,
+        48.04081632653061
+      ],
+      "frames": [
+        {
+          "name": "kilnHead",
+          "rect": [
+            0,
+            0,
+            1470,
+            1070
+          ],
+          "pivot": [
+            735,
+            520
+          ],
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "sockets": {
+        "core": [
+          0,
+          0
+        ],
+        "rearCoupling": [
+          0,
+          -19.76
+        ],
+        "drill": [
+          0,
+          17.5
+        ],
+        "leftCutter": [
+          -24,
+          13.5
+        ],
+        "rightCutter": [
+          24,
+          13.5
+        ]
+      }
+    },
+    "kilnSegment": {
+      "path": "./kiln-segment.png",
+      "imageSize": [
+        1402,
+        1122
+      ],
+      "drawSize": [
+        40,
+        22.40469208211144
+      ],
+      "frames": [
+        {
+          "name": "kilnSegment",
+          "rect": [
+            360,
+            370,
+            682,
+            382
+          ],
+          "pivot": [
+            341,
+            191
+          ],
+          "uv": [
+            0.25677603423680456,
+            0.32976827094474154,
+            0.7432239657631954,
+            0.6702317290552585
+          ]
+        }
+      ],
+      "sockets": {
+        "core": [
+          0,
+          0
+        ],
+        "frontCoupling": [
+          0,
+          9.6
+        ],
+        "rearCoupling": [
+          0,
+          -9.6
+        ]
+      }
+    },
+    "starfallEngine": {
+      "path": "./starfall-engine.png",
+      "imageSize": [
+        1470,
+        1070
+      ],
+      "drawSize": [
+        104,
+        80.59612518628911
+      ],
+      "frames": [
+        {
+          "name": "starfallEngine",
+          "rect": [
+            64,
+            0,
+            1342,
+            1040
+          ],
+          "pivot": [
+            671,
+            446
+          ],
+          "uv": [
+            0.04353741496598639,
+            0,
+            0.9564625850340136,
+            0.9719626168224299
+          ]
+        }
+      ],
+      "sockets": {
+        "leftEmitter": [
+          -28.98,
+          0
+        ],
+        "rightEmitter": [
+          28.98,
+          0
+        ],
+        "core": [
+          0,
+          0
+        ],
+        "lowerEmitter": [
+          0,
+          21.62
+        ]
+      },
+      "weakpointRadii": {
+        "leftEmitter": 7,
+        "rightEmitter": 7,
+        "core": 8,
+        "lowerEmitter": 7
+      }
+    },
+    "minelayer": {
+      "path": "./minelayer.png",
+      "imageSize": [
+        1305,
+        1205
+      ],
+      "drawSize": [
+        30,
+        31.747088186356073
+      ],
+      "frames": [
+        {
+          "name": "minelayer",
+          "rect": [
+            352,
+            298,
+            601,
+            636
+          ],
+          "pivot": [
+            300.5,
+            318
+          ],
+          "uv": [
+            0.2697318007662835,
+            0.24730290456431536,
+            0.7302681992337164,
+            0.775103734439834
+          ]
+        }
+      ],
+      "sockets": {
+        "mineRelease": [
+          0,
+          12
+        ]
+      }
+    },
+    "warden": {
+      "path": "./warden.png",
+      "imageSize": [
+        1290,
+        1219
+      ],
+      "drawSize": [
+        36,
+        34.81023454157783
+      ],
+      "frames": [
+        {
+          "name": "warden",
+          "rect": [
+            176,
+            128,
+            938,
+            907
+          ],
+          "pivot": [
+            469,
+            453.5
+          ],
+          "uv": [
+            0.13643410852713178,
+            0.10500410172272355,
+            0.8635658914728682,
+            0.8490566037735849
+          ]
+        }
+      ],
+      "sockets": {
+        "leftMuzzle": [
+          -7.9,
+          8.8
+        ],
+        "rightMuzzle": [
+          7.9,
+          8.8
+        ]
+      }
+    }
+  }
+}
