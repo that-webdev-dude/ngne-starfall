@@ -2,6 +2,7 @@ import { clamp, type WorldAccess } from "@ngne/core";
 import { Bullet, Enemy, Pose } from "../components/combat.ts";
 import type { StageConfig } from "../config/stages.ts";
 import { COMBAT } from "../config/encounters.ts";
+import { Kind } from "../config/enemies.ts";
 import { spawnBeam, spawnBullet, spawnEnemy } from "../entities/combat.ts";
 import { curtainPositions, fan, ring, type Shot } from "../world/patterns.ts";
 import type { RunState } from "../world/session.ts";
@@ -9,10 +10,10 @@ import type { CombatContext } from "./combat-context.ts";
 import { engineSockets } from "../services/campaign-assets.ts";
 
 export function spawnAdvancedBoss(world: WorldAccess, run: RunState, stage: StageConfig): void {
-  spawnEnemy(world, run, stage.index === 1 ? 8 : 10, 240, -40, { hp: stage.bossHp });
+  spawnEnemy(world, run, stage.index === 1 ? Kind.KilnHead : Kind.StarfallEngine, 240, -40, { hp: stage.bossHp });
   const count = stage.index === 1 ? 3 : 2;
   run.bossLeft = run.bossRight = 55;
-  for (let i = 0; i < count; i++) spawnEnemy(world, run, stage.index === 1 ? 9 : 11, 240, -40, { hp: 55, pattern: i });
+  for (let i = 0; i < count; i++) spawnEnemy(world, run, stage.index === 1 ? Kind.KilnSegment : Kind.EngineEmitter, 240, -40, { hp: 55, pattern: i });
 }
 export function installAdvancedEnemies({ scene, run, stage, sound }: CombatContext): void {
   const enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Bullet);
@@ -30,41 +31,41 @@ export function installAdvancedEnemies({ scene, run, stage, sound }: CombatConte
       for (let row = 0; row < chunk.count; row++) {
         if (!e.active[row] || e.hp[row] <= 0) continue;
         const kind = e.kind[row], age = e.age[row];
-        if (kind === 5 || kind === 6) {
+        if (kind === Kind.Minelayer || kind === Kind.Warden) {
           p.y[row] += dt * (p.y[row] < 65 ? 30 : age > 12 ? 45 : 2);
-          p.x[row] = e.originX[row] + Math.sin(age * 0.65) * (kind === 5 ? 20 : 9);
+          p.x[row] = e.originX[row] + Math.sin(age * 0.65) * (kind === Kind.Minelayer ? 20 : 9);
           e.cooldown[row] -= dt;
           if (e.cooldown[row] < 0.8 && !e.cue[row]) { e.cue[row] = 1; e.targetAngle[row] = clamp(run.x, 24, 456); }
           if (e.cooldown[row] <= 0) {
-            if (kind === 5 && run.novaRing >= 0.1 && enemies.size < COMBAT.enemyCap) spawnEnemy(scene.world, run, 7, p.x[row], p.y[row] + 18, { cooldown: 1.8 });
-            else if (kind === 6 && run.novaRing >= 0.1) { spawnBeam(scene.world, e.targetAngle[row], 10, 0.8, 0.55); sound.enemyShot(); }
-            e.cooldown[row] = kind === 5 ? 3 : 3.3; e.cue[row] = 0;
+            if (kind === Kind.Minelayer && run.novaRing >= 0.1 && enemies.size < COMBAT.enemyCap) spawnEnemy(scene.world, run, Kind.Mine, p.x[row], p.y[row] + 18, { cooldown: 1.8 });
+            else if (kind === Kind.Warden && run.novaRing >= 0.1) { spawnBeam(scene.world, e.targetAngle[row], 10, 0.8, 0.55); sound.enemyShot(); }
+            e.cooldown[row] = kind === Kind.Minelayer ? 3 : 3.3; e.cue[row] = 0;
           }
           if (p.y[row] > 295) { e.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); }
         }
-        if (kind === 7) {
+        if (kind === Kind.Mine) {
           p.y[row] += dt * 13; e.cooldown[row] -= dt;
           if (e.cooldown[row] < 0.8) e.cue[row] = 1;
           if (e.cooldown[row] <= 0) { emit(p.x[row], p.y[row], ring(8, age * 0.15, 48), 0xffbc74); e.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); }
         }
-        if (kind !== 8 && kind !== 10) continue;
+        if (kind !== Kind.KilnHead && kind !== Kind.StarfallEngine) continue;
         const time = Math.max(0, age - 2.7);
-        p.x[row] = kind === 8 ? 275 + Math.sin(time * 0.5) * 90 : 240 + Math.sin(time * 0.4) * 65;
+        p.x[row] = kind === Kind.KilnHead ? 275 + Math.sin(time * 0.5) * 90 : 240 + Math.sin(time * 0.4) * 65;
         p.y[row] = Math.min(65, p.y[row] + dt * 40);
         bossX = p.x[row]; bossY = p.y[row]; bossAge = time; run.bossHealth = Math.max(0, e.hp[row]);
-        const phase = kind === 8 ? (e.hp[row] < stage.bossHp / 2 ? 2 : 1) : e.hp[row] < stage.bossHp / 3 ? 3 : e.hp[row] < stage.bossHp * 2 / 3 ? 2 : 1;
-        if (phase > run.bossPhase) { run.bossPhase = phase; run.banner = `PHASE ${phase} / ${kind === 8 ? "CORE OVERHEAT" : "REACTOR SURGE"}`; run.bannerTime = 1.4; sound.boss(); }
+        const phase = kind === Kind.KilnHead ? (e.hp[row] < stage.bossHp / 2 ? 2 : 1) : e.hp[row] < stage.bossHp / 3 ? 3 : e.hp[row] < stage.bossHp * 2 / 3 ? 2 : 1;
+        if (phase > run.bossPhase) { run.bossPhase = phase; run.banner = `PHASE ${phase} / ${kind === Kind.KilnHead ? "CORE OVERHEAT" : "REACTOR SURGE"}`; run.bannerTime = 1.4; sound.boss(); }
         const cycle = Math.floor(e.fireIndex[row] / 8), index = e.fireIndex[row] % 8;
-        const times = kind === 8 ? [0.8, 2, 3.2, 4.8, 6, 8.2, 9.3, 10.4] : [0.8, 1.8, 2.8, 4.5, 5.6, 6.7, 8.4, 10];
+        const times = kind === Kind.KilnHead ? [0.8, 2, 3.2, 4.8, 6, 8.2, 9.3, 10.4] : [0.8, 1.8, 2.8, 4.5, 5.6, 6.7, 8.4, 10];
         const due = cycle * 12 + times[index];
         if (time > due - 0.7 && !e.cue[row]) {
           e.cue[row] = index < 3 ? 1 : 2;
           e.targetAngle[row] = Math.atan2(run.y - p.y[row], run.x - p.x[row]);
-          if (kind === 8 && index === 5) e.originX[row] = clamp(p.x[row], 80, 400);
-          if (kind === 10 && index === 3) e.originX[row] = cycle % 2 ? 350 : 130;
+          if (kind === Kind.KilnHead && index === 5) e.originX[row] = clamp(p.x[row], 80, 400);
+          if (kind === Kind.StarfallEngine && index === 3) e.originX[row] = cycle % 2 ? 350 : 130;
         }
         if (time < due) continue;
-        if (kind === 8) {
+        if (kind === Kind.KilnHead) {
           if (index < 3) emit(p.x[row], p.y[row] + 18, fan(Math.PI / 2 + (index % 2 ? -0.3 : 0.3), phase === 1 ? 7 : 9, Math.PI * 0.47, 60));
           else if (index < 5) {
             emit(p.x[row], p.y[row] + 12, ring(phase === 1 ? 10 : 14, index === 4 ? Math.PI / 14 : 0, phase === 1 ? 46 : 50));
@@ -87,8 +88,8 @@ export function installAdvancedEnemies({ scene, run, stage, sound }: CombatConte
       }
     });
     enemies.eachChunk(({ views, count }) => { const p = views.pose, e = views.enemy; for (let row = 0; row < count; row++) if (e.active[row]) {
-      if (e.kind[row] === 9) { const i = e.pattern[row]; p.x[row] = 275 + Math.sin((bossAge - (i + 1) * 0.3) * 0.5) * 90 - (i + 1) * 34; p.y[row] = bossY + 6 + Math.sin(bossAge * 1.2 - i * 0.8) * 12; run.sections[i] = Math.max(0, e.hp[row]); }
-      if (e.kind[row] === 11) { const socket = e.pattern[row] ? engineSockets().rightEmitter : engineSockets().leftEmitter; p.x[row] = bossX + socket[0]; p.y[row] = bossY + socket[1]; if (e.pattern[row]) run.bossRight = Math.max(0, e.hp[row]); else run.bossLeft = Math.max(0, e.hp[row]); }
+      if (e.kind[row] === Kind.KilnSegment) { const i = e.pattern[row]; p.x[row] = 275 + Math.sin((bossAge - (i + 1) * 0.3) * 0.5) * 90 - (i + 1) * 34; p.y[row] = bossY + 6 + Math.sin(bossAge * 1.2 - i * 0.8) * 12; run.sections[i] = Math.max(0, e.hp[row]); }
+      if (e.kind[row] === Kind.EngineEmitter) { const socket = e.pattern[row] ? engineSockets().rightEmitter : engineSockets().leftEmitter; p.x[row] = bossX + socket[0]; p.y[row] = bossY + socket[1]; if (e.pattern[row]) run.bossRight = Math.max(0, e.hp[row]); else run.bossLeft = Math.max(0, e.hp[row]); }
     } });
   });
 }

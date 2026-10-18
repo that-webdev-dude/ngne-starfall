@@ -1,6 +1,6 @@
 import type { Entity, SchemaQueryViews } from "@ngne/core";
 import { Beam, Bullet, Enemy, Pickup, Pose } from "../components/combat.ts";
-import { isBoss, isBossPart, isOrdinaryEnemy } from "../world/enemy-kinds.ts";
+import { Kind, enemySpec, isBoss, isBossPart, isOrdinaryEnemy } from "../config/enemies.ts";
 import { COMBAT } from "../config/encounters.ts";
 import { spawnRepair } from "../entities/combat.ts";
 import { segmentCircle } from "../world/patterns.ts";
@@ -57,13 +57,13 @@ export function installCombatCollision({ scene, run, sound, burst, stage }: Comb
       if (!e.active[row]) continue;
       if (e.hp[row] <= 0) {
         e.active[row] = 0; scene.world.despawn(entity);
-        const kind = e.kind[row], base = [100, 300, 200, 5000, 650, 350, 400, 50, 6500, 800, 10000, 1000][kind], points = base * run.combo;
+        const kind = e.kind[row], points = enemySpec(kind).score * run.combo;
         run.score += points; run.kills++; run.combo = Math.min(COMBAT.maxChain, run.combo + 1); run.comboTimer = COMBAT.chainSeconds;
         run.scorePops.push({ x: p.x[row] - 8, y: p.y[row] - 12, text: `+${points}`, life: 0.8 });
         const large = isBoss(kind) || isBossPart(kind);
         burst(p.x[row], p.y[row], large ? 0xffc57d : 0xff9c7d, large ? 55 : 18, true);
         sound.kill(large); run.shake = Math.max(run.shake, large ? 4 : 0.8);
-        if (isBossPart(kind)) { if (kind === 9) run.sections[e.pattern[row]] = 0; else if (e.pattern[row] === 0) run.bossLeft = 0; else run.bossRight = 0; scene.freeze(3); }
+        if (isBossPart(kind)) { if (kind === Kind.KilnSegment) run.sections[e.pattern[row]] = 0; else if (e.pattern[row] === 0) run.bossLeft = 0; else run.bossRight = 0; scene.freeze(3); }
         if (isOrdinaryEnemy(kind) && drops.next() < 0.04) spawnRepair(scene.world, p.x[row], p.y[row]);
         if (isBoss(kind) && run.hull > 0) {
           run.phase = "clear"; run.bossHealth = 0; run.banner = stage.index === 2 ? "STARFALL / VICTORY" : `${stage.name} SECURED`; run.bannerTime = 5; run.shake = 6; run.flash = 0.2;

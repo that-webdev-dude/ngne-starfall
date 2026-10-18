@@ -3,6 +3,7 @@ import { strict as assert } from "node:assert";
 import { Game, emptyInput, type Asset, type PreparedScene, type SceneSetup, type WorldAccess } from "@ngne/core";
 import { Beam, Bullet, Enemy, Pose } from "../src/components/combat.ts";
 import { STAGES } from "../src/config/stages.ts";
+import { Kind } from "../src/config/enemies.ts";
 import { spawnBeam, spawnBullet, spawnEnemy } from "../src/entities/combat.ts";
 import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";
@@ -49,7 +50,7 @@ function hostileCount(world: WorldAccess): number {
 
 const defeatedBoss: Action = (scene, run) => {
   run.phase = "boss";
-  spawnEnemy(scene.world, run, [3, 8, 10][run.stageIndex], 240, 65, { hp: 0 });
+  spawnEnemy(scene.world, run, [Kind.Gatebreaker, Kind.KilnHead, Kind.StarfallEngine][run.stageIndex], 240, 65, { hp: 0 });
 };
 
 test("each stage awards its clear and hull bonuses exactly once through actual boss death", async () => {
@@ -142,22 +143,22 @@ test("later-stage pause freezes beams and resume or title replacement releases c
 });
 
 test("later enemy families differ: delayed mine versus charged lane, with delayed beam damage and Nova cancellation", async () => {
-  for (const kind of [5, 6]) {
+  for (const kind of [Kind.Minelayer, Kind.Warden]) {
     const h = await campaignFixture(1, 0, (scene, run) => { run.invulnerable = 0; spawnEnemy(scene.world, run, kind, 100, 65, { cooldown: 0 }); });
     try {
       h.ticks(1);
       assert.equal(hostileCount(h.world), 0, "neither family creates immediate damaging bullets");
-      assert.equal(h.world.query(Beam).size, kind === 6 ? 1 : 0);
-      if (kind === 5) {
+      assert.equal(h.world.query(Beam).size, kind === Kind.Warden ? 1 : 0);
+      if (kind === Kind.Minelayer) {
         let mines = 0;
-        h.world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) if (views.enemy.kind[i] === 7) mines++; });
+        h.world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) if (views.enemy.kind[i] === Kind.Mine) mines++; });
         assert.equal(mines, 1);
         h.ticks(80);
         assert.equal(hostileCount(h.world), 0, "mine must retain its arming delay");
         h.ticks(30);
         assert.equal(hostileCount(h.world), 8, "armed mine detonates into a radial burst");
       }
-      if (kind === 6) {
+      if (kind === Kind.Warden) {
         h.ticks(40);
         assert.equal(h.session.run!.hull, 5, "charge telegraph must not damage the player");
         h.ticks(10);
@@ -174,7 +175,7 @@ test("mines damage on contact, can be shot down, and Nova suppresses a due deton
     const h = await campaignFixture(1, 0, (scene, run) => {
       run.invulnerable = 0;
       const x = mode === "contact" ? run.x : 100, y = mode === "contact" ? run.y : 140;
-      spawnEnemy(scene.world, run, 7, x, y, { cooldown: mode === "nova" ? 0 : 1.8 });
+      spawnEnemy(scene.world, run, Kind.Mine, x, y, { cooldown: mode === "nova" ? 0 : 1.8 });
       if (mode === "shoot") for (let i = 0; i < 2; i++) spawnBullet(scene.world, x, y, 0, 0, 0);
     });
     try {
@@ -204,8 +205,8 @@ test("expired beams and charging beams at stage clear release their entities", a
 test("Kiln sections are destructible, transfer core damage and suppress their contribution to future rings", async () => {
   const h = await campaignFixture(1, 0, (scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, 8, 275, 65, { hp: STAGES[1].bossHp });
-    spawnEnemy(scene.world, run, 9, 227.55, 70.99, { hp: 1, pattern: 0 });
+    spawnEnemy(scene.world, run, Kind.KilnHead, 275, 65, { hp: STAGES[1].bossHp });
+    spawnEnemy(scene.world, run, Kind.KilnSegment, 227.55, 70.99, { hp: 1, pattern: 0 });
     spawnBullet(scene.world, 227.55, 70.99, 0, 0, 0);
   });
   try {
@@ -213,7 +214,7 @@ test("Kiln sections are destructible, transfer core damage and suppress their co
     assert.equal(h.session.run!.sections[0], 0);
     assert.ok(Math.abs(h.session.run!.bossHealth - (STAGES[1].bossHp - 0.65)) < 1e-9);
     h.ticks(5);
-    h.queue.push((scene) => scene.world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) if (views.enemy.kind[i] === 8) { views.enemy.age[i] = 7.5; views.enemy.fireIndex[i] = 3; } }));
+    h.queue.push((scene) => scene.world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) if (views.enemy.kind[i] === Kind.KilnHead) { views.enemy.age[i] = 7.5; views.enemy.fireIndex[i] = 3; } }));
     h.ticks(1);
     assert.equal(hostileCount(h.world), 14, "10 core shots plus two shots from each surviving section");
   } finally { h.game.dispose(); }
@@ -223,7 +224,7 @@ test("Starfall Engine has three health phases and increasing charged lanes; emit
   for (const [hp, phase, beamCount] of [[STAGES[2].bossHp, 1, 0], [STAGES[2].bossHp * 2 / 3 - 1, 2, 1], [STAGES[2].bossHp / 3 - 1, 3, 2]]) {
     const h = await campaignFixture(2, 0, (scene, run) => {
       run.phase = "boss";
-      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: 10, hp, age: 7.2, fireIndex: 3 }));
+      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: Kind.StarfallEngine, hp, age: 7.2, fireIndex: 3 }));
     });
     try { h.ticks(1); assert.equal(h.session.run!.bossPhase, phase); assert.equal(h.world.query(Beam).size, beamCount); }
     finally { h.game.dispose(); }
@@ -231,7 +232,7 @@ test("Starfall Engine has three health phases and increasing charged lanes; emit
   for (const destroyed of [false, true]) {
     const h = await campaignFixture(2, 0, (scene, run) => {
       run.phase = "boss"; run.bossLeft = destroyed ? 0 : 55; run.bossRight = destroyed ? 0 : 55;
-      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: 10, hp: STAGES[2].bossHp / 3 - 1, age: 11.1, fireIndex: 6 }));
+      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: Kind.StarfallEngine, hp: STAGES[2].bossHp / 3 - 1, age: 11.1, fireIndex: 6 }));
     });
     try { h.ticks(1); assert.equal(hostileCount(h.world), destroyed ? 14 : 20); }
     finally { h.game.dispose(); }
@@ -242,8 +243,8 @@ test("Starfall Engine emitter collision uses its measured sprite socket and tran
   const [sx, sy] = engineSockets().leftEmitter;
   const h = await campaignFixture(2, 0, (scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, 10, 240, 65, { hp: STAGES[2].bossHp });
-    spawnEnemy(scene.world, run, 11, 240 + sx, 65 + sy, { hp: 1, pattern: 0 });
+    spawnEnemy(scene.world, run, Kind.StarfallEngine, 240, 65, { hp: STAGES[2].bossHp });
+    spawnEnemy(scene.world, run, Kind.EngineEmitter, 240 + sx, 65 + sy, { hp: 1, pattern: 0 });
     spawnBullet(scene.world, 240 + sx, 65 + sy, 0, 0, 0);
   });
   try {

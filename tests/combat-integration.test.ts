@@ -4,6 +4,7 @@ import { Game, emptyInput, type Asset, type PreparedScene, type SceneSetup, type
 import { Bullet, Enemy, Pose } from "../src/components/combat.ts";
 import { BOSS } from "../src/config/boss-geometry.ts";
 import { COMBAT, ENCOUNTERS } from "../src/config/encounters.ts";
+import { Kind } from "../src/config/enemies.ts";
 import { spawnBullet, spawnEnemy } from "../src/entities/combat.ts";
 import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";
@@ -76,7 +77,7 @@ test("Nova clears hostile shots, preserves friendly shots, suppresses due enemy 
     spawnBullet(scene.world, 10, 220, 0, 0, 0);
     spawnBullet(scene.world, 70, 170, 0, 0, 1);
     spawnBullet(scene.world, 80, 170, 0, 0, 1);
-    spawnEnemy(scene.world, run, 1, 130, 67, { hp: 20, cooldown: 0 });
+    spawnEnemy(scene.world, run, Kind.Gunship, 130, 67, { hp: 20, cooldown: 0 });
   });
   try {
     h.press("KeyB");
@@ -98,7 +99,7 @@ test("Nova clears hostile shots, preserves friendly shots, suppresses due enemy 
 });
 
 test("three enemy families emit distinct actual patterns", async () => {
-  for (const [kind, count, speed] of [[0, 1, 62], [1, 5, 58], [2, 3, 48]]) {
+  for (const [kind, count, speed] of [[Kind.Interceptor, 1, 62], [Kind.Gunship, 5, 58], [Kind.Sweeper, 3, 48]] as const) {
     const h = await boot((scene, run) => spawnEnemy(scene.world, run, kind, 100, 70, { cooldown: 0 }));
     try {
       h.ticks(1);
@@ -113,7 +114,7 @@ test("three enemy families emit distinct actual patterns", async () => {
 test("boss warning retires wave enemies and bullets before carrier and two turrets arrive", async () => {
   const h = await boot((scene, run) => {
     run.seconds = 85.99;
-    spawnEnemy(scene.world, run, 1, 130, 67, { cooldown: 0 });
+    spawnEnemy(scene.world, run, Kind.Gunship, 130, 67, { cooldown: 0 });
     spawnBullet(scene.world, 70, 170, 0, 0, 1);
   });
   try {
@@ -124,7 +125,7 @@ test("boss warning retires wave enemies and bullets before carrier and two turre
     assert.equal(h.session.run!.phase, "boss");
     const kinds: number[] = [];
     h.world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) kinds.push(views.enemy.kind[i]); });
-    assert.deepEqual(kinds.sort(), [3, 4, 4]);
+    assert.deepEqual(kinds.sort(), [Kind.Gatebreaker, Kind.GatebreakerTurret, Kind.GatebreakerTurret]);
     assert.equal(h.calls.boss, 1);
   } finally { h.game.dispose(); }
 });
@@ -133,7 +134,7 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
   for (const [hp, count] of [[COMBAT.bossHp, 14], [COMBAT.bossHp / 2 - 1, 18]]) {
     const h = await boot((scene, run) => {
       run.phase = "boss";
-      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: 3, hp, age: 11, fireIndex: 6 }));
+      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp, age: 11, fireIndex: 6 }));
     });
     try { h.ticks(1); assert.equal(bullets(h.world).filter((b) => b.team).length, count); }
     finally { h.game.dispose(); }
@@ -141,7 +142,7 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
   for (const alive of [true, false]) {
     const h = await boot((scene, run) => {
       run.phase = "boss"; run.bossLeft = alive ? 35 : 0;
-      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: 3, hp: COMBAT.bossHp, age: 3.4 }));
+      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp: COMBAT.bossHp, age: 3.4 }));
     });
     try { h.ticks(1); assert.equal(bullets(h.world).filter((b) => b.team).length, alive ? 7 : 0); }
     finally { h.game.dispose(); }
@@ -151,9 +152,9 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
 test("turret damage transfers to the core, turret destruction persists, and carrier defeat finishes once", async () => {
   const h = await boot((scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, 3, 240, 67);
-    spawnEnemy(scene.world, run, 4, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], { hp: 1, pattern: 0 });
-    spawnEnemy(scene.world, run, 4, 240 + BOSS.rightTurret[0], 67 + BOSS.rightTurret[1], { pattern: 1 });
+    spawnEnemy(scene.world, run, Kind.Gatebreaker, 240, 67);
+    spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], { hp: 1, pattern: 0 });
+    spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 240 + BOSS.rightTurret[0], 67 + BOSS.rightTurret[1], { pattern: 1 });
     spawnBullet(scene.world, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], 0, 0, 0);
   });
   try {
@@ -163,7 +164,7 @@ test("turret damage transfers to the core, turret destruction persists, and carr
     h.ticks(5);
     assert.equal(h.session.run!.bossLeft, 0);
     h.queue.push((scene) => scene.world.query(Pose, Enemy).eachChunk(({ views, count }) => {
-      for (let i = 0; i < count; i++) if (views.enemy.kind[i] === 3) {
+      for (let i = 0; i < count; i++) if (views.enemy.kind[i] === Kind.Gatebreaker) {
         views.enemy.hp[i] = 1;
         spawnBullet(scene.world, views.pose.x[i], views.pose.y[i], 0, 0, 0);
       }
@@ -220,7 +221,7 @@ test("actual pause blocks simulation; death result retries into a clean stage an
 });
 
 test("idle flight never fires even with an enemy available to target", async () => {
-  const h = await boot((scene, run) => spawnEnemy(scene.world, run, 1, 80, 140, { hp: 100, cooldown: 100 }));
+  const h = await boot((scene, run) => spawnEnemy(scene.world, run, Kind.Gunship, 80, 140, { hp: 100, cooldown: 100 }));
   try {
     h.ticks(90);
     assert.equal(h.calls.shoot ?? 0, 0);
@@ -230,7 +231,7 @@ test("idle flight never fires even with an enemy available to target", async () 
 
 test("held fire triggers share one cadence and always shoot straight up regardless of possible aim targets", async () => {
   for (const held of [["Space"], ["Pointer0"], ["Space", "Pointer0"], ["Pad2"]]) {
-    const h = await boot((scene, run) => spawnEnemy(scene.world, run, 1, 80, 140, { hp: 100, cooldown: 100 }));
+    const h = await boot((scene, run) => spawnEnemy(scene.world, run, Kind.Gunship, 80, 140, { hp: 100, cooldown: 100 }));
     try {
       const input = { ...emptyInput(), held, axes: [0, 0, 1, 0], pointer: { ...emptyInput().pointer, active: true, x: 420, y: 230 } };
       for (let i = 0; i < 24; i++) h.game.tick(input);

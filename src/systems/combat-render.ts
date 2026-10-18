@@ -2,13 +2,22 @@ import { lerp } from "@ngne/core";
 import { Beam, Bullet, Enemy, Particle, Pickup, Pose } from "../components/combat.ts";
 import { Flight } from "../components/flight.ts";
 import { BOSS } from "../config/boss-geometry.ts";
-import { animationIndex, art } from "../services/art-assets.ts";
+import { animationIndex, art, type ArtFrame } from "../services/art-assets.ts";
 import { combatArt } from "../services/combat-assets.ts";
 import { text } from "../ui/bitmap-text.ts";
 import { drawSprite } from "../ui/sprite.ts";
 import type { CombatContext } from "./combat-context.ts";
 import { campaignFrame, engineSockets } from "../services/campaign-assets.ts";
-import { isBoss } from "../world/enemy-kinds.ts";
+import { Kind, isBoss } from "../config/enemies.ts";
+
+/** Turrets and emitters are drawn by their boss artwork; mines are drawn procedurally. */
+const ENEMY_ART: Record<Kind, ArtFrame | undefined> = {
+  [Kind.Interceptor]: art.enemy, [Kind.Gunship]: combatArt.gunship, [Kind.Sweeper]: combatArt.dart,
+  [Kind.Gatebreaker]: combatArt.gatebreaker, [Kind.GatebreakerTurret]: undefined,
+  [Kind.Minelayer]: campaignFrame("minelayer"), [Kind.Warden]: campaignFrame("warden"), [Kind.Mine]: undefined,
+  [Kind.KilnHead]: campaignFrame("kilnHead"), [Kind.KilnSegment]: campaignFrame("kilnSegment"),
+  [Kind.StarfallEngine]: campaignFrame("starfallEngine"), [Kind.EngineEmitter]: undefined,
+};
 
 export function installCombatRender({ scene, run, session, stage }: CombatContext): void {
   const players = scene.world.query(Flight), enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Pose, Bullet), particles = scene.world.query(Pose, Particle), pickups = scene.world.query(Pose, Pickup);
@@ -22,8 +31,8 @@ export function installCombatRender({ scene, run, session, stage }: CombatContex
     if (run.phase === "clear" && run.finishTimer < 1.45) drawSprite(frame, bossArtwork(), run.bossDeathX, run.bossDeathY, 2, 1, 0x9c706b, stage.index === 1 ? -Math.PI / 2 : 0);
     if (stage.index === 1) {
       const joints = new Map<number, { x: number; y: number }>();
-      enemies.eachChunk(({ views, count }) => { const p = views.pose, e = views.enemy; for (let row = 0; row < count; row++) if (e.active[row] && (e.kind[row] === 8 || e.kind[row] === 9)) {
-        joints.set(e.kind[row] === 8 ? -1 : e.pattern[row], { x: lerp(p.px[row], p.x[row], alpha), y: lerp(p.py[row], p.y[row], alpha) });
+      enemies.eachChunk(({ views, count }) => { const p = views.pose, e = views.enemy; for (let row = 0; row < count; row++) if (e.active[row] && (e.kind[row] === Kind.KilnHead || e.kind[row] === Kind.KilnSegment)) {
+        joints.set(e.kind[row] === Kind.KilnHead ? -1 : e.pattern[row], { x: lerp(p.px[row], p.x[row], alpha), y: lerp(p.py[row], p.y[row], alpha) });
       } });
       for (let index = 0; index < 3; index++) {
         const current = joints.get(index), previous = joints.get(index - 1);
@@ -37,39 +46,40 @@ export function installCombatRender({ scene, run, session, stage }: CombatContex
     enemies.eachChunk((chunk) => {
       const p = chunk.views.pose, e = chunk.views.enemy;
       for (let row = 0; row < chunk.count; row++) {
-        if (!e.active[row] || e.kind[row] === 4 || e.kind[row] === 11) continue;
+        if (!e.active[row]) continue;
         const x = lerp(p.px[row], p.x[row], alpha), y = lerp(p.py[row], p.y[row], alpha), kind = e.kind[row];
-        if (kind === 7) {
+        if (kind === Kind.Mine) {
           frame.sprite({ x, y, width: 10, height: 10, rotation: Math.PI / 4, color: 0x624a39, layer: 3 });
           frame.rect(x, y, 6, 6, e.cue[row] ? 0xff9163 : 0xe3c471, 1, 4);
           frame.rect(x, y, 2, 2, 0xfff0b5, 1, 5);
           if (e.cue[row]) for (let i = 0; i < 8; i++) { const angle = i * Math.PI / 4, radius = 10 + Math.sin(run.effectClock * 14) * 2; frame.rect(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius, 1, 1, 0xffaa73, 0.7, 3); }
           continue;
         }
-        const artwork = kind === 0 ? art.enemy : kind === 1 ? combatArt.gunship : kind === 2 ? combatArt.dart : kind === 3 ? combatArt.gatebreaker : campaignFrame(kind === 5 ? "minelayer" : kind === 6 ? "warden" : kind === 8 ? "kilnHead" : kind === 9 ? "kilnSegment" : "starfallEngine");
-        const rotated = kind === 8 || kind === 9;
+        const artwork = ENEMY_ART[kind as Kind];
+        if (!artwork) continue;
+        const rotated = kind === Kind.KilnHead || kind === Kind.KilnSegment;
         drawSprite(frame, artwork, x, y, 2, 1, e.flash[row] ? 0xffb7b0 : 0xffffff, rotated ? -Math.PI / 2 : 0);
         if (e.flash[row]) { const height = rotated ? artwork.width : artwork.height; frame.rect(x, y - height / 2, 7, 1, 0xfff6da, 1, 4); frame.rect(x, y - height / 2, 1, 6, 0xfff6da, 1, 4); }
         if (e.cue[row]) {
           const pulse = 2 + Math.sin(run.effectClock * 36) * 0.7;
           frame.rect(x, y + (isBoss(kind) ? 8 : 12), pulse * 2, pulse * 2, 0xffbb7c, 0.8, 5);
-          if (kind === 3 && e.cue[row] === 2) {
+          if (kind === Kind.Gatebreaker && e.cue[row] === 2) {
             const gap = Math.floor(e.fireIndex[row] / 8) % 2 ? 360 : 120;
             frame.rect(gap, 151, 64, 230, 0x67e3be, 0.07, -1, true);
             text(frame, "GAP", gap - 6, 36, 0xa4e8bd);
           }
-          if ((kind === 8 && e.fireIndex[row] % 8 >= 5 || kind === 10 && e.fireIndex[row] % 8 >= 3 && e.fireIndex[row] % 8 < 6) && e.cue[row] === 2) {
-            const gap = e.originX[row], width = kind === 8 ? 72 : 88 - run.bossPhase * 8;
+          if ((kind === Kind.KilnHead && e.fireIndex[row] % 8 >= 5 || kind === Kind.StarfallEngine && e.fireIndex[row] % 8 >= 3 && e.fireIndex[row] % 8 < 6) && e.cue[row] === 2) {
+            const gap = e.originX[row], width = kind === Kind.KilnHead ? 72 : 88 - run.bossPhase * 8;
             frame.rect(gap, 151, width, 230, 0x77e5c2, 0.07, -1, true); text(frame, "GAP", gap - 6, 36, 0xb5efd0);
           }
         }
-        if (kind === 3) {
+        if (kind === Kind.Gatebreaker) {
           for (const [hp, socket] of [[run.bossLeft, BOSS.leftTurret], [run.bossRight, BOSS.rightTurret]] as const) if (hp <= 0) {
             frame.rect(x + socket[0], y + socket[1] + 8, 20, 25, 0x0a1320, 0.84, 3);
             frame.rect(x + socket[0], y + socket[1], 9, 3, 0xa64738, 1, 4);
           }
         }
-        if (kind === 10) {
+        if (kind === Kind.StarfallEngine) {
           const sockets = engineSockets();
           for (const [hp, socket] of [[run.bossLeft, sockets.leftEmitter], [run.bossRight, sockets.rightEmitter]] as const) if (hp <= 0) {
             frame.rect(x + socket[0], y + socket[1], 20, 20, 0x0a1020, 0.88, 3); frame.rect(x + socket[0], y + socket[1], 8, 3, 0x954258, 1, 4);

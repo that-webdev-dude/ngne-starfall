@@ -1,12 +1,12 @@
 import type { WorldAccess } from "@ngne/core";
 import { Beam, Bullet, Enemy, Particle, Pickup, Pose } from "../components/combat.ts";
 import type { RunState } from "../world/session.ts";
-import { COMBAT } from "../config/encounters.ts";
-export function spawnEnemy(world: WorldAccess, run: RunState, kind: number, x: number, y: number, options: { vx?: number; pattern?: number; hp?: number; cooldown?: number } = {}) {
-  const hp = options.hp ?? [3, 12, 8, COMBAT.bossHp, 35, 14, 17, 2, 460, 55, 540, 55][kind];
+import { enemySpec, type Kind } from "../config/enemies.ts";
+export function spawnEnemy(world: WorldAccess, run: RunState, kind: Kind, x: number, y: number, options: { vx?: number; pattern?: number; hp?: number; cooldown?: number } = {}) {
+  const spec = enemySpec(kind), hp = options.hp ?? spec.hp;
   return world.spawn(Pose.of({ x, y, px: x, py: y }), Enemy.of({ kind, hp, maxHp: hp, originX: x,
-    cooldown: options.cooldown ?? (kind === 0 ? 1.6 : kind === 1 ? 1.9 : 0.7), vx: options.vx ?? 0,
-    pattern: options.pattern ?? 0, radius: [12, 14, 9, 29, 11, 12, 14, 6, 22, 14, 28, 10][kind], id: run.nextId++ }));
+    cooldown: options.cooldown ?? spec.cooldown, vx: options.vx ?? 0,
+    pattern: options.pattern ?? 0, radius: spec.radius, id: run.nextId++ }));
 }
 export function spawnBullet(world: WorldAccess, x: number, y: number, vx: number, vy: number, team = 1, color = 0xff717e, size = 3) {
   return world.spawn(Pose.of({ x, y, px: x, py: y }), Bullet.of({ vx, vy, team, radius: team ? 2.5 : 2, color, size }));

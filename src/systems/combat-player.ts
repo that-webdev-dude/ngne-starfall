@@ -1,7 +1,7 @@
 import { clamp, down, pressed } from "@ngne/core";
 import { Flight } from "../components/flight.ts";
 import { Beam, Bullet, Enemy, Pose } from "../components/combat.ts";
-import { isBoss } from "../world/enemy-kinds.ts";
+import { isBoss } from "../config/enemies.ts";
 import { COMBAT } from "../config/encounters.ts";
 import { FLIGHT } from "../config/preview.ts";
 import { spawnBullet } from "../entities/combat.ts";
