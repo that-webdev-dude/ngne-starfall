@@ -1,6 +1,6 @@
 import "./style.css";
 import { BrowserGame } from "@ngne/core";
-import { VIEW } from "./config/preview.ts";
+import { VIEW } from "./config/view.ts";
 import { installDisplay } from "./services/display.ts";
 import { createCampaign } from "./services/campaign.ts";
 import { loadBest, loadSettings, saveBest } from "./services/storage.ts";

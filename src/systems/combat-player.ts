@@ -3,7 +3,7 @@ import { Flight } from "../components/flight.ts";
 import { Enemy, Pose } from "../components/combat.ts";
 import { isBoss } from "../config/enemies.ts";
 import { COMBAT } from "../config/encounters.ts";
-import { FLIGHT } from "../config/preview.ts";
+import { FLIGHT } from "../config/view.ts";
 import { spawnBullet } from "../entities/combat.ts";
 import { approach } from "../utils/motion.ts";
 import { flightVelocity } from "../world/flight-motion.ts";

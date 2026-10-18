@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { flightVelocity } from "../src/world/flight-motion.ts";
-import { FLIGHT } from "../src/config/preview.ts";
+import { FLIGHT } from "../src/config/view.ts";
 
 test("release preserves momentum then settles smoothly", () => {
   let velocity = FLIGHT.speed;

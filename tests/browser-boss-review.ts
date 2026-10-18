@@ -2,7 +2,7 @@
 // This is not normal-rules reachability evidence and is excluded from the shipped build.
 import "../src/style.css";
 import { BrowserGame, type PreparedScene } from "@ngne/core";
-import { VIEW } from "../src/config/preview.ts";
+import { VIEW } from "../src/config/view.ts";
 import { STAGES } from "../src/config/stages.ts";
 import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";

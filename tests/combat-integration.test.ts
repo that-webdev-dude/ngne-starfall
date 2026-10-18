@@ -2,6 +2,7 @@ import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { Game, emptyInput, type Asset, type PreparedScene, type SceneSetup, type WorldAccess } from "@ngne/core";
 import { Bullet, Enemy, Pose } from "../src/components/combat.ts";
+import { Flight } from "../src/components/flight.ts";
 import { BOSS } from "../src/config/boss-geometry.ts";
 import { COMBAT, ENCOUNTERS } from "../src/config/encounters.ts";
 import { Kind } from "../src/config/enemies.ts";
@@ -268,6 +269,20 @@ test("fire taps captured between simulation ticks produce one volley and do not 
   }
 });
 
+test("a directional tap between ticks moves the ship and retains release drift", async () => {
+  const h = await boot();
+  try {
+    const speed = () => { let vx = 0; h.world.query(Flight).eachChunk(({ views }) => { vx = views.flight.vx[0]; }); return vx; };
+    const run = h.session.run!, startX = run.x;
+    h.game.tick({ ...emptyInput(), pressed: ["ArrowRight"], released: ["ArrowRight"] });
+    assert.ok(run.x > startX);
+    assert.ok(speed() > 0);
+    const xAfterTap = run.x, speedAfterTap = speed();
+    h.ticks(1);
+    assert.ok(run.x > xAfterTap);
+    assert.ok(speed() > 0 && speed() < speedAfterTap);
+  } finally { h.game.dispose(); }
+});
 test("long idle does not accumulate cooldown debt or produce a catch-up burst", async () => {
   const h = await boot();
   try {

@@ -1,4 +1,4 @@
-import { FLIGHT } from "../config/preview.ts";
+import { FLIGHT } from "../config/view.ts";
 
 /** Exponential response is stable under changing simulation step sizes. */
 export function flightVelocity(velocity: number, input: number, dt: number): number {

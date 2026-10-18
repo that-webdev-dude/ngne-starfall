@@ -2,7 +2,7 @@
 // The observer never changes game state, entity data, health, clocks or encounter rules.
 import "../src/style.css";
 import { BrowserGame, type WorldAccess } from "@ngne/core";
-import { VIEW } from "../src/config/preview.ts";
+import { VIEW } from "../src/config/view.ts";
 import { STAGES } from "../src/config/stages.ts";
 import { createCampaign } from "../src/services/campaign.ts";
 import { createBotMemory, observeCampaign, decideCampaignKeys } from "./helpers/campaign-bot.ts";
