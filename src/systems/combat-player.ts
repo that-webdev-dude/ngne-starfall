@@ -6,7 +6,7 @@ import { COMBAT } from "../config/encounters.ts";
 import { FLIGHT } from "../config/view.ts";
 import { spawnBullet } from "../entities/combat.ts";
 import { approach } from "../utils/motion.ts";
-import { flightVelocity } from "../world/flight-motion.ts";
+import { flightVelocity, stickAxis } from "../world/flight-motion.ts";
 import type { CombatContext } from "./combat-context.ts";
 
 export function installCombatPlayer(context: CombatContext): void {
@@ -18,8 +18,8 @@ export function installCombatPlayer(context: CombatContext): void {
     run.invulnerable = Math.max(0, run.invulnerable - dt); run.nova = Math.min(1, run.nova + dt / COMBAT.novaSeconds);
     run.comboTimer = Math.max(0, run.comboTimer - dt); if (run.comboTimer === 0) run.combo = 1;
     const active = (key: string) => down(input, key) || pressed(input, key);
-    let mx = Number(active("KeyD") || active("ArrowRight")) - Number(active("KeyA") || active("ArrowLeft")) + (input.axes[0] ?? 0);
-    let my = Number(active("KeyS") || active("ArrowDown")) - Number(active("KeyW") || active("ArrowUp")) + (input.axes[1] ?? 0);
+    let mx = Number(active("KeyD") || active("ArrowRight")) - Number(active("KeyA") || active("ArrowLeft")) + stickAxis(input.axes[0] ?? 0);
+    let my = Number(active("KeyS") || active("ArrowDown")) - Number(active("KeyW") || active("ArrowUp")) + stickAxis(input.axes[1] ?? 0);
     const length = Math.max(1, Math.hypot(mx, my)); mx /= length; my /= length;
     players.eachChunk((chunk) => {
       const p = chunk.views.flight;

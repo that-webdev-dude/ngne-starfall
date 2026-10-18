@@ -277,7 +277,7 @@ test("fire taps captured between simulation ticks produce one volley and do not 
   }
 });
 
-test("a directional tap between ticks moves the ship and retains release drift", async () => {
+test("a directional tap between ticks moves the ship and settles as a small nudge", async () => {
   const h = await boot();
   try {
     const speed = () => { let vx = 0; h.world.query(Flight).eachChunk(({ views }) => { vx = views.flight.vx[0]; }); return vx; };
@@ -285,10 +285,12 @@ test("a directional tap between ticks moves the ship and retains release drift",
     h.game.tick({ ...emptyInput(), pressed: ["ArrowRight"], released: ["ArrowRight"] });
     assert.ok(run.x > startX);
     assert.ok(speed() > 0);
-    const xAfterTap = run.x, speedAfterTap = speed();
+    const xAfterTap = run.x;
     h.ticks(1);
-    assert.ok(run.x > xAfterTap);
-    assert.ok(speed() > 0 && speed() < speedAfterTap);
+    assert.ok(run.x > xAfterTap, "release carries the ship forward");
+    h.ticks(15);
+    assert.equal(speed(), 0);
+    assert.ok(run.x - startX < 3, "a single tap stays a small, precise nudge");
   } finally { h.game.dispose(); }
 });
 test("long idle does not accumulate cooldown debt or produce a catch-up burst", async () => {
