@@ -26,7 +26,8 @@ export function stageScene(session: Session, services: StageServices, stageIndex
       const run = scene.resource("run", newRun(stageIndex, entryScore)); run.banner = stage.name; session.run = run; session.screen = "playing";
       scene.world.spawn(Flight.of({ x: 240, px: 240, y: 206, py: 206 }));
       const sound = services.sound(scene), base = { scene, run, session, sound, stage };
-      const context = { ...base, burst: createEffects(base), hostiles: createHostileFire(base) };
+      const effects = { ...base, burst: createEffects(base), hostiles: createHostileFire(base) };
+      const context = { ...effects, boss: stage.boss.create(effects) };
       const progress = scene.state();
       let pauseRequested = false, cascadeIndex = 0;
       scene.system(({ input, scenes }) => {
@@ -35,7 +36,9 @@ export function stageScene(session: Session, services: StageServices, stageIndex
           const candidate = services.take("pause"); if (candidate) { pauseRequested = false; scenes.push(candidate); }
         }
       });
-      installCombatPlayer(context); installCombatEnemies(context); installAdvancedEnemies(context); installCombatCollision(context); installCombatEffects(context);
+      installCombatPlayer(context); installCombatEnemies(context);
+      scene.system(({ dt }) => { if (run.phase !== "dead" && run.phase !== "clear") context.boss.update(dt); });
+      installAdvancedEnemies(context); installCombatCollision(context); installCombatEffects(context);
       scene.system(({ dt, scenes }) => {
         if (run.phase !== "dead" && run.phase !== "clear") return;
         if (!run.finished) { run.finished = true; progress.dispatch({ type: "finish", score: run.score }); }

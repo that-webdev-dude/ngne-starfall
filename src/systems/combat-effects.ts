@@ -2,7 +2,7 @@ import { Particle, Pose } from "../components/combat.ts";
 import { spawnParticle } from "../entities/combat.ts";
 import type { CombatContext } from "./combat-context.ts";
 
-export function createEffects(context: Omit<CombatContext, "burst" | "hostiles">): CombatContext["burst"] {
+export function createEffects(context: Omit<CombatContext, "burst" | "hostiles" | "boss">): CombatContext["burst"] {
   const { scene } = context, particles = scene.world.query(Pose, Particle), random = scene.random("combat-effects");
   let countThisTick = 0;
   scene.system(() => { countThisTick = 0; }, { runsDuringFreeze: true });

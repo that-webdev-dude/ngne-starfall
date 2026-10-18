@@ -42,6 +42,12 @@ async function boot(initialize?: Fixture) {
   };
 }
 
+/** A boss part counts as destroyed once its entity is gone. */
+function partAlive(world: WorldAccess, kind: number, pattern: number): boolean {
+  let alive = false;
+  world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) if (views.enemy.kind[i] === kind && views.enemy.pattern[i] === pattern) alive = true; });
+  return alive;
+}
 function bullets(world: WorldAccess) {
   const result: { team: number; x: number; y: number; vx: number; vy: number }[] = [];
   world.query(Pose, Bullet).eachChunk(({ views, count }) => {
@@ -142,7 +148,8 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
   }
   for (const alive of [true, false]) {
     const h = await boot((scene, run) => {
-      run.phase = "boss"; run.bossLeft = alive ? 35 : 0;
+      run.phase = "boss";
+      if (alive) spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], { pattern: 0 });
       scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp: COMBAT.bossHp, age: 3.4 }));
     });
     try { h.ticks(1); assert.equal(bullets(h.world).filter((b) => b.team).length, alive ? 7 : 0); }
@@ -160,10 +167,10 @@ test("turret damage transfers to the core, turret destruction persists, and carr
   });
   try {
     h.ticks(1);
-    assert.equal(h.session.run!.bossLeft, 0);
+    assert.equal(partAlive(h.world, Kind.GatebreakerTurret, 0), false);
     assert.ok(Math.abs(h.session.run!.bossHealth - (COMBAT.bossHp - 0.65)) < 1e-9);
     h.ticks(5);
-    assert.equal(h.session.run!.bossLeft, 0);
+    assert.equal(partAlive(h.world, Kind.GatebreakerTurret, 0), false);
     h.queue.push((scene) => scene.world.query(Pose, Enemy).eachChunk(({ views, count }) => {
       for (let i = 0; i < count; i++) if (views.enemy.kind[i] === Kind.Gatebreaker) {
         views.enemy.hp[i] = 1;

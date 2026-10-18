@@ -1,13 +1,12 @@
 import { lerp } from "@ngne/core";
 import { Beam, Bullet, Enemy, Particle, Pickup, Pose } from "../components/combat.ts";
 import { Flight } from "../components/flight.ts";
-import { BOSS } from "../config/boss-geometry.ts";
 import { animationIndex, art, type ArtFrame } from "../services/art-assets.ts";
 import { combatArt } from "../services/combat-assets.ts";
 import { text } from "../ui/bitmap-text.ts";
 import { drawSprite } from "../ui/sprite.ts";
 import type { CombatContext } from "./combat-context.ts";
-import { campaignFrame, engineSockets } from "../services/campaign-assets.ts";
+import { campaignFrame } from "../services/campaign-assets.ts";
 import { Kind, isBoss } from "../config/enemies.ts";
 
 /** Turrets and emitters are drawn by their boss artwork; mines are drawn procedurally. */
@@ -19,30 +18,14 @@ const ENEMY_ART: Record<Kind, ArtFrame | undefined> = {
   [Kind.StarfallEngine]: campaignFrame("starfallEngine"), [Kind.EngineEmitter]: undefined,
 };
 
-export function installCombatRender({ scene, run, session, stage }: CombatContext): void {
+export function installCombatRender({ scene, run, session, stage, boss }: CombatContext): void {
   const players = scene.world.query(Flight), enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Pose, Bullet), particles = scene.world.query(Pose, Particle), pickups = scene.world.query(Pose, Pickup);
   const rng = scene.random("background-stars"), stars = Array.from({ length: 36 }, () => ({ x: rng.range(0, 480), y: rng.range(0, 270), speed: rng.range(5, 23) }));
   scene.render((frame, alpha) => {
     const background = stage.index === 0 ? art.background : campaignFrame(stage.index === 1 ? "furnaceBackground" : "citadelBackground");
-    const bossArtwork = () => stage.index === 0 ? combatArt.gatebreaker : campaignFrame(stage.index === 1 ? "kilnHead" : "starfallEngine");
     drawSprite(frame, background, 240, 135, -10);
     frame.rect(240, 135, 480, 270, 0x050d19, 0.17, -9, true);
     for (const star of stars) frame.rect(star.x, (star.y + (session.settings.reducedMotion ? 0 : run.effectClock * star.speed)) % 270, 1, star.speed > 16 ? 2 : 1, 0x9ccee1, 0.35, -7);
-    if (run.phase === "clear" && run.finishTimer < 1.45) drawSprite(frame, bossArtwork(), run.bossDeathX, run.bossDeathY, 2, 1, 0x9c706b, stage.index === 1 ? -Math.PI / 2 : 0);
-    if (stage.index === 1) {
-      const joints = new Map<number, { x: number; y: number }>();
-      enemies.eachChunk(({ views, count }) => { const p = views.pose, e = views.enemy; for (let row = 0; row < count; row++) if (e.active[row] && (e.kind[row] === Kind.KilnHead || e.kind[row] === Kind.KilnSegment)) {
-        joints.set(e.kind[row] === Kind.KilnHead ? -1 : e.pattern[row], { x: lerp(p.px[row], p.x[row], alpha), y: lerp(p.py[row], p.y[row], alpha) });
-      } });
-      for (let index = 0; index < 3; index++) {
-        const current = joints.get(index), previous = joints.get(index - 1);
-        if (!current || !previous) continue;
-        const dx = previous.x - current.x, dy = previous.y - current.y;
-        const link = { x: (current.x + previous.x) / 2, y: (current.y + previous.y) / 2, width: Math.hypot(dx, dy), rotation: Math.atan2(dy, dx), layer: 1 };
-        frame.sprite({ ...link, height: 4, color: 0x644b40 });
-        frame.sprite({ ...link, height: 1, color: 0xc6a47b });
-      }
-    }
     enemies.eachChunk((chunk) => {
       const p = chunk.views.pose, e = chunk.views.enemy;
       for (let row = 0; row < chunk.count; row++) {
@@ -63,30 +46,10 @@ export function installCombatRender({ scene, run, session, stage }: CombatContex
         if (e.cue[row]) {
           const pulse = 2 + Math.sin(run.effectClock * 36) * 0.7;
           frame.rect(x, y + (isBoss(kind) ? 8 : 12), pulse * 2, pulse * 2, 0xffbb7c, 0.8, 5);
-          if (kind === Kind.Gatebreaker && e.cue[row] === 2) {
-            const gap = Math.floor(e.fireIndex[row] / 8) % 2 ? 360 : 120;
-            frame.rect(gap, 151, 64, 230, 0x67e3be, 0.07, -1, true);
-            text(frame, "GAP", gap - 6, 36, 0xa4e8bd);
-          }
-          if ((kind === Kind.KilnHead && e.fireIndex[row] % 8 >= 5 || kind === Kind.StarfallEngine && e.fireIndex[row] % 8 >= 3 && e.fireIndex[row] % 8 < 6) && e.cue[row] === 2) {
-            const gap = e.originX[row], width = kind === Kind.KilnHead ? 72 : 88 - run.bossPhase * 8;
-            frame.rect(gap, 151, width, 230, 0x77e5c2, 0.07, -1, true); text(frame, "GAP", gap - 6, 36, 0xb5efd0);
-          }
-        }
-        if (kind === Kind.Gatebreaker) {
-          for (const [hp, socket] of [[run.bossLeft, BOSS.leftTurret], [run.bossRight, BOSS.rightTurret]] as const) if (hp <= 0) {
-            frame.rect(x + socket[0], y + socket[1] + 8, 20, 25, 0x0a1320, 0.84, 3);
-            frame.rect(x + socket[0], y + socket[1], 9, 3, 0xa64738, 1, 4);
-          }
-        }
-        if (kind === Kind.StarfallEngine) {
-          const sockets = engineSockets();
-          for (const [hp, socket] of [[run.bossLeft, sockets.leftEmitter], [run.bossRight, sockets.rightEmitter]] as const) if (hp <= 0) {
-            frame.rect(x + socket[0], y + socket[1], 20, 20, 0x0a1020, 0.88, 3); frame.rect(x + socket[0], y + socket[1], 8, 3, 0x954258, 1, 4);
-          }
         }
       }
     });
+    boss.render(frame, alpha);
     scene.world.query(Pose, Beam).eachChunk(({ views, count }) => { const p = views.pose, beam = views.beam; for (let row = 0; row < count; row++) if (beam.active[row]) {
       const firing = beam.age[row] >= beam.charge[row], x = p.x[row];
       frame.rect(x, 154, firing ? beam.width[row] + 4 : beam.width[row], 232, firing ? 0xdc80ff : 0xfc798f, firing ? 0.65 : 0.12, firing ? 12 : -1);
@@ -139,7 +102,7 @@ export function installCombatRender({ scene, run, session, stage }: CombatContex
     text(frame, "SPACE/MOUSE FIRE   B NOVA   ESC PAUSE", 280, 257, 0x7d99ae);
     text(frame, `${Math.floor(run.seconds / 60)}:${String(Math.floor(run.seconds % 60)).padStart(2, "0")}`, 445, 257, 0x9cb4c5);
     if (run.phase === "boss") {
-      text(frame, stage.bossName, 240 - stage.bossName.length * 2, 15, 0xf1c9c2);
+      text(frame, stage.boss.name, 240 - stage.boss.name.length * 2, 15, 0xf1c9c2);
       frame.rect(240, 26, 180, 4, 0x3a2a3d, 1, 44, true);
       const fraction = run.bossHealth / run.bossMax;
       frame.rect(150 + 90 * fraction, 26, 180 * fraction, 4, 0xfa797b, 1, 45, true);

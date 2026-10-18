@@ -79,7 +79,7 @@ for (const seed of seeds) {
 const evidence = {
   evidenceClass: "Headless normal-rules campaign run using actual production stage and menu systems",
   command: `node --experimental-strip-types tests/run-campaign-bot.ts ${output} ${seeds.join(" ")}`,
-  stageConfig: STAGES.map(({ id, bossAt, bossHp }) => ({ id, bossAt, bossHp })), results,
+  stageConfig: STAGES.map(({ id, bossAt, boss }) => ({ id, bossAt, bossHp: boss.hp })), results,
   limitations: ["No browser/GPU, decoded production assets or audible sound: empty fixture assets and stub sound.", "Bot reads exact public ECS observations and predicts threats; this is reachability evidence, not human difficulty/fun acceptance.", "Only ordinary held Space, arrows, KeyB and menu Enter inputs; no gameplay HP, timer, invulnerability, encounter or AI mutations.", "Menu candidate preparation is a headless adapter matching production route semantics; actual stage/menu systems execute.", "Simulation time is not a wall-time performance benchmark."],
 };
 mkdirSync(dirname(output), { recursive: true });

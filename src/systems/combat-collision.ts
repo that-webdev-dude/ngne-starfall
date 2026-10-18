@@ -1,6 +1,6 @@
 import type { Entity, SchemaQueryViews } from "@ngne/core";
 import { Beam, Bullet, Enemy, Pickup, Pose } from "../components/combat.ts";
-import { Kind, enemySpec, isBoss, isBossPart, isOrdinaryEnemy } from "../config/enemies.ts";
+import { enemySpec, isBoss, isBossPart, isOrdinaryEnemy } from "../config/enemies.ts";
 import { COMBAT } from "../config/encounters.ts";
 import { spawnRepair } from "../entities/combat.ts";
 import { segmentCircle } from "../world/patterns.ts";
@@ -63,11 +63,11 @@ export function installCombatCollision({ scene, run, sound, burst, stage, hostil
         const large = isBoss(kind) || isBossPart(kind);
         burst(p.x[row], p.y[row], large ? 0xffc57d : 0xff9c7d, large ? 55 : 18, true);
         sound.kill(large); run.shake = Math.max(run.shake, large ? 4 : 0.8);
-        if (isBossPart(kind)) { if (kind === Kind.KilnSegment) run.sections[e.pattern[row]] = 0; else if (e.pattern[row] === 0) run.bossLeft = 0; else run.bossRight = 0; scene.freeze(3); }
+        if (isBossPart(kind)) scene.freeze(3);
         if (isOrdinaryEnemy(kind) && drops.next() < 0.04) spawnRepair(scene.world, p.x[row], p.y[row]);
         if (isBoss(kind) && run.hull > 0) {
           run.phase = "clear"; run.bossHealth = 0; run.banner = stage.index === 2 ? "STARFALL / VICTORY" : `${stage.name} SECURED`; run.bannerTime = 5; run.shake = 6; run.flash = 0.2;
-          run.score += [3000, 5000, 10000][stage.index] + run.hull * 500;
+          run.score += stage.boss.clearBonus + run.hull * 500;
           run.bossDeathX = p.x[row]; run.bossDeathY = p.y[row]; scene.freeze(9);
           hostiles.clear({ enemies: true, playerBullets: true });
         }

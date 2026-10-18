@@ -42,6 +42,12 @@ async function campaignFixture(stageIndex = 0, entryScore = 0, initialize?: Acti
   };
 }
 
+/** A boss part counts as destroyed once its entity is gone. */
+function partAlive(world: WorldAccess, kind: number, pattern: number): boolean {
+  let alive = false;
+  world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) if (views.enemy.kind[i] === kind && views.enemy.pattern[i] === pattern) alive = true; });
+  return alive;
+}
 function hostileCount(world: WorldAccess): number {
   let count = 0;
   world.query(Bullet).eachChunk(({ views, count: length }) => { for (let i = 0; i < length; i++) if (views.bullet.active[i] && views.bullet.team[i]) count++; });
@@ -205,14 +211,15 @@ test("expired beams and charging beams at stage clear release their entities", a
 test("Kiln sections are destructible, transfer core damage and suppress their contribution to future rings", async () => {
   const h = await campaignFixture(1, 0, (scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, Kind.KilnHead, 275, 65, { hp: STAGES[1].bossHp });
+    spawnEnemy(scene.world, run, Kind.KilnHead, 275, 65, { hp: STAGES[1].boss.hp });
     spawnEnemy(scene.world, run, Kind.KilnSegment, 227.55, 70.99, { hp: 1, pattern: 0 });
+    for (const pattern of [1, 2]) spawnEnemy(scene.world, run, Kind.KilnSegment, 240, -40, { hp: 55, pattern });
     spawnBullet(scene.world, 227.55, 70.99, 0, 0, 0);
   });
   try {
     h.ticks(1);
-    assert.equal(h.session.run!.sections[0], 0);
-    assert.ok(Math.abs(h.session.run!.bossHealth - (STAGES[1].bossHp - 0.65)) < 1e-9);
+    assert.equal(partAlive(h.world, Kind.KilnSegment, 0), false);
+    assert.ok(Math.abs(h.session.run!.bossHealth - (STAGES[1].boss.hp - 0.65)) < 1e-9);
     h.ticks(5);
     h.queue.push((scene) => scene.world.query(Enemy).eachChunk(({ views, count }) => { for (let i = 0; i < count; i++) if (views.enemy.kind[i] === Kind.KilnHead) { views.enemy.age[i] = 7.5; views.enemy.fireIndex[i] = 3; } }));
     h.ticks(1);
@@ -221,7 +228,7 @@ test("Kiln sections are destructible, transfer core damage and suppress their co
 });
 
 test("Starfall Engine has three health phases and increasing charged lanes; emitters reduce late ring density", async () => {
-  for (const [hp, phase, beamCount] of [[STAGES[2].bossHp, 1, 0], [STAGES[2].bossHp * 2 / 3 - 1, 2, 1], [STAGES[2].bossHp / 3 - 1, 3, 2]]) {
+  for (const [hp, phase, beamCount] of [[STAGES[2].boss.hp, 1, 0], [STAGES[2].boss.hp * 2 / 3 - 1, 2, 1], [STAGES[2].boss.hp / 3 - 1, 3, 2]]) {
     const h = await campaignFixture(2, 0, (scene, run) => {
       run.phase = "boss";
       scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: Kind.StarfallEngine, hp, age: 7.2, fireIndex: 3 }));
@@ -231,8 +238,9 @@ test("Starfall Engine has three health phases and increasing charged lanes; emit
   }
   for (const destroyed of [false, true]) {
     const h = await campaignFixture(2, 0, (scene, run) => {
-      run.phase = "boss"; run.bossLeft = destroyed ? 0 : 55; run.bossRight = destroyed ? 0 : 55;
-      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: Kind.StarfallEngine, hp: STAGES[2].bossHp / 3 - 1, age: 11.1, fireIndex: 6 }));
+      run.phase = "boss";
+      if (!destroyed) for (const [pattern, [sx, sy]] of [engineSockets().leftEmitter, engineSockets().rightEmitter].entries()) spawnEnemy(scene.world, run, Kind.EngineEmitter, 240 + sx, 65 + sy, { hp: 55, pattern });
+      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: Kind.StarfallEngine, hp: STAGES[2].boss.hp / 3 - 1, age: 11.1, fireIndex: 6 }));
     });
     try { h.ticks(1); assert.equal(hostileCount(h.world), destroyed ? 14 : 20); }
     finally { h.game.dispose(); }
@@ -243,15 +251,15 @@ test("Starfall Engine emitter collision uses its measured sprite socket and tran
   const [sx, sy] = engineSockets().leftEmitter;
   const h = await campaignFixture(2, 0, (scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, Kind.StarfallEngine, 240, 65, { hp: STAGES[2].bossHp });
+    spawnEnemy(scene.world, run, Kind.StarfallEngine, 240, 65, { hp: STAGES[2].boss.hp });
     spawnEnemy(scene.world, run, Kind.EngineEmitter, 240 + sx, 65 + sy, { hp: 1, pattern: 0 });
     spawnBullet(scene.world, 240 + sx, 65 + sy, 0, 0, 0);
   });
   try {
     h.ticks(1);
-    assert.equal(h.session.run!.bossLeft, 0);
-    assert.ok(Math.abs(h.session.run!.bossHealth - (STAGES[2].bossHp - 0.65)) < 1e-9);
+    assert.equal(partAlive(h.world, Kind.EngineEmitter, 0), false);
+    assert.ok(Math.abs(h.session.run!.bossHealth - (STAGES[2].boss.hp - 0.65)) < 1e-9);
     h.ticks(8);
-    assert.equal(h.session.run!.bossLeft, 0);
+    assert.equal(partAlive(h.world, Kind.EngineEmitter, 0), false);
   } finally { h.game.dispose(); }
 });
