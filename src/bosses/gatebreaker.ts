@@ -1,7 +1,6 @@
 import { lerp } from "@ngne/core";
 import { Enemy, Pose } from "../components/combat.ts";
 import { BOSS } from "../config/boss-geometry.ts";
-import { COMBAT } from "../config/encounters.ts";
 import { Kind, enemySpec } from "../config/enemies.ts";
 import { spawnEnemy } from "../entities/combat.ts";
 import { combatArt } from "../services/combat-assets.ts";
@@ -10,13 +9,13 @@ import { drawDefeat, drawGap, forgetDestroyed, locate, type BossDefinition } fro
 
 /** Stage 1 carrier: two destructible turrets (pattern 0 left, 1 right) fire aimed fans; the hull fires curtains and rings. */
 export const gatebreaker: BossDefinition = {
-  name: "GATEBREAKER", hp: COMBAT.bossHp, clearBonus: 3000,
+  name: "GATEBREAKER", hp: enemySpec(Kind.Gatebreaker).hp, clearBonus: 3000,
   create({ scene, run, hostiles: { emit } }) {
     const enemies = scene.world.query(Pose, Enemy), sockets = [BOSS.leftTurret, BOSS.rightTurret];
     const turrets = [enemySpec(Kind.GatebreakerTurret).hp, enemySpec(Kind.GatebreakerTurret).hp];
     return {
       spawn() {
-        spawnEnemy(scene.world, run, Kind.Gatebreaker, 240, -35, { hp: gatebreaker.hp });
+        spawnEnemy(scene.world, run, Kind.Gatebreaker, 240, -35);
         spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 202, -20, { pattern: 0 });
         spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 278, -20, { pattern: 1 });
       },
@@ -34,7 +33,7 @@ export const gatebreaker: BossDefinition = {
           const next = cycle * 12 + times[index];
           if (time > next - 0.55 && !e.cue[row]) { e.cue[row] = index < 3 ? 1 : index < 6 ? 2 : 3; e.targetAngle[row] = Math.atan2(run.y - p.y[row], run.x - p.x[row]); }
           if (time >= next) {
-            const enraged = e.hp[row] < COMBAT.bossHp / 2;
+            const enraged = e.hp[row] < gatebreaker.hp / 2;
             if (index < 3) {
               const side = index % 2 === 0 ? 0 : 1;
               if (turrets[side] > 0) emit(p.x[row] + sockets[side][0], p.y[row] + 21, fan(e.targetAngle[row], enraged ? 9 : 7, (enraged ? 96 : 72) * Math.PI / 180, 58), 0xffa07e);

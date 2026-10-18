@@ -7,4 +7,4 @@ export const ENCOUNTERS: Encounter[] = ([
   ...[28, 36, 60, 66, 72, 79].map((at, index) => ({ at, kind: "sweeper" as const, count: 2, side: index % 2 })),
   { at: 52, kind: "repair", count: 1, side: 240 },
 ] satisfies Encounter[]).sort((a, b) => a.at - b.at);
-export const COMBAT = { bossAt: 90, retreatAt: 86, enemyCap: 18, bulletCap: 180, novaSeconds: 15, playerRadius: 4, chainSeconds: 2, maxChain: 8, bossHp: 480 } as const;
+export const COMBAT = { enemyCap: 18, bulletCap: 180, novaSeconds: 15, playerRadius: 4, chainSeconds: 2, maxChain: 8 } as const;

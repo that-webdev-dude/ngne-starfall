@@ -8,14 +8,14 @@ import { drawDefeat, drawGap, forgetDestroyed, locate, type BossDefinition } fro
 
 /** Stage 3 finale: three health phases add charged lanes; two destructible emitters (pattern 0 left, 1 right) fire fans and thicken rings. */
 export const starfallEngine: BossDefinition = {
-  name: "STARFALL ENGINE", hp: 600, clearBonus: 10000,
+  name: "STARFALL ENGINE", hp: enemySpec(Kind.StarfallEngine).hp, clearBonus: 10000,
   create({ scene, run, sound, hostiles }) {
     const enemies = scene.world.query(Pose, Enemy), { emit } = hostiles;
     const emitters = [enemySpec(Kind.EngineEmitter).hp, enemySpec(Kind.EngineEmitter).hp];
     const socket = (side: number) => side ? engineSockets().rightEmitter : engineSockets().leftEmitter;
     return {
       spawn() {
-        spawnEnemy(scene.world, run, Kind.StarfallEngine, 240, -40, { hp: starfallEngine.hp });
+        spawnEnemy(scene.world, run, Kind.StarfallEngine, 240, -40);
         for (let i = 0; i < emitters.length; i++) spawnEnemy(scene.world, run, Kind.EngineEmitter, 240, -40, { hp: 55, pattern: i });
       },
       update(dt) {

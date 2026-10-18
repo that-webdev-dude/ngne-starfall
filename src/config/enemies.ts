@@ -1,5 +1,3 @@
-import { COMBAT } from "./encounters.ts";
-
 /** Values stored in the `Enemy.kind` u8 column. */
 export const Kind = {
   Interceptor: 0, Gunship: 1, Sweeper: 2,
@@ -18,14 +16,14 @@ const ENEMIES: Record<Kind, EnemySpec> = {
   [Kind.Interceptor]: { role: "ordinary", hp: 3, radius: 12, cooldown: 1.6, score: 100 },
   [Kind.Gunship]: { role: "ordinary", hp: 12, radius: 14, cooldown: 1.9, score: 300 },
   [Kind.Sweeper]: { role: "ordinary", hp: 8, radius: 9, cooldown: 0.7, score: 200 },
-  [Kind.Gatebreaker]: { role: "boss", hp: COMBAT.bossHp, radius: 29, cooldown: 0.7, score: 5000 },
+  [Kind.Gatebreaker]: { role: "boss", hp: 480, radius: 29, cooldown: 0.7, score: 5000 },
   [Kind.GatebreakerTurret]: { role: "part", hp: 35, radius: 11, cooldown: 0.7, score: 650 },
   [Kind.Minelayer]: { role: "ordinary", hp: 14, radius: 12, cooldown: 0.7, score: 350 },
   [Kind.Warden]: { role: "ordinary", hp: 17, radius: 14, cooldown: 0.7, score: 400 },
   [Kind.Mine]: { role: "mine", hp: 2, radius: 6, cooldown: 0.7, score: 50 },
-  [Kind.KilnHead]: { role: "boss", hp: 460, radius: 22, cooldown: 0.7, score: 6500 },
+  [Kind.KilnHead]: { role: "boss", hp: 540, radius: 22, cooldown: 0.7, score: 6500 },
   [Kind.KilnSegment]: { role: "part", hp: 55, radius: 14, cooldown: 0.7, score: 800 },
-  [Kind.StarfallEngine]: { role: "boss", hp: 540, radius: 28, cooldown: 0.7, score: 10000 },
+  [Kind.StarfallEngine]: { role: "boss", hp: 600, radius: 28, cooldown: 0.7, score: 10000 },
   [Kind.EngineEmitter]: { role: "part", hp: 55, radius: 10, cooldown: 0.7, score: 1000 },
 };
 

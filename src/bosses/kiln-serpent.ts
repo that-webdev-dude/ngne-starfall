@@ -8,13 +8,13 @@ import { drawDefeat, drawGap, forgetDestroyed, locate, type BossDefinition } fro
 
 /** Stage 2 serpent: a head trailed by three destructible sections (pattern 0-2) that add fans to its rings. */
 export const kilnSerpent: BossDefinition = {
-  name: "KILN SERPENT", hp: 540, clearBonus: 5000,
+  name: "KILN SERPENT", hp: enemySpec(Kind.KilnHead).hp, clearBonus: 5000,
   create({ scene, run, sound, hostiles: { emit } }) {
     const enemies = scene.world.query(Pose, Enemy);
     const sections = Array.from({ length: 3 }, () => enemySpec(Kind.KilnSegment).hp);
     return {
       spawn() {
-        spawnEnemy(scene.world, run, Kind.KilnHead, 240, -40, { hp: kilnSerpent.hp });
+        spawnEnemy(scene.world, run, Kind.KilnHead, 240, -40);
         for (let i = 0; i < sections.length; i++) spawnEnemy(scene.world, run, Kind.KilnSegment, 240, -40, { hp: 55, pattern: i });
       },
       update(dt) {

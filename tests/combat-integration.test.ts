@@ -6,6 +6,7 @@ import { Flight } from "../src/components/flight.ts";
 import { BOSS } from "../src/config/boss-geometry.ts";
 import { COMBAT, ENCOUNTERS } from "../src/config/encounters.ts";
 import { Kind } from "../src/config/enemies.ts";
+import { STAGES } from "../src/config/stages.ts";
 import { spawnBullet, spawnEnemy } from "../src/entities/combat.ts";
 import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";
@@ -138,7 +139,7 @@ test("boss warning retires wave enemies and bullets before carrier and two turre
 });
 
 test("actual boss phase changes ring density and destroyed turret suppresses its fan", async () => {
-  for (const [hp, count] of [[COMBAT.bossHp, 14], [COMBAT.bossHp / 2 - 1, 18]]) {
+  for (const [hp, count] of [[STAGES[0].boss.hp, 14], [STAGES[0].boss.hp / 2 - 1, 18]]) {
     const h = await boot((scene, run) => {
       run.phase = "boss";
       scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp, age: 11, fireIndex: 6 }));
@@ -150,7 +151,7 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
     const h = await boot((scene, run) => {
       run.phase = "boss";
       if (alive) spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], { pattern: 0 });
-      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp: COMBAT.bossHp, age: 3.4 }));
+      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp: STAGES[0].boss.hp, age: 3.4 }));
     });
     try { h.ticks(1); assert.equal(bullets(h.world).filter((b) => b.team).length, alive ? 7 : 0); }
     finally { h.game.dispose(); }
@@ -168,7 +169,7 @@ test("turret damage transfers to the core, turret destruction persists, and carr
   try {
     h.ticks(1);
     assert.equal(partAlive(h.world, Kind.GatebreakerTurret, 0), false);
-    assert.ok(Math.abs(h.session.run!.bossHealth - (COMBAT.bossHp - 0.65)) < 1e-9);
+    assert.ok(Math.abs(h.session.run!.bossHealth - (STAGES[0].boss.hp - 0.65)) < 1e-9);
     h.ticks(5);
     assert.equal(partAlive(h.world, Kind.GatebreakerTurret, 0), false);
     h.queue.push((scene) => scene.world.query(Pose, Enemy).eachChunk(({ views, count }) => {

@@ -1,4 +1,4 @@
-import { COMBAT, ENCOUNTERS, type Encounter } from "./encounters.ts";
+import { ENCOUNTERS, type Encounter } from "./encounters.ts";
 import type { BossDefinition } from "../bosses/boss.ts";
 import { gatebreaker } from "../bosses/gatebreaker.ts";
 import { kilnSerpent } from "../bosses/kiln-serpent.ts";
@@ -16,7 +16,7 @@ function laterEncounters(final: boolean): Encounter[] {
   return list.sort((a, b) => a.at - b.at);
 }
 export const STAGES: readonly StageConfig[] = [
-  { index: 0, id: "orbital-breakwater", name: "ORBITAL BREAKWATER", bossAt: COMBAT.bossAt, boss: gatebreaker, encounters: ENCOUNTERS },
+  { index: 0, id: "orbital-breakwater", name: "ORBITAL BREAKWATER", bossAt: 90, boss: gatebreaker, encounters: ENCOUNTERS },
   { index: 1, id: "furnace-belt", name: "FURNACE BELT", bossAt: 100, boss: kilnSerpent, encounters: laterEncounters(false) },
   { index: 2, id: "midnight-citadel", name: "MIDNIGHT CITADEL", bossAt: 110, boss: starfallEngine, encounters: laterEncounters(true) },
 ];
