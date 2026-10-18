@@ -7,6 +7,7 @@ import { text } from "../ui/bitmap-text.ts";
 import { drawSprite } from "../ui/sprite.ts";
 import type { CombatContext } from "./combat-context.ts";
 import { campaignFrame } from "../services/campaign-assets.ts";
+import { stageArt } from "../services/stage-assets.ts";
 import { Kind, isBoss } from "../config/enemies.ts";
 
 /** Turrets and emitters are drawn by their boss artwork; mines are drawn procedurally. */
@@ -20,9 +21,8 @@ const ENEMY_ART: Record<Kind, ArtFrame | undefined> = {
 
 export function installCombatRender({ scene, run, session, stage, boss }: CombatContext): void {
   const players = scene.world.query(Flight), enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Pose, Bullet), particles = scene.world.query(Pose, Particle), pickups = scene.world.query(Pose, Pickup);
-  const rng = scene.random("background-stars"), stars = Array.from({ length: 36 }, () => ({ x: rng.range(0, 480), y: rng.range(0, 270), speed: rng.range(5, 23) }));
+  const { background } = stageArt(stage), rng = scene.random("background-stars"), stars = Array.from({ length: 36 }, () => ({ x: rng.range(0, 480), y: rng.range(0, 270), speed: rng.range(5, 23) }));
   scene.render((frame, alpha) => {
-    const background = stage.index === 0 ? art.background : campaignFrame(stage.index === 1 ? "furnaceBackground" : "citadelBackground");
     drawSprite(frame, background, 240, 135, -10);
     frame.rect(240, 135, 480, 270, 0x050d19, 0.17, -9, true);
     for (const star of stars) frame.rect(star.x, (star.y + (session.settings.reducedMotion ? 0 : run.effectClock * star.speed)) % 270, 1, star.speed > 16 ? 2 : 1, 0x9ccee1, 0.35, -7);

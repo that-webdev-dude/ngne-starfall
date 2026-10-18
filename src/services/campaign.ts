@@ -2,10 +2,8 @@ import type { Audio, Game, PreparedScene, SceneDefinition } from "@ngne/core";
 import { STAGES } from "../config/stages.ts";
 import { stageScene } from "../scenes/stage.ts";
 import { menuScene } from "../scenes/menu.ts";
-import { artAssets } from "./art-assets.ts";
-import { combatImageAssets } from "./combat-assets.ts";
-import { campaignImageAssets } from "./campaign-assets.ts";
-import { combatAudioAssetsForStage, createCombatSound } from "./sound.ts";
+import { createCombatSound } from "./sound.ts";
+import { stageAssets } from "./stage-assets.ts";
 import type { Progress, ProgressCommand, Session } from "../world/session.ts";
 
 /** Shared browser composition: production and browser verification use identical scene ownership. */
@@ -15,11 +13,7 @@ export function createCampaign(session: Session, audio: Audio, getGame: () => Ga
     return owner ? game.candidates.take(owner.id, purpose) : undefined;
   };
   const makeStage = (index: number, score: number) => stageScene(session, {
-    assets: [
-      ...artAssets.filter((asset) => index === 0 || asset.id !== "orbital-breakwater"),
-      ...combatImageAssets.filter((asset) => index === 0 || asset.id !== "gatebreaker"),
-      ...campaignImageAssets(index), ...combatAudioAssetsForStage(index),
-    ],
+    assets: stageAssets(STAGES[index]),
     sound: (scene) => createCombatSound(scene, audio, session.settings, index), take,
   }, index, score);
   const first = makeStage(0, 0), title = menuScene("title", session, take), pause = menuScene("pause", session, take), result = menuScene("result", session, take);

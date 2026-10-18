@@ -6,10 +6,8 @@ import { VIEW } from "../src/config/view.ts";
 import { STAGES } from "../src/config/stages.ts";
 import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";
-import { artAssets } from "../src/services/art-assets.ts";
-import { combatImageAssets } from "../src/services/combat-assets.ts";
-import { campaignImageAssets } from "../src/services/campaign-assets.ts";
-import { combatAudioAssetsForStage, createCombatSound } from "../src/services/sound.ts";
+import { createCombatSound } from "../src/services/sound.ts";
+import { stageAssets } from "../src/services/stage-assets.ts";
 import type { Progress, ProgressCommand, Session } from "../src/world/session.ts";
 const stageIndex = new URLSearchParams(location.search).get("stage") === "3" ? 2 : 1;
 const ending = new URLSearchParams(location.search).has("result");
@@ -24,7 +22,7 @@ const app = new BrowserGame<Progress, ProgressCommand>({ canvas, ...VIEW, seed: 
   },
 });
 let result: PreparedScene | undefined = ending ? await app.game.prepare(menuScene("result", session, () => undefined), { key: "ending-presentation" }) : undefined;
-const actual = stageScene(session, { assets: [...artAssets, ...combatImageAssets, ...campaignImageAssets(stageIndex), ...combatAudioAssetsForStage(stageIndex)], sound: scene => createCombatSound(scene, app.audio, session.settings, stageIndex), take: purpose => { if (purpose !== "result") return; const candidate = result; result = undefined; return candidate; } }, stageIndex);
+const actual = stageScene(session, { assets: stageAssets(STAGES[stageIndex]), sound: scene => createCombatSound(scene, app.audio, session.settings, stageIndex), take: purpose => { if (purpose !== "result") return; const candidate = result; result = undefined; return candidate; } }, stageIndex);
 await app.start(await app.game.prepare({ ...actual, setup(scene) {
   actual.setup(scene); session.run!.seconds = STAGES[stageIndex].bossAt - .2;
   if (ending) { Object.assign(session.run!, { phase: "clear", score: 191550, kills: 104, banner: "STARFALL / VICTORY", bannerTime: 5 }); session.best = 191550; }
