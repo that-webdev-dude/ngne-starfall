@@ -1,12 +1,6 @@
 import { audioAsset, type Audio, type SceneSetup } from "@ngne/core";
+import type { CombatPhase, Settings } from "../world/session.ts";
 
-export interface SoundSettings {
-  music: number;
-  effects: number;
-  muted: boolean;
-  reducedMotion: boolean;
-}
-export type CombatPhase = "waves" | "boss" | "clear" | "dead";
 const clips = {
   waves: audioAsset("music-breakwater", new URL("../assets/audio/breakwater.wav", import.meta.url).href),
   boss: audioAsset("music-gatebreaker", new URL("../assets/audio/gatebreaker.wav", import.meta.url).href),
@@ -25,7 +19,6 @@ const sectorMusic = [
   { waves: audioAsset("music-citadel", new URL("../assets/audio/citadel.wav", import.meta.url).href), boss: audioAsset("music-starfall-engine", new URL("../assets/audio/starfall-engine.wav", import.meta.url).href) },
 ] as const;
 const clipsForStage = (stageIndex: number) => ({ ...clips, ...(sectorMusic[stageIndex] ?? sectorMusic[0]) });
-export const combatAudioAssets = Object.values(clips);
 export const combatAudioAssetsForStage = (stageIndex: number) => Object.values(clipsForStage(stageIndex));
 export interface CombatSound {
   update(dt: number, phase: CombatPhase): void;
@@ -34,7 +27,7 @@ export interface CombatSound {
 }
 
 /** All voices belong to scene scopes; cue cooldowns keep dense encounters under the voice budget. */
-export function createCombatSound<S, C>(scene: SceneSetup<S, C>, audio: Audio, settings: SoundSettings, stageIndex = 0): CombatSound {
+export function createCombatSound<S, C>(scene: SceneSetup<S, C>, audio: Audio, settings: Pick<Settings, "music" | "effects" | "muted">, stageIndex = 0): CombatSound {
   const effects = audio.scene("combat-effects");
   scene.defer(() => effects.dispose());
   let music = audio.scene("combat-music");

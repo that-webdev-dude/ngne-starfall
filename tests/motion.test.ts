@@ -4,7 +4,7 @@ import { flightVelocity } from "../src/world/flight-motion.ts";
 import { FLIGHT } from "../src/config/view.ts";
 
 test("release preserves momentum then settles smoothly", () => {
-  let velocity = FLIGHT.speed;
+  let velocity: number = FLIGHT.speed;
   velocity = flightVelocity(velocity, 0, 1 / 60);
   assert.ok(velocity > 100 && velocity < FLIGHT.speed);
   for (let frame = 0; frame < 29; frame++) velocity = flightVelocity(velocity, 0, 1 / 60);
