@@ -1,0 +1,5 @@
+interface:
+  display_name: "Codebase"
+  short_description: "Review architecture and explore focused refactors"
+policy:
+  allow_implicit_invocation: false

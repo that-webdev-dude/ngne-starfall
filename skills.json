@@ -1,0 +1,8 @@
+{
+  "source": "skills-manager",
+  "pin": "d4476c50548beda352155e2b3d89bf304e8e53a0",
+  "skills": {
+    "codebase": ["claude","codex"],
+    "ponytail": ["claude","codex"]
+  }
+}
