@@ -1,6 +1,6 @@
 import { clamp, down, pressed } from "@ngne/core";
 import { Flight } from "../components/flight.ts";
-import { Beam, Bullet, Enemy, Pose } from "../components/combat.ts";
+import { Enemy, Pose } from "../components/combat.ts";
 import { isBoss } from "../config/enemies.ts";
 import { COMBAT } from "../config/encounters.ts";
 import { FLIGHT } from "../config/preview.ts";
@@ -10,10 +10,9 @@ import { flightVelocity } from "../world/flight-motion.ts";
 import type { CombatContext } from "./combat-context.ts";
 
 export function installCombatPlayer(context: CombatContext): void {
-  const { scene, run, sound, burst } = context;
-  const players = scene.world.query(Flight), enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Pose, Bullet);
+  const { scene, run, sound, burst, hostiles } = context;
+  const players = scene.world.query(Flight), enemies = scene.world.query(Pose, Enemy);
   scene.system(({ dt, input }) => {
-    run.bulletSpawns = 0;
     if (run.phase === "dead" || run.phase === "clear") return;
     run.seconds += dt; run.bannerTime = Math.max(0, run.bannerTime - dt);
     run.invulnerable = Math.max(0, run.invulnerable - dt); run.nova = Math.min(1, run.nova + dt / COMBAT.novaSeconds);
@@ -47,17 +46,11 @@ export function installCombatPlayer(context: CombatContext): void {
     if ((pressed(input, "KeyB") || pressed(input, "Pad0")) && run.nova >= 0.999) {
       run.nova = 0; run.invulnerable = Math.max(run.invulnerable, 0.5); run.novaRing = 0;
       run.shake = 4; run.flash = 0.16; scene.freeze(5); sound.nova();
-      bullets.eachChunk((chunk) => {
-        const p = chunk.views.pose, b = chunk.views.bullet;
-        for (let row = 0; row < chunk.count; row++) if (b.team[row] && b.active[row]) {
-          b.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); burst(p.x[row], p.y[row], 0x83f1e1, 2);
-        }
-      });
+      hostiles.clear({ onHostileBullet: (x, y) => burst(x, y, 0x83f1e1, 2) });
       enemies.eachChunk((chunk) => {
         const e = chunk.views.enemy;
         for (let row = 0; row < chunk.count; row++) if (e.active[row]) { e.hp[row] -= isBoss(e.kind[row]) ? 28 : 12; e.flash[row] = 0.14; }
       });
-      scene.world.query(Beam).eachChunk((chunk) => { for (let row = 0; row < chunk.count; row++) { chunk.views.beam.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); } });
       burst(run.x, run.y, 0x93f5ff, 60);
     }
   });

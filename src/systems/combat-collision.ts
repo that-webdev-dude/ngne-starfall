@@ -6,7 +6,7 @@ import { spawnRepair } from "../entities/combat.ts";
 import { segmentCircle } from "../world/patterns.ts";
 import type { CombatContext } from "./combat-context.ts";
 
-export function installCombatCollision({ scene, run, sound, burst, stage }: CombatContext): void {
+export function installCombatCollision({ scene, run, sound, burst, stage, hostiles }: CombatContext): void {
   const enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Pose, Bullet), pickups = scene.world.query(Pose, Pickup);
   const drops = scene.random("repair-drops");
   type Views = SchemaQueryViews<[typeof Pose, typeof Enemy]>;
@@ -69,9 +69,7 @@ export function installCombatCollision({ scene, run, sound, burst, stage }: Comb
           run.phase = "clear"; run.bossHealth = 0; run.banner = stage.index === 2 ? "STARFALL / VICTORY" : `${stage.name} SECURED`; run.bannerTime = 5; run.shake = 6; run.flash = 0.2;
           run.score += [3000, 5000, 10000][stage.index] + run.hull * 500;
           run.bossDeathX = p.x[row]; run.bossDeathY = p.y[row]; scene.freeze(9);
-          for (const other of targets) if (other.e.active[other.row]) { other.e.active[other.row] = 0; scene.world.despawn(other.entity); }
-          bullets.eachChunk((batch) => { for (let i = 0; i < batch.count; i++) if (batch.views.bullet.active[i]) { batch.views.bullet.active[i] = 0; scene.world.despawn(batch.entityAt(i)); } });
-          scene.world.query(Beam).eachChunk((chunk) => { for (let row = 0; row < chunk.count; row++) { chunk.views.beam.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); } });
+          hostiles.clear({ enemies: true, playerBullets: true });
         }
       } else if (Math.hypot(p.x[row] - run.x, p.y[row] - run.y) < e.radius[row] + COMBAT.playerRadius) damagePlayer();
     }

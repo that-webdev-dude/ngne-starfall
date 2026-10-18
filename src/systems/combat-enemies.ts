@@ -1,33 +1,20 @@
-import { Beam, Bullet, Enemy, Pose } from "../components/combat.ts";
+import { Enemy, Pose } from "../components/combat.ts";
 import { COMBAT } from "../config/encounters.ts";
 import { Kind } from "../config/enemies.ts";
 import { BOSS } from "../config/boss-geometry.ts";
-import { spawnBullet, spawnEnemy, spawnRepair } from "../entities/combat.ts";
-import { curtainPositions, fan, ring, type Shot } from "../world/patterns.ts";
+import { spawnEnemy, spawnRepair } from "../entities/combat.ts";
+import { curtainPositions, fan, ring } from "../world/patterns.ts";
 import type { CombatContext } from "./combat-context.ts";
 import { spawnAdvancedBoss } from "./advanced-enemies.ts";
 
-export function installCombatEnemies({ scene, run, sound, stage }: CombatContext): void {
-  const enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Pose, Bullet);
+export function installCombatEnemies({ scene, run, sound, stage, hostiles }: CombatContext): void {
+  const enemies = scene.world.query(Pose, Enemy), { emit } = hostiles;
   let warning = false;
-  const emit = (x: number, y: number, shots: Shot[], color = 0xff747d) => {
-    // Nova cancellation owns this tick, including shots that would be queued later.
-    if (run.novaRing < 0.1) return;
-    for (const shot of shots) {
-      let hostileCount = 0;
-      bullets.eachChunk((chunk) => { const b = chunk.views.bullet; for (let row = 0; row < chunk.count; row++) if (b.team[row] && b.active[row]) hostileCount++; });
-      if (hostileCount + run.bulletSpawns >= COMBAT.bulletCap) break;
-      spawnBullet(scene.world, x, y, shot.vx, shot.vy, 1, color); run.bulletSpawns++;
-    }
-    sound.enemyShot();
-  };
   scene.system(({ dt }) => {
     if (run.phase === "dead" || run.phase === "clear") return;
     if (run.seconds >= stage.bossAt - 4 && !warning) {
       warning = true; run.banner = `WARNING / ${stage.bossName}`; run.bannerTime = 4;
-      enemies.eachChunk((chunk) => { const e = chunk.views.enemy; for (let row = 0; row < chunk.count; row++) { e.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); } });
-      bullets.eachChunk((chunk) => { const b = chunk.views.bullet; for (let row = 0; row < chunk.count; row++) if (b.team[row]) { b.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); } });
-      scene.world.query(Beam).eachChunk((chunk) => { for (let row = 0; row < chunk.count; row++) { chunk.views.beam.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); } });
+      hostiles.clear({ enemies: true });
       run.waveIndex = stage.encounters.length;
     }
     if (run.phase === "waves" && run.seconds >= stage.bossAt) {
@@ -67,7 +54,7 @@ export function installCombatEnemies({ scene, run, sound, stage }: CombatContext
           if (e.pattern[row] === 0 && e.fireIndex[row] === 0) {
             e.cooldown[row] -= dt;
             if (e.cooldown[row] < 0.35 && !e.cue[row]) { e.cue[row] = 1; e.targetAngle[row] = Math.atan2(run.y - p.y[row], run.x - p.x[row]); }
-            if (e.cooldown[row] <= 0) { emit(p.x[row], p.y[row] + 8, fan(e.targetAngle[row], 1, 0, 62)); e.fireIndex[row]++; e.cue[row] = 0; }
+            if (e.cooldown[row] <= 0) { emit(p.x[row], p.y[row] + 8, fan(e.targetAngle[row], 1, 0, 62), 0xff747d); e.fireIndex[row]++; e.cue[row] = 0; }
           }
         } else if (kind === Kind.Gunship) {
           p.y[row] += dt * (p.y[row] < 67 ? 28 : age > 12 ? 38 : 5);

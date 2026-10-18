@@ -1,10 +1,10 @@
 import { clamp, type WorldAccess } from "@ngne/core";
-import { Bullet, Enemy, Pose } from "../components/combat.ts";
+import { Enemy, Pose } from "../components/combat.ts";
 import type { StageConfig } from "../config/stages.ts";
 import { COMBAT } from "../config/encounters.ts";
 import { Kind } from "../config/enemies.ts";
-import { spawnBeam, spawnBullet, spawnEnemy } from "../entities/combat.ts";
-import { curtainPositions, fan, ring, type Shot } from "../world/patterns.ts";
+import { spawnBeam, spawnEnemy } from "../entities/combat.ts";
+import { curtainPositions, fan, ring } from "../world/patterns.ts";
 import type { RunState } from "../world/session.ts";
 import type { CombatContext } from "./combat-context.ts";
 import { engineSockets } from "../services/campaign-assets.ts";
@@ -15,14 +15,8 @@ export function spawnAdvancedBoss(world: WorldAccess, run: RunState, stage: Stag
   run.bossLeft = run.bossRight = 55;
   for (let i = 0; i < count; i++) spawnEnemy(world, run, stage.index === 1 ? Kind.KilnSegment : Kind.EngineEmitter, 240, -40, { hp: 55, pattern: i });
 }
-export function installAdvancedEnemies({ scene, run, stage, sound }: CombatContext): void {
-  const enemies = scene.world.query(Pose, Enemy), bullets = scene.world.query(Bullet);
-  const emit = (x: number, y: number, shots: Shot[], color = 0xffaa76) => {
-    if (run.novaRing < 0.1) return;
-    let count = 0; bullets.eachChunk(({ views, count: length }) => { for (let i = 0; i < length; i++) if (views.bullet.team[i] && views.bullet.active[i]) count++; });
-    for (const shot of shots) { if (count + run.bulletSpawns >= COMBAT.bulletCap) break; spawnBullet(scene.world, x, y, shot.vx, shot.vy, 1, color); run.bulletSpawns++; }
-    sound.enemyShot();
-  };
+export function installAdvancedEnemies({ scene, run, stage, sound, hostiles }: CombatContext): void {
+  const enemies = scene.world.query(Pose, Enemy), { emit } = hostiles;
   scene.system(({ dt }) => {
     if (run.phase === "clear" || run.phase === "dead") return;
     let bossX = 240, bossY = -40, bossAge = 0;
@@ -37,8 +31,8 @@ export function installAdvancedEnemies({ scene, run, stage, sound }: CombatConte
           e.cooldown[row] -= dt;
           if (e.cooldown[row] < 0.8 && !e.cue[row]) { e.cue[row] = 1; e.targetAngle[row] = clamp(run.x, 24, 456); }
           if (e.cooldown[row] <= 0) {
-            if (kind === Kind.Minelayer && run.novaRing >= 0.1 && enemies.size < COMBAT.enemyCap) spawnEnemy(scene.world, run, Kind.Mine, p.x[row], p.y[row] + 18, { cooldown: 1.8 });
-            else if (kind === Kind.Warden && run.novaRing >= 0.1) { spawnBeam(scene.world, e.targetAngle[row], 10, 0.8, 0.55); sound.enemyShot(); }
+            if (kind === Kind.Minelayer && !hostiles.suppressed && enemies.size < COMBAT.enemyCap) spawnEnemy(scene.world, run, Kind.Mine, p.x[row], p.y[row] + 18, { cooldown: 1.8 });
+            else if (kind === Kind.Warden && !hostiles.suppressed) { spawnBeam(scene.world, e.targetAngle[row], 10, 0.8, 0.55); sound.enemyShot(); }
             e.cooldown[row] = kind === Kind.Minelayer ? 3 : 3.3; e.cue[row] = 0;
           }
           if (p.y[row] > 295) { e.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); }
@@ -66,11 +60,11 @@ export function installAdvancedEnemies({ scene, run, stage, sound }: CombatConte
         }
         if (time < due) continue;
         if (kind === Kind.KilnHead) {
-          if (index < 3) emit(p.x[row], p.y[row] + 18, fan(Math.PI / 2 + (index % 2 ? -0.3 : 0.3), phase === 1 ? 7 : 9, Math.PI * 0.47, 60));
+          if (index < 3) emit(p.x[row], p.y[row] + 18, fan(Math.PI / 2 + (index % 2 ? -0.3 : 0.3), phase === 1 ? 7 : 9, Math.PI * 0.47, 60), 0xffaa76);
           else if (index < 5) {
-            emit(p.x[row], p.y[row] + 12, ring(phase === 1 ? 10 : 14, index === 4 ? Math.PI / 14 : 0, phase === 1 ? 46 : 50));
+            emit(p.x[row], p.y[row] + 12, ring(phase === 1 ? 10 : 14, index === 4 ? Math.PI / 14 : 0, phase === 1 ? 46 : 50), 0xffaa76);
             for (let i = 0; i < 3; i++) if (run.sections[i] > 0) emit(p.x[row] - (i + 1) * 34, p.y[row] + 12, fan(Math.PI / 2, 2, 0.7, 42), 0xffdf87);
-          } else for (const x of curtainPositions(e.originX[row], 72, index % 2 === 0 ? 12 : 0)) emit(x, 38, [{ vx: 0, vy: 50 }]);
+          } else for (const x of curtainPositions(e.originX[row], 72, index % 2 === 0 ? 12 : 0)) emit(x, 38, [{ vx: 0, vy: 50 }], 0xffaa76);
         } else {
           if (index < 3) {
             const left = index % 2 === 0;
@@ -78,7 +72,7 @@ export function installAdvancedEnemies({ scene, run, stage, sound }: CombatConte
             if (left ? run.bossLeft > 0 : run.bossRight > 0) emit(p.x[row] + socket[0], p.y[row] + socket[1] + 12, fan(e.targetAngle[row], phase === 1 ? 7 : 9, 1.25, 54 + phase * 4), 0xf4a0e4);
           } else if (index < 6) {
             for (const x of curtainPositions(e.originX[row], 88 - phase * 8, index % 2 === 0 ? 12 : 0)) emit(x, 38, [{ vx: 0, vy: 48 + phase * 2 }], 0xd794ff);
-            if (index === 3 && phase > 1 && run.novaRing >= 0.1) { spawnBeam(scene.world, clamp(run.x, 28, 452), 12, 1.1, 0.65); if (phase === 3) spawnBeam(scene.world, clamp(run.x + (run.x < 240 ? 100 : -100), 28, 452), 12, 1.1, 0.65); }
+            if (index === 3 && phase > 1 && !hostiles.suppressed) { spawnBeam(scene.world, clamp(run.x, 28, 452), 12, 1.1, 0.65); if (phase === 3) spawnBeam(scene.world, clamp(run.x + (run.x < 240 ? 100 : -100), 28, 452), 12, 1.1, 0.65); }
           } else {
             const count = (phase === 1 ? 14 : phase === 2 ? 18 : 20) - (run.bossLeft <= 0 ? 3 : 0) - (run.bossRight <= 0 ? 3 : 0);
             emit(p.x[row], p.y[row] + 10, ring(count, index === 7 ? Math.PI / count : 0, 40 + phase * 4), 0xff88c8);
