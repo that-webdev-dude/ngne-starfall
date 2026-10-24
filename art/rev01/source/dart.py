@@ -6,9 +6,14 @@ import sys; from pathlib import Path; sys.path.insert(0, str(Path(__file__).reso
 # (x <= 6), mirrored, so only the active parts change:
 #   pulse = tail engine glow: the top of the dorsal spine (6,1)-(6,2) turns exhaust[2]
 #           (2 px; the outline cap (6,0) stays).
-#   fire  = muzzle cue at the barrel mouth: needle[2] core on the tip (6,24) = muzzle socket,
-#           needle[1] rim on the row above (5,23)-(7,23) (4 px, all inside the idle silhouette;
-#           the canvas has no row below the tip).
+#   fire  = muzzle flash that extends the silhouette below the nose (canvas 13x29 since gate 4;
+#           rows 25-28 are empty in idle/pulse): the tip outline (6,24) turns needle[1] so the
+#           flash stays joined to the barrel, then a fan that opens away from the gun with a
+#           needle[2] hot core down the centre: row 25 n N n, row 26 n n N n n, row 27 three
+#           prongs n . n . n (11 px). Row 28 (canvas edge) stays empty. A fan widening away
+#           from the barrel and fixed to the nose does not read as the hostileNeedle bullet
+#           (a 3 px shaft behind a head that narrows to its point).
+#           Muzzle socket = (6,25), the first transparent pixel under the tip in idle.
 LEGEND = {
     ".": None,
     "o": ("outline", 0),
@@ -43,6 +48,10 @@ HALF = [
     ".....oc",
     ".....ob",
     "......o",
+    ".......",
+    ".......",
+    ".......",
+    ".......",
 ]
 
 def edit(half, cells):
@@ -52,7 +61,10 @@ def edit(half, cells):
     return ["".join(r) for r in out]
 
 PULSE = edit(HALF, {(6, 1): "E", (6, 2): "E"})
-FIRE = edit(HALF, {(5, 23): "n", (6, 23): "n", (6, 24): "N"})
+FIRE = edit(HALF, {(6, 24): "n",
+                   (5, 25): "n", (6, 25): "N",
+                   (4, 26): "n", (5, 26): "n", (6, 26): "N",
+                   (4, 27): "n", (6, 27): "n"})
 
 def mirror(half): return [r + r[-2::-1] for r in half]
 

@@ -2,13 +2,13 @@
 
 Spec for moving Starfall from a 480x270 view with runtime-shrunk paintings to a 640x360 view with sprites drawn at their final size. The machine-readable version is [spec.json](spec.json); this file explains it. Nothing in `src/` has changed yet.
 
-**Revision pass complete (gates 1–3 approved by the owner, 24 Oct 2026, stills only).** The owner's review [FEEDBACK.md](FEEDBACK.md) was the brief for the pass; its proposals (7 bank poses on 31×33, 40–65 ms pose transitions, a hold-to-charge plasma of about 0.9 s, a 12-frame / 620 ms nova, 17 plasma effect frames, 7 flash counterparts, the projectile sizes) are the working defaults in spec.json and are marked "proposal" there. Status per asset is in the table below.
+**Revision pass complete (gates 1–3 approved by the owner, 24 Oct 2026, stills only). Completion pass approved at gate 4 (owner, 24 Oct 2026, stills + GIFs):** Kiln death states, player death, reduced-motion cues, mine/pickup/beam-warning sprites and the motion-review fixes. The owner's review [FEEDBACK.md](FEEDBACK.md) was the brief; its proposals are the working defaults in spec.json and are marked "proposal" there. Status per asset is in the table below.
 
 Sources: rules tagged *(book)* come from the pixel-art skill ("Pixel Art for Game Developers"). Untagged numbers are choices for this project.
 
 ## Status
 
-Scope of every approval so far: **stills only**. No playback, collision or gameplay check has been done for any asset. "rev01 README" means the approval was recorded in the first README of this pack without a named approver; it is treated as the owner's approval of the stills.
+Scope of every approval so far: **stills only** (gates 1–3) and **stills + GIFs** (gate 4). No engine playback, collision or gameplay check has been done for any asset; gate 4's GIFs are offline renders at the spec timings. "rev01 README" means the approval was recorded in the first README of this pack without a named approver; it is treated as the owner's approval of the stills.
 
 | Asset | Revision | Approved by | Scope | Pending in this pass |
 |---|---|---|---|---|
@@ -17,7 +17,7 @@ Scope of every approval so far: **stills only**. No playback, collision or gamep
 | exhaust | Phase 3 build (5 frames) | owner, gate 3, 24 Oct 2026 | stills | short/medium/long unchanged |
 | primaryLance, hostileBead, hostileNeedle, hostileOrb | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; needle has 3 direction frames |
 | plasmaCharge, plasmaReady, plasmaMuzzle, plasmaShot, plasmaImpact | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | |
-| nova, novaCalm | Phase 2 build (12 + 2 frames) | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; staging decision open |
+| nova, novaCalm | Phase 2 build (12 + 2 frames) | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; staging decision open; gate 4: fade-2/3 never visible on screen (drop or re-stage, owner decision open) |
 | interceptor | Phase 3 build (idle / pulse / fire) | owner, gate 3, 24 Oct 2026 | stills | |
 | dart | Phase 3 build (idle / pulse / fire) | owner, gate 3, 24 Oct 2026 | stills | |
 | gunship | Phase 2 build (4 frames, canvas 39×35) | owner, gate 2, 24 Oct 2026 | stills | |
@@ -30,6 +30,12 @@ Scope of every approval so far: **stills only**. No playback, collision or gamep
 | breakwaterBackground | Phase 3 tweak (boss entrance contrast) | owner, gate 3, 24 Oct 2026 | stills | |
 | furnaceBackground | Phase 3 tweak (5 dim depth cues) | owner, gate 3, 24 Oct 2026 | stills | stays dim by owner decision |
 | citadelBackground | Phase 3 tweak (edge variations, calmer portal) | owner, gate 3, 24 Oct 2026 | stills | |
+| kilnHead, kilnSegment (death states) | gate 4 build (head damaged loop + defeat; segment destroyed) | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
+| Motion-review fixes | gate 4: dart and interceptor fire flash (canvases 13×29, 27×25), plasmaReady 9×9/11×11, player bank-2 fuselage, starfallEngine surge-1..3, gunship fire follow-through, heavyBreakup frame 1, exhaust short row 4 | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
+| playerDeath | gate 4 build (8 frames) | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
+| playerCalm, plasmaReadyCalm | gate 4 build (reduced-motion cues) | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
+| mine, pickup | gate 4 build (replace code-drawn) | owner, gate 4, 24 Oct 2026 | stills + GIFs | minelayer release frame shows the full-scale mine; mine radius 6 vs 7 open |
+| beamWarning | gate 4 build (replaces the code-drawn marker) | owner, gate 4, 24 Oct 2026 | stills + GIFs | odd lane widths open |
 
 Approvals are recorded here only when the owner gives them, with the revision and the scope checked. Nothing has been checked in playback, for collisions or in gameplay; integration into `src/` is out of scope of this pass.
 
@@ -122,17 +128,23 @@ All canvases are odd×odd, so a symmetric ship has a 1 px centre column and the 
 | hitSpark | 11×11 | 3 | 5 | — | code burst |
 | heavyBreakup | 47×47 | 8 | 8 | — | — |
 | gatebreakerTurret | 27×45, pivot (13,14) | 4 (idle, telegraph, firing, down) | 20 | — | part of the hull + code 20×25 rect |
-| interceptor | 27×23 | 3 (idle, pulse, fire) | 14 | 6% | 40×33, 12% |
-| dart (Sweeper) | 13×25 | 3 (idle, pulse, fire) | 12 | 7% | 14×27, 10% |
+| interceptor | 27×25, pivot (13,11) | 3 (idle, pulse, fire) | 14 | 6% | 40×33, 12% |
+| dart (Sweeper) | 13×29, pivot (6,12) | 3 (idle, pulse, fire) | 12 | 7% | 14×27, 10% |
 | gunship | 39×35, pivot (19,15) | 4 (idle, fire, vent-a, vent-b) | 17 | 9% | 42×32, 12% |
 | warden | 33×31 | 3 (idle, charge, fire) | 16 | 9% | 36×35, 13% |
 | minelayer | 29×29 | 3 (idle, open, release) | 14 | 8% | 30×32, 12% |
 | Gatebreaker | 159×79 | 5 (idle, telegraph, wreck ×3) | 24 | 24.8% width / 21.9% height | 110×56, 22.9% width |
-| Kiln head | 65×47 | 3 (cut loop) | 20 | — | 66×48 |
-| Kiln segment | 41×23 | 2 (idle, compressed) | 14 | — | 40×22 |
+| Kiln head | 65×47 | 7 (cut loop ×3, damaged loop ×3, defeat) | 22 | — | 66×48 |
+| Kiln segment | 41×23 | 3 (idle, compressed, destroyed) | 16 | — | 40×22 |
 | Starfall Engine | 143×111, pivot (71,48) | 7 (phase ×3, surge ×3, defeat) | 24 | 22.3% width / 30.8% height | 104×81, 21.7% width / 30% height |
 | starfallEmitter | 27×27 | 4 (idle, charge, firing, down) | 16 | — | part of the hull + code 20×20 rect |
 | explosion | 31×31 | 6 | 6 | — | 56×56 |
+| playerDeath | 47×47, pivot (23,23) | 8 | 14 | — | code burst |
+| playerCalm | 35×37, pivot (17,18) | 14 (shield ×7 poses, hit ×7 poses) | 6 | — | — |
+| plasmaReadyCalm | 15×15 | 1 | 4 | — | — |
+| mine | 19×19 | 2 (idle, armed) | 8 | — | code 13 diamond |
+| pickup | 17×17 | 3 (base, bright, peak) | 5 | — | code 15 square |
+| beamWarning | 13×17, pivot (6,8) | 2 (marker, marker-dim) | 4 | — | code triangles |
 | backgrounds ×3 | 640×400, pivot (320,200) | 1 each | 32 | full screen | 480×270 |
 
 Size decisions:
@@ -155,7 +167,10 @@ Banking is **whole-body**: each of the seven poses is a solid hull rolling, re-l
 |---|---|---|---|
 | player | input pose | bank-left-3 … neutral … bank-right-3 | 40–65 per level (proposal) |
 | exhaust | loop | short, medium, long, medium-left, medium, long, medium-right, medium | 80 ×8 |
-| kilnHead | loop | cut-0, cut-1, cut-2 | 80 ×3 |
+| kilnHead | loop | cut-0, cut-1, cut-2 (damaged-0..2 from phase 2; defeat held) | 80 ×3 |
+| playerDeath | once | 0–7 | 40, 45, 55, 65, 75, 85, 95, 110 (570 total) |
+| pickup | loop | base, bright, peak, bright | 200 ×4 |
+| beamWarning | loop | marker, marker-dim | 120, 120 |
 | explosion | once | 0–5 | 45, 50, 65, 65, 65, 75 (365 total) |
 | plasmaReady | loop | a, b | 120, 120 |
 | plasmaMuzzle | once | 0–1 | 40, 50 |
@@ -173,7 +188,17 @@ Each cue has one meaning:
 - **Charge:** energy gathers at the plasma muzzle (`plasmaCharge` levels), then the `plasmaReady` pulse stays local at the muzzle. It must not resemble being hit.
 - **Low hull:** a persistent small emissive on the pod rears (spec `codeDrawn.lowHullCue`), separate from the damage flash.
 
-When cues overlap: damage first, then the invulnerability blink, while the charge-ready cue stays visible at the muzzle. Reduced-motion play needs persistent substitutes for the blinking cues.
+When cues overlap: damage first, then the invulnerability blink, while the charge-ready cue stays visible at the muzzle.
+
+Reduced motion / flashes (approved at gate 4 as art; timings are proposals; `playerCalm.cuePriority` in spec.json):
+
+| Cue | Normal | Reduced motion |
+|---|---|---|
+| Damage | `playerFlash` counterpart, one brief flash | `playerCalm` hit-<pose>: cockpit[1] outline 1 px clear of the hull, held 250 ms, no opacity change |
+| Invulnerability | runtime bright/dim opacity | `playerCalm` shield-<pose>: plasma[2] outline held until invulnerability ends (always open at the nozzles and in an 11×11 window at the plasma muzzle) |
+| Charge ready | `plasmaReady` loop at the muzzle | `plasmaReadyCalm`: one static 9×9 ring-and-core frame at the muzzle, visible through both cues above |
+| Low hull | emissive blinking at ~2 Hz | same emissive, held steady |
+| Death | `playerDeath` | `playerDeath` (no full-screen flash) |
 
 ### Projectiles and effects
 

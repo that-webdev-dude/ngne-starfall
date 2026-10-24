@@ -337,16 +337,29 @@ def phase3(rows):
     return apply(rows, D3)
 
 # ---------------------------------------------------------------- surge-N (held for the 0.7 s cue)
-# core cue for the curtain and ring attacks on top of phase-N, so damage never disappears: the
-# corona one step up (the original core's glow[2] cells go bone[1] from phase 2 on) and a 5 px
-# bone[1] plus on the core socket; the star pixels between its arms go glow[2] so the plus reads
-PLUS = [(71, 48 + d) for d in range(-2, 3)] + [(71 + d, 48) for d in (-2, -1, 1, 2)]
+# core cue for the curtain and ring attacks on top of phase-N, so damage away from the core never
+# disappears. Every surge only adds light to its own phase (phase-2/3 already run a glow[2] corona,
+# so the cue has to come from white, not pink): the corona one step up (pink kept between star and
+# rim), the steel[3] star grown (arms +-8 instead of +-5, a radius-4 diamond body) with a 1 px
+# bone[1] halo, a 1 px steel[3] ring just inside the outline[1] lens rim, and the bone[0] side of the
+# bone ring and talons round the lens lit to bone[1].
+def grow(cells, within):
+    return {(x + dx, y + dy) for x, y in cells for dx, dy in N4} & within | set(cells)
+
+# the lens interior: everything inside the outline[1] rim (corona, inner bone ring, talon tips, star)
+LENS = flood(["".join(APPROVED[y][x] if ((x - CX) / 9.5) ** 2 + ((y - 47.5) / 9) ** 2 <= 1 else "q" for x in range(W)) for y in range(H)], (CX, 48), "56789d")
+# grown star: four-point star sqrt|dx| + sqrt|dy| <= sqrt(8) (arms reach +-8) over a radius-4 diamond body
+SURGE_STAR = {(x, y) for x, y in LENS if abs(x - CX) ** 0.5 + abs(y - 48) ** 0.5 <= 8 ** 0.5 + 1e-9 or abs(x - CX) + abs(y - 48) <= 4}
+SURGE_HALO = grow(SURGE_STAR, LENS) - SURGE_STAR
+RIM_RING = {(x, y) for x, y in CORONA if any(APPROVED[y + dy][x + dx] == "q" and (x + dx, y + dy) not in LENS for dx, dy in N4)}
+# the bone ring and talons round the lens (shadowed bone[0] side), lit by the core
+TALONS = {(x, y) for y in range(33, 62) for x in range(57, 86) if (x, y) not in LENS and APPROVED[y][x] == "8"
+          and ((x - CX) / 13) ** 2 + ((y - 47.5) / 12) ** 2 <= 1}
 
 def surge(rows, n):
     rows = remap(rows, CORONA, {"5": "6", "6": "7"})
-    if n >= 2: rows = apply(rows, [(x, y, "9") for x, y in CORONA if APPROVED[y][x] == "7"])
-    pocket = [(x, y, "7") for x in range(69, 74) for y in range(46, 51) if (x, y) in STAR and (x, y) not in PLUS]
-    return apply(rows, pocket + [(x, y, "9") for x, y in PLUS])
+    rows = remap(rows, TALONS, {"8": "9"})
+    return apply(rows, [(x, y, "9") for x, y in SURGE_HALO] + [(x, y, "d") for x, y in SURGE_STAR | RIM_RING])
 
 # ---------------------------------------------------------------- defeat
 # phase-3 darkened one step (tears included); the spires and the lower emitter stay lit so it does

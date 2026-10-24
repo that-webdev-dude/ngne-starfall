@@ -1,6 +1,6 @@
 {
   "version": "rev01",
-  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer. Gate 2 (owner, 24 Oct 2026): Phase 2 assets approved as stills; nova staging kept. Gate 3 (owner, 24 Oct 2026): Phase 3 assets and background tweaks approved as stills; the pass is complete.",
+  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer. Gate 2 (owner, 24 Oct 2026): Phase 2 assets approved as stills; nova staging kept. Gate 3 (owner, 24 Oct 2026): Phase 3 assets and background tweaks approved as stills; the pass is complete. Completion pass (gate 4, approved by the owner 24 Oct 2026 as stills + GIFs): Kiln death states, player death, reduced-motion cue sprites, mine and pickup sprites, beam warning marker, motion review fixes. Entries added in this pass carry 'pass': 'gate 4'. Open owner decisions: nova fade-2/3 (never visible on screen), odd beam lane widths, mine radius 6 vs 7.",
   "conventions": {
     "units": "pixels in the 640x360 logical view; 1 texel = 1 logical pixel, no runtime scaling",
     "origin": "top-left of each canvas, +x right, +y down",
@@ -11,7 +11,8 @@
     "sockets": "a socket is [dx, dy] from the pivot, a list of them, or an object keyed by frame name when it moves per pose; a per-pose socket must be given for every frame",
     "bounds": "'damage' is the collision shape the game may use (circle radius from the pivot, or a rect [w, h] centred on it); 'glow' is the decorative extent that promises no damage",
     "muzzles": "a muzzle socket is the first transparent pixel straight ahead of the muzzle centre (the pixel a shot is spawned on); exhaust sockets are the centre of the nozzle exit on the row below it",
-    "edges": "no opaque pixel on a canvas edge row or column, except where the canvas is exactly the sprite's shape (primaryLance 3x11, hostileNeedle head columns)"
+    "edges": "no opaque pixel on a canvas edge row or column, except where the canvas is exactly the sprite's shape (primaryLance 3x11, hostileNeedle head columns)",
+    "edgeClear": "sprites with \"edgeClear\": true must keep every opaque pixel off the canvas edge rows and columns (validate.py checks it); hulls that fill their canvas omit the flag"
   },
   "viewport": {
     "logical": [
@@ -475,7 +476,9 @@
             -15
           ]
         }
-      }
+      },
+      "edgeClear": true,
+      "pass": "gate 4: bank-left-2 / bank-right-2 fuselage relit as an intermediate facet (no mid-roll brightness pulse); alpha and sockets unchanged"
     },
     {
       "id": "playerFlash",
@@ -682,7 +685,9 @@
           ]
         }
       },
-      "socketStatus": "identical to player, pose by pose (same silhouettes)"
+      "socketStatus": "identical to player, pose by pose (same silhouettes)",
+      "reducedMotion": "replaced by playerCalm hit-<pose> (held, no flash); see playerCalm.cuePriority",
+      "edgeClear": true
     },
     {
       "id": "exhaust",
@@ -729,7 +734,7 @@
           80
         ]
       },
-      "states": "lateral flicker: medium-left / medium-right are the medium flame with the tail bent 1 px to that side below row 4 (row 5 keeps a 2 px core so the flame stays connected); rows 0-1 never change in any frame, so the nozzle join stays fixed (short's row 2 is narrower by design)"
+      "states": "lateral flicker: medium-left / medium-right are the medium flame with the tail bent 1 px to that side below row 4 (row 5 keeps a 2 px core so the flame stays connected); rows 0-1 never change in any frame, so the nozzle join stays fixed (short's row 2 is narrower by design); gate 4: short's row 4 equals medium's row 4 so no side pixels pop"
     },
     {
       "id": "primaryLance",
@@ -783,7 +788,8 @@
         "damage": 3,
         "glow": 4
       },
-      "proposal": "size from FEEDBACK.md priority 2"
+      "proposal": "size from FEEDBACK.md priority 2",
+      "edgeClear": true
     },
     {
       "id": "hostileNeedle",
@@ -797,8 +803,7 @@
       ],
       "maxColors": 4,
       "ramps": [
-        "needle",
-        "outline"
+        "needle"
       ],
       "frames": [
         "needle-0",
@@ -831,8 +836,7 @@
       ],
       "maxColors": 5,
       "ramps": [
-        "orb",
-        "outline"
+        "orb"
       ],
       "frames": [
         "orb"
@@ -843,7 +847,8 @@
         "glow": 6
       },
       "proposal": "size from FEEDBACK.md priority 2",
-      "decision": "gate 1: round orb (study B hostileOrb)"
+      "decision": "gate 1: round orb (study B hostileOrb)",
+      "edgeClear": true
     },
     {
       "id": "plasmaCharge",
@@ -869,7 +874,8 @@
       "animation": {
         "type": "state",
         "note": "proposal: charge accumulates while fire is held, about 0.9 s to full (levels at ~0.3 / 0.6 / 0.9 s); releasing early fires nothing"
-      }
+      },
+      "edgeClear": true
     },
     {
       "id": "plasmaReady",
@@ -890,7 +896,7 @@
         "ready-b"
       ],
       "attach": "player plasmaMuzzle, drawn above the hull",
-      "role": "ready pulse held at the muzzle while the charge is full; local, must not resemble being hit",
+      "role": "ready pulse held at the muzzle while the charge is full: a held round orb, ready-a 9x9 (x3..11) and ready-b 11x11 with a grown core and a 1 px plasma[1] halo, so 'full' never reads smaller than charge-3; local, must not resemble being hit",
       "animation": {
         "type": "loop",
         "order": [
@@ -901,7 +907,10 @@
           120,
           120
         ]
-      }
+      },
+      "reducedMotion": "replaced by plasmaReadyCalm (static)",
+      "edgeClear": true,
+      "pass": "gate 4: enlarged from 6x6/8x8 (motion review: the cue shrank at full charge)"
     },
     {
       "id": "plasmaMuzzle",
@@ -928,7 +937,8 @@
           40,
           50
         ]
-      }
+      },
+      "edgeClear": true
     },
     {
       "id": "plasmaShot",
@@ -976,7 +986,8 @@
           60
         ]
       },
-      "proposal": "core canvas from FEEDBACK.md priority 2; damage rect [11,19] covers the hot front (study B), for the consumer to confirm"
+      "proposal": "core canvas from FEEDBACK.md priority 2; damage rect [11,19] covers the hot front (study B), for the consumer to confirm",
+      "edgeClear": true
     },
     {
       "id": "plasmaImpact",
@@ -1012,7 +1023,8 @@
           65,
           75
         ]
-      }
+      },
+      "edgeClear": true
     },
     {
       "id": "nova",
@@ -1143,8 +1155,7 @@
       ],
       "maxColors": 6,
       "ramps": [
-        "nova",
-        "outline"
+        "nova"
       ],
       "frames": [
         "calm-ring",
@@ -1158,14 +1169,15 @@
           150
         ]
       },
-      "source": "source/novaCalm.py imports the ring geometry from source/nova.py"
+      "source": "source/novaCalm.py imports the ring geometry from source/nova.py",
+      "edgeClear": true
     },
     {
       "id": "interceptor",
       "replaces": "interceptor.png",
       "canvas": [
         27,
-        23
+        25
       ],
       "pivot": [
         13,
@@ -1184,7 +1196,7 @@
         "pulse",
         "fire"
       ],
-      "states": "idle; pulse = engine glow (exhaust ramp) on the pod rears one step brighter, alternates with idle as a 2-frame loop; fire = muzzle cue (needle ramp) at the nose gun for one frame when it shoots",
+      "states": "idle; pulse = engine glow (exhaust ramp) on the pod rears one step brighter, alternates with idle as a 2-frame loop; fire = 11 px needle-ramp flash fanning 3 rows below the nose gun (needle[2] core, rows 21-23) for one frame when it shoots",
       "sockets": {
         "muzzle": [
           0,
@@ -1205,7 +1217,9 @@
         "type": "state",
         "note": "proposal: idle/pulse loop 120/120 ms; fire 70 ms"
       },
-      "socketNote": "muzzle = first transparent pixel ahead of the nose tip (the fire cue's core); engines = first transparent pixel behind each pod's rear face"
+      "socketNote": "muzzle = first transparent pixel ahead of the nose tip (the fire cue's core); engines = first transparent pixel behind each pod's rear face",
+      "canvasNote": "gate 4: grew from 27x23 to 27x25 (pivot unchanged) so the fire cue gets rows below the nose; hull unchanged",
+      "pass": "gate 4: canvas 27x25, stronger fire cue"
     },
     {
       "id": "dart",
@@ -1213,7 +1227,7 @@
       "replaces": "dart.png",
       "canvas": [
         13,
-        25
+        29
       ],
       "pivot": [
         6,
@@ -1235,19 +1249,21 @@
       "sockets": {
         "muzzle": [
           0,
-          12
+          13
         ],
         "engine": [
           0,
           -11
         ]
       },
-      "states": "idle; pulse = engine glow (exhaust ramp) at the tail; fire = muzzle cue (needle ramp) at the muzzle socket. Must stay visible against Furnace edges",
+      "states": "idle; pulse = engine glow (exhaust ramp) at the tail; fire = 11 px needle-ramp flash fanning 3 rows below the nose (needle[2] core) at the muzzle socket. Must stay visible against Furnace edges",
       "animation": {
         "type": "state",
         "note": "proposal: idle/pulse loop 100/100 ms; fire 70 ms"
       },
-      "socketNote": "the dart fills its canvas: muzzle (0,12) is the nose tip pixel (the fire cue's core) and engine (0,-11) is the lit spine pixel; the first-transparent convention would fall outside the canvas"
+      "socketNote": "muzzle = first transparent pixel ahead of the nose tip in idle (the fire flash's core, row 25); engine (0,-11) is the lit spine pixel, because the hull fills row 0 and the first-transparent convention would fall outside the canvas",
+      "canvasNote": "gate 4: grew from 13x25 to 13x29 (pivot unchanged) so the fire frame's muzzle flash extends the silhouette 2+ rows below the nose (motion review: the in-silhouette recolour did not read at 1x); hull unchanged",
+      "pass": "gate 4: canvas 13x29, stronger fire cue"
     },
     {
       "id": "gunship",
@@ -1289,7 +1305,7 @@
           -3
         ]
       },
-      "states": "idle; fire = recoil (barrels and collars 1-2 px up/back, muzzle flash in the needle ramp at the muzzle sockets); vent-a/vent-b = charge vent (reactor housing opens, fire-ramp glow) shown before the volley as the telegraph",
+      "states": "idle; fire = recoil (barrels and collars 1-2 px up/back, muzzle flash in the needle ramp at the muzzle sockets); vent-a/vent-b = charge vent (reactor housing opens, fire-ramp glow) shown before the volley as the telegraph; gate 4: the fire frame keeps the vent open with a dimmer all-fire[2] glow as follow-through from vent-b",
       "animation": {
         "type": "state",
         "note": "proposal: vent-a 120 ms, vent-b 120 ms (looped twice as telegraph), fire 70 ms, back to idle"
@@ -1368,12 +1384,13 @@
           9
         ]
       },
-      "states": "idle; open = the mine bay doors at the mineRelease socket open 2 px with a fire-ramp glow inside; release = doors fully open with the mine's diamond showing in the bay (the game spawns the mine at the socket on this frame)",
+      "states": "idle; open = the mine bay doors at the mineRelease socket open 2 px with a fire-ramp glow inside; release = doors fully open with the full-scale idle mine sprite in the bay, centred on mineRelease and cropped by the hull (its 5 visible detonator pixels use fire[2] because the 14-colour budget has no fire[1]) (the game spawns the mine at the socket on this frame)",
       "animation": {
         "type": "state",
         "note": "proposal: open 120 ms, release 120 ms, back to idle"
       },
-      "socketNote": "centre of the mine shown in the bay on the release frame; the game spawns its mine there"
+      "socketNote": "centre of the mine shown in the bay on the release frame; the game spawns its mine there",
+      "pass": "gate 4: release frame shows the mine at full scale (no size jump at spawn); idle/open unchanged"
     },
     {
       "id": "gatebreaker",
@@ -1465,7 +1482,8 @@
         "type": "state",
         "note": "proposal: telegraph held for the 0.55 s cue, firing 90 ms"
       },
-      "socketNote": "muzzles are the first transparent pixel under each barrel in idle; for the flipped right instance negate dx"
+      "socketNote": "muzzles are the first transparent pixel under each barrel in idle; for the flipped right instance negate dx",
+      "edgeClear": true
     },
     {
       "id": "kilnHead",
@@ -1478,7 +1496,7 @@
         32,
         23
       ],
-      "maxColors": 20,
+      "maxColors": 22,
       "ramps": [
         "outline",
         "steel",
@@ -1488,7 +1506,11 @@
       "frames": [
         "cut-0",
         "cut-1",
-        "cut-2"
+        "cut-2",
+        "damaged-0",
+        "damaged-1",
+        "damaged-2",
+        "defeat"
       ],
       "orientation": "same as today's source; the engine rotates it by exactly -90 degrees",
       "sockets": {
@@ -1513,7 +1535,7 @@
           13
         ]
       },
-      "states": "3-frame loop: the two saw cutters turn (teeth advance one position per frame) and the fluted drill spins (flutes advance one step per frame); everything else identical. Checked as the assembled chain after the -90 degree rotation",
+      "states": "3-frame loop: the two saw cutters turn (teeth advance one position per frame) and the fluted drill spins (flutes advance one step per frame); everything else identical. Checked as the assembled chain after the -90 degree rotation. Gate 4: damaged-0/1/2 = the same cut loop in phase 2 (HP < 1/2, 'CORE OVERHEAT'): cracked and scorched plates, a torn hazard panel, the core running hotter (fire[4] centre) with heat in the seams; cutters and drill still turn. defeat = held state at 0 HP: cutters stalled with broken teeth, drill snapped, core dark (outline/fire[0]), embers in the seams; the game tints and drops it via drawDefeat",
       "animation": {
         "type": "loop",
         "order": [
@@ -1525,9 +1547,12 @@
           80,
           80,
           80
-        ]
+        ],
+        "note": "damaged-0/1/2 loop the same way (80 ms each) from phase 2 on; defeat is a held state"
       },
-      "integration": "chain check (Phase 3, stills): at a fixed 45 px joint spacing there is no gap or overlap, with 10-11 px (head to segment 1) and 22 px (segment to segment) of bare code link. The game's phase-lag term makes the spacing 27-63 px at 640: at 27 px segment 1 overlaps the head's rear stack by 7 px, which no art compression can absorb; at 63 px the chain reads as beads on a rope. Consumer fix: keep the minimum spacing >= 34 px (e.g. base 52 with a +-18 lag) or cap the lag term, and draw the head above the segments. After the -90 degree rotation the drill points screen +x (the head leads to the right), matching the game's trailing segments at x - 34(i+1)."
+      "integration": "chain check (Phase 3, stills): at a fixed 45 px joint spacing there is no gap or overlap, with 10-11 px (head to segment 1) and 22 px (segment to segment) of bare code link. The game's phase-lag term makes the spacing 27-63 px at 640: at 27 px segment 1 overlaps the head's rear stack by 7 px, which no art compression can absorb; at 63 px the chain reads as beads on a rope. Consumer fix: keep the minimum spacing >= 34 px (e.g. base 52 with a +-18 lag) or cap the lag term, and draw the head above the segments. After the -90 degree rotation the drill points screen +x (the head leads to the right), matching the game's trailing segments at x - 34(i+1).",
+      "pass": "gate 4: damaged loop + defeat added; cut-0..2 unchanged",
+      "socketNote": "sockets are fixed for all frames; in 'defeat' the drill is snapped and its last opaque pixel on the pivot column is [0, 15] (drill socket unused during defeat)"
     },
     {
       "id": "kilnSegment",
@@ -1540,15 +1565,17 @@
         20,
         11
       ],
-      "maxColors": 14,
+      "maxColors": 16,
       "ramps": [
         "outline",
         "steel",
-        "rust"
+        "rust",
+        "fire"
       ],
       "frames": [
         "idle",
-        "compressed"
+        "compressed",
+        "destroyed"
       ],
       "orientation": "same as kilnHead",
       "sockets": {
@@ -1564,6 +1591,10 @@
           "compressed": [
             0,
             10
+          ],
+          "destroyed": [
+            0,
+            11
           ]
         },
         "rearCoupling": {
@@ -1574,15 +1605,21 @@
           "compressed": [
             0,
             -10
+          ],
+          "destroyed": [
+            0,
+            -11
           ]
         }
       },
-      "states": "idle; compressed = the coupling bellows at both couplings shorten by 1-2 px (canvas y) when the chain turns, so links never show a gap or an overlap; the engine draws a code link between joints",
+      "states": "idle; compressed = the coupling bellows at both couplings shorten by 1-2 px (canvas y) when the chain turns, so links never show a gap or an overlap; the engine draws a code link between joints. Gate 4: destroyed = a burnt-out husk once that section's HP reaches 0 while the head lives: core window dark, plates split and blackened, a small fire, couplings intact so the chain still links",
       "animation": {
         "type": "state",
         "note": "the consumer shows 'compressed' while the angle between adjacent joints is changing"
       },
-      "idleChange": "Phase 3: the fluted coupling stubs became bellows rings (rows 0-3 and 19-22) so compression has something to show; the hull is unchanged"
+      "idleChange": "Phase 3: the fluted coupling stubs became bellows rings (rows 0-3 and 19-22) so compression has something to show; the hull is unchanged",
+      "integration": "the game removes a destroyed section today (sections[i] = 0) and skips the code link to the next joint; to show 'destroyed' the consumer keeps the husk in the chain (no collision, no fire) until the head's defeat",
+      "pass": "gate 4: destroyed added; idle/compressed unchanged; destroyed couplings measured (same as idle)"
     },
     {
       "id": "starfallEngine",
@@ -1630,11 +1667,12 @@
           30
         ]
       },
-      "states": "hull only; the two destructible emitters live in starfallEmitter. phase-1/2/3 = the hull at full / <2/3 / <1/3 HP: each phase adds damage that reads at 1x (exposed lit machinery, torn panels, reactor flare); surge-N = phase-N with the core cue (core and corona brighter, bone[1] plus) for the curtain/ring telegraph, so damage never disappears during the cue; defeat = darkened hull, core dark, embers (the game tints it as it falls). The lower emitter stays hull art; emitter wells stay drawn in every frame",
+      "states": "hull only; the two destructible emitters live in starfallEmitter. phase-1/2/3 = the hull at full / <2/3 / <1/3 HP: each phase adds damage that reads at 1x (exposed lit machinery, torn panels, reactor flare); surge-N = phase-N with the core cue for the curtain/ring telegraph: a larger steel[3] star (arms +-8) with a 1 px bone[1] halo, a steel[3] ring inside the lens rim, corona one step up, bone around the lens lit; every surge only adds light to its phase, so damage never disappears during the cue; defeat = darkened hull, core dark, embers (the game tints it as it falls). The lower emitter stays hull art; emitter wells stay drawn in every frame",
       "animation": {
         "type": "state",
         "note": "proposal: surge-N held for the 0.7 s cue in phase N"
-      }
+      },
+      "pass": "gate 4: surge-1/2/3 redrawn (motion review: the cue read as the core dimming); phase and defeat frames unchanged"
     },
     {
       "id": "starfallEmitter",
@@ -1673,7 +1711,8 @@
         "type": "state",
         "note": "proposal: charge held for the cue, firing 90 ms"
       },
-      "socketNote": "muzzle (0,12) matches the game's socket + 12 px spawn point and lands on the housing's lower rim; the first transparent pixel under the lens in idle is (0,10); negate dx for the flipped right instance"
+      "socketNote": "muzzle (0,12) matches the game's socket + 12 px spawn point and lands on the housing's lower rim; the first transparent pixel under the lens in idle is (0,10); negate dx for the flipped right instance",
+      "edgeClear": true
     },
     {
       "id": "explosion",
@@ -1710,7 +1749,8 @@
           75
         ]
       },
-      "margin": "no opaque pixel on the canvas edge rows/columns"
+      "margin": "no opaque pixel on the canvas edge rows/columns",
+      "edgeClear": true
     },
     {
       "id": "hitSpark",
@@ -1739,7 +1779,8 @@
           40,
           50
         ]
-      }
+      },
+      "edgeClear": true
     },
     {
       "id": "heavyBreakup",
@@ -1780,7 +1821,9 @@
           80,
           90
         ]
-      }
+      },
+      "edgeClear": true,
+      "pass": "gate 4: frame 1 fire widened so the fireball no longer shrinks between frames 0 and 2"
     },
     {
       "id": "breakwaterBackground",
@@ -1841,6 +1884,292 @@
         "citadel"
       ],
       "pass2": "local tweaks: break up the repeated terrace and window rhythms at the left and right edges with a few larger structural variations; calm the luminous portal where it sits behind the boss (upper centre) by lowering its contrast; stay dim"
+    },
+    {
+      "id": "playerDeath",
+      "pass": "gate 4",
+      "canvas": [
+        47,
+        47
+      ],
+      "pivot": [
+        23,
+        23
+      ],
+      "maxColors": 14,
+      "edgeClear": true,
+      "ramps": [
+        "outline",
+        "steel",
+        "hero",
+        "cockpit",
+        "plasma"
+      ],
+      "frames": [
+        "death-0",
+        "death-1",
+        "death-2",
+        "death-3",
+        "death-4",
+        "death-5",
+        "death-6",
+        "death-7"
+      ],
+      "role": "player destruction when hull reaches 0: the neutral hull overloads from the core outward, splits into 3-4 hero-ramp plates that drift apart with cyan/white plasma venting between them, then plasma embers; no orange fire-ramp fireball, so it never reads as an enemy kill. Starts from the pose shown at death (frame 0 is drawn from neutral; the consumer may skip frame 0 for a banked pose)",
+      "attach": "player position at death, pivot = player pivot; drawn where the ship was, above hulls, below hostile bullet cores",
+      "coreMarker": {
+        "lastFrame": "death-1",
+        "offset": [
+          0,
+          0
+        ],
+        "note": "the code-drawn playerCore marker is drawn on death-0 and death-1 only; death-2 carries a small afterimage of it at the pivot. The afterimage was sized from the current 5x5 code marker, not the 7 px codeDrawn.playerCore proposal"
+      },
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          40,
+          45,
+          55,
+          65,
+          75,
+          85,
+          95,
+          110
+        ],
+        "totalMs": 570
+      },
+      "integration": "the renderer skips the player while run.phase is 'dead'; it must instead play this strip once at the death position",
+      "hullOffset": [
+        8,
+        7
+      ],
+      "colorNote": "outline[0], plasma[0], plasma[3] unused (budget 14); the hull outline is drawn in outline[1] in every frame"
+    },
+    {
+      "id": "playerCalm",
+      "pass": "gate 4",
+      "canvas": [
+        35,
+        37
+      ],
+      "pivot": [
+        17,
+        18
+      ],
+      "maxColors": 6,
+      "edgeClear": true,
+      "ramps": [
+        "outline",
+        "plasma",
+        "cockpit"
+      ],
+      "frames": [
+        "shield-bank-left-3",
+        "shield-bank-left-2",
+        "shield-bank-left-1",
+        "shield-neutral",
+        "shield-bank-right-1",
+        "shield-bank-right-2",
+        "shield-bank-right-3",
+        "hit-bank-left-3",
+        "hit-bank-left-2",
+        "hit-bank-left-1",
+        "hit-neutral",
+        "hit-bank-right-1",
+        "hit-bank-right-2",
+        "hit-bank-right-3"
+      ],
+      "role": "reduced-motion / reduced-flash substitutes for the player's blinking cues: a persistent outline drawn around the current pose's silhouette, never blinking and never hiding the hull. shield-<pose> = 1 px plasma outline one px clear of the hull (invulnerability); hit-<pose> = the same outline in the cockpit ramp, uniform, warm (damage)",
+      "attach": "player pivot; canvas is the player canvas grown by 2 px each side (player (x, y) -> (x+2, y+2)). Draw right after the hull on the hull's layer (the outline never overlaps the hull or any exhaust frame, so order against them does not matter); plasmaReadyCalm above it; the core marker stays on top",
+      "cuePriority": "reduced motion on: damage -> hit-<pose> held 250 ms with no opacity change (replaces playerFlash); then invulnerability -> shield-<pose> held until run.invulnerable ends (replaces the opacity blink); the charge-ready cue -> plasmaReadyCalm held at the muzzle (replaces the plasmaReady loop) and stays visible through both; low hull -> the codeDrawn.lowHullCue emissive held steady instead of blinking at 2 Hz. The outline follows pose changes (same frame index as player)",
+      "outline": {
+        "source": "generated from each pose's alpha in sprites/player.png",
+        "gap": 1,
+        "gapFill": "outline[1]",
+        "close": 2,
+        "breaks": {
+          "nozzle": "rows >= the exhaust socket row, |x - socket x| <= 3",
+          "muzzle": "Chebyshev distance <= 5 from plasmaMuzzle (an 11x11 window, always open, so plasmaReadyCalm stays 1 px clear)"
+        },
+        "colors": {
+          "shield": "plasma[2]",
+          "hit": "cockpit[1]"
+        }
+      },
+      "extents": {
+        "note": "outline extents from the pivot, y [-14, 14] for every pose",
+        "x": {
+          "bank-left-3": [
+            -10,
+            15
+          ],
+          "bank-left-2": [
+            -13,
+            16
+          ],
+          "bank-left-1": [
+            -15,
+            16
+          ],
+          "neutral": [
+            -16,
+            16
+          ],
+          "bank-right-1": [
+            -16,
+            15
+          ],
+          "bank-right-2": [
+            -16,
+            13
+          ],
+          "bank-right-3": [
+            -15,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "id": "plasmaReadyCalm",
+      "pass": "gate 4",
+      "canvas": [
+        15,
+        15
+      ],
+      "pivot": [
+        7,
+        7
+      ],
+      "maxColors": 4,
+      "edgeClear": true,
+      "ramps": [
+        "plasma"
+      ],
+      "frames": [
+        "ready-static"
+      ],
+      "attach": "player plasmaMuzzle, drawn above the hull (same as plasmaReady)",
+      "role": "reduced-motion charge-ready marker: one static 9x9 frame (offsets -4..4; the size of ready-a / charge-3): ring lit from the top, 1 px plasma[0] gap, hot core with a white plus; reads as held 'ready' without pulsing, distinct from charge-3's star, the shield outline and being hit"
+    },
+    {
+      "id": "mine",
+      "pass": "gate 4",
+      "replaces": "codeDrawn.mine",
+      "canvas": [
+        19,
+        19
+      ],
+      "pivot": [
+        9,
+        9
+      ],
+      "maxColors": 8,
+      "edgeClear": true,
+      "ramps": [
+        "outline",
+        "brass",
+        "fire"
+      ],
+      "frames": [
+        "idle",
+        "armed"
+      ],
+      "role": "Minelayer mine: 13 px diamond (dark brass shell with an outline rim), 7 px core and 3 px hot centre, matching codeDrawn.mine; armed = the cue before it bursts (core shifts to fire[2]/fire[3] and four short spikes or marks stand off the diamond's points inside the 19x19 canvas), replacing the code's orbiting dots. Must match the mine shown in minelayer's release frame",
+      "bounds": {
+        "damage": 7,
+        "glow": 9
+      },
+      "animation": {
+        "type": "state",
+        "note": "idle until the game sets its cue; armed is held (the code blink of the cue ring is dropped: steady works for reduced motion too)"
+      },
+      "design": "idle: dark brass diamond lit by plane (upper faces brass[2], waist brass[1], lower faces brass[0]), recessed core bowl, 3x3 fire[1] detonator lamp with a fire[3] centre; armed: same rim and outer shell ring, core heats to fire[2]/fire[3] around fire[4], fire[1] heat ring, four 2 px marks off the points (reach |d| = 8)",
+      "integration": "replace the code mine (combat-render.ts): idle while e.cue == 0, armed while e.cue == 1, no orbiting dots or blink. Spawn at minelayer.sockets.mineRelease (advanced-enemies.ts uses p.y + 18 at 480, i.e. +24 at 640, which does not match the baked bay mine). Draw the mine below the minelayer hull so it slides out of the bay without a pop. Gameplay radius: art suggests 6 (a radius-7 circle passes the diamond faces by ~2.4 px at the diagonals); owner decision"
+    },
+    {
+      "id": "pickup",
+      "pass": "gate 4",
+      "replaces": "codeDrawn.pickup",
+      "canvas": [
+        17,
+        17
+      ],
+      "pivot": [
+        8,
+        8
+      ],
+      "maxColors": 5,
+      "edgeClear": true,
+      "ramps": [
+        "outline",
+        "pickup"
+      ],
+      "frames": [
+        "base",
+        "bright",
+        "peak"
+      ],
+      "role": "repair pickup: 15 px square plate, 13 px inner field, 9x3 cross (codeDrawn.pickup sizes); the pulse brightens the inner field and the cross rim only, the silhouette never changes",
+      "animation": {
+        "type": "loop",
+        "order": [
+          "base",
+          "bright",
+          "peak",
+          "bright"
+        ],
+        "durationsMs": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "totalMs": 800,
+        "note": "~1.25 Hz like the code pulse (sin 8t); reduced motion holds 'base'"
+      },
+      "design": "raised plate (chamfered corners, plate x/y 1-15, field 2-14) with a medical cross (arms 4-12 x 7-9); bright = cross rim to pickup[2]; peak = lower and right field edges lit too",
+      "integration": "replace the code pickup's sin(8t) opacity pulse with the base, bright, peak, bright loop"
+    },
+    {
+      "id": "beamWarning",
+      "pass": "gate 4",
+      "replaces": "codeDrawn.beamLane.warning.marker",
+      "canvas": [
+        13,
+        17
+      ],
+      "pivot": [
+        6,
+        8
+      ],
+      "maxColors": 4,
+      "edgeClear": true,
+      "ramps": [
+        "orb"
+      ],
+      "frames": [
+        "marker",
+        "marker-dim"
+      ],
+      "role": "pre-fire beam warning: two stacked 11x7 down-pointing triangles, orb[0] rim, upper body orb[2], lower body orb[3] (codeDrawn.beamLane.warning.marker); marker-dim drops each body one step (orb[1] / orb[2]) and keeps the rim, so the silhouette is constant",
+      "attach": "beam centre x; pivot at (beam.x, laneTop + 9) so the marker fills rows laneTop+2 .. laneTop+16 inside the top of the lane; the lower triangle's tip points down the lane",
+      "animation": {
+        "type": "loop",
+        "order": [
+          "marker",
+          "marker-dim"
+        ],
+        "durationsMs": [
+          120,
+          120
+        ],
+        "totalMs": 240,
+        "note": "reduced motion holds 'marker'"
+      },
+      "geometry": "each triangle: flat orb[0] top rim row, sides stepping 1:1 below it to a 1 px tip (11 wide x 7 tall incl. the rim; one vertical rim pixel at each top corner); 1 px gap between the triangles; content rows 1-15",
+      "integration": "replaces the '!' text and 9x3 bar in combat-render.ts while !firing. The lane colours there are still the pre-rev01 ones (#fc798f/#ffb2bb warning, #dc80ff/#ffedff firing) and the firing glow is drawn width + 4: both must follow codeDrawn.beamLane. Lane widths at 640: Starfall 12 x 4/3 = 16, Warden 10 x 4/3 = 13.3 (not whole); an even lane cannot centre on the odd marker (owner decision: odd widths)"
     }
   ],
   "codeDrawn": {
@@ -1858,7 +2187,7 @@
       "warning": {
         "lane": "orb[1] at 30% opacity",
         "boundary": "orb[2] at 75%, dashed 6 on / 4 off, scrolling",
-        "marker": "two stacked 11x7 down-triangles at the emitter end, orb[0] rim, upper orb[2], lower orb[3], blinking"
+        "marker": "two stacked 11x7 down-triangles at the emitter end, orb[0] rim, upper orb[2], lower orb[3], blinking (gate 4: sprite beamWarning)"
       },
       "proposal": "study B colour table; opacities to confirm in play"
     },
@@ -1897,7 +2226,8 @@
     },
     "lowHullCue": {
       "role": "persistent low-hull warning: a 2x2 needle[1] emissive on each pod rear (rows 21-25 of the player canvas, on the aft section above the collar), blinking at ~2 Hz; separate from the damage flash",
-      "proposal": true
+      "proposal": true,
+      "reducedMotion": "held steady (no blink)"
     }
   },
   "gameplay": {

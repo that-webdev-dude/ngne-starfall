@@ -13,6 +13,8 @@ import sys; from pathlib import Path; sys.path.insert(0, str(Path(__file__).reso
 #   vent-a = reactor ring opens 1 px (inner corner fillets become aperture gap), core glows
 #            fire[2] with a fire[3] centre; flank vent slots (x12-13 of seam row 11) fire[2].
 #   vent-b = core brightens: fire[4] centre, fire[3] arms, fire[2] corners; slots fire[3].
+#   fire also keeps the ring open with a dimmer glow (core and slots all fire[2]) as the vent's
+#   follow-through, so the sequence vent-a, vent-b -> fire -> idle fades instead of cutting.
 # Canvas 39x35: rows 31-34 are empty in idle/vent and give the fire frame's burst room.
 # Lamps (dorsal sensor, pod grilles, strut highlights) never change.
 LEGEND = {
@@ -123,8 +125,13 @@ def edit(half, cells):
     for (x, y), c in cells.items(): out[y][x] = c
     return ["".join(r) for r in out]
 
-FIRE = [r if y < 17 else POD_FIRE[y - 17] + r[9:] for y, r in enumerate(HALF)]
 VENT_OPEN = {(17, 10): "O", (17, 14): "O"}            # ring inner fillets -> aperture gap
+# Fire keeps a dimmer vent-a-style glow as follow-through (vent-b -> fire -> idle decays):
+# ring still open, core all fire[2] (vent-a without its fire[3] centre), slots fire[2].
+FIRE_GLOW = {**VENT_OPEN,
+    (18, 11): "f", (19, 11): "f", (18, 12): "f", (19, 12): "f", (18, 13): "f", (19, 13): "f",
+    (12, 11): "f", (13, 11): "f"}
+FIRE = edit([r if y < 17 else POD_FIRE[y - 17] + r[9:] for y, r in enumerate(HALF)], FIRE_GLOW)
 VENT_A = edit(HALF, {**VENT_OPEN,
     (18, 11): "f", (19, 11): "f", (18, 12): "f", (19, 12): "F", (18, 13): "f", (19, 13): "f",
     (12, 11): "f", (13, 11): "f"})

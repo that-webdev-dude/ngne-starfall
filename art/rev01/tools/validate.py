@@ -5,7 +5,7 @@ Usage: python -I tools/validate.py [--all] [--rebuild] [sprite-id=path/to/file.p
   --rebuild   also run source/<id>.py with saving intercepted and compare to the export
 
 Scope: this checks files, not art quality. It verifies strip sizes, binary alpha, ramp
-membership and colour budgets; background palette size, forbidden ramps and the brightness
+membership, colour budgets and edge margins (sprites flagged edgeClear); background palette size, forbidden ramps and the brightness
 cap; that every socket exists for every pose and lies inside the canvas; and, with
 --rebuild, that each source script reproduces its PNG exactly. It does not judge silhouette,
 shading, animation, collision fairness or readability in play."""
@@ -121,6 +121,11 @@ def check_strip(sprite_id: str, path: str) -> list[str]:
     if partial: errors.append(f"{path}: {partial} semi-transparent pixels")
     if foreign: errors.append(f"{path}: colours outside its ramps: {sorted(foreign)[:8]}")
     if len(used) > spec["maxColors"]: errors.append(f"{path}: {len(used)} colours, max {spec['maxColors']}")
+    if spec.get("edgeClear") and image.size == expected:
+        x = 0
+        for frame, (w, h) in zip(spec["frames"], sizes):
+            box = image.crop((x, 0, x + w, h)).getchannel("A").getbbox(); x += w
+            if box and (box[0] == 0 or box[1] == 0 or box[2] == w or box[3] == h): errors.append(f"{path}: frame {frame} has opaque pixels on the canvas edge (edgeClear)")
     return errors
 
 def check_background(spec: dict, path: str, image: Image.Image) -> list[str]:

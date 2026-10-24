@@ -112,7 +112,10 @@ def steel(dx, dy, angle):
     if a == 225 or a == 240: return "c"                     # upper-left rim pixel under the arm edge
     return "b"
 
-def cutters(g, phase):
+STUB = {0: ((7, -2), (7, -1), (7, 0))}  # what is left of a broken phase-0 hook: its root on the rim
+
+def cutters(g, phase, broken=()):
+    """broken: (hub, k) hooks snapped off to their root (defeat only; the cut loop passes none)."""
     for hub in HUBS:
         cx, cy = hub
         ox = cx - 10
@@ -124,6 +127,7 @@ def cutters(g, phase):
         for k in range(4):
             angle = phase + 90 * k
             for p in HOOK[phase]:
+                if (hub, k) in broken and p not in STUB[phase]: continue
                 dx, dy = turn(p, k)
                 fill[(cx + dx, cy + dy)] = steel(dx, dy, angle)
             dx, dy = turn(NUB[phase], k)
@@ -155,11 +159,15 @@ def drill(g, frame):
             zone = "L" if x < m else "M" if x < r else "R"
             g[y][x] = FLUTE[zone][((x + y) % 4) in LIGHT[frame][zone]]
 
-def build(frame):
+def build(frame, broken=()):
     g = [list(r) for r in ROWS]
-    cutters(g, 30 * frame)
+    cutters(g, 30 * frame, broken)
     drill(g, frame)
     return ["".join(r) for r in g]
+
+def moving(x, y):
+    """The cutter and drill cells: the only cells allowed to differ between frames of one loop."""
+    return (y >= 30 and (x <= 21 or x >= 43)) or (31 <= y <= 43 and 28 <= x <= 36)
 
 FRAMES = [build(f) for f in range(3)]
 assert FRAMES[0] == ROWS, "the frame builder must reproduce the approved cut-0"
@@ -167,5 +175,161 @@ for f in FRAMES[1:]:  # nothing outside the cutters and the drill changes
     for y in range(47):
         for x in range(65):
             if f[y][x] != ROWS[y][x]:
-                assert (y >= 30 and (x <= 21 or x >= 43)) or (31 <= y <= 43 and 28 <= x <= 36), (x, y)
-pixlib.save_sprite("kilnHead", [pixlib.grid_image(f, LEGEND) for f in FRAMES])
+                assert moving(x, y), (x, y)
+
+# ---------------------------------------------------------------- damage helpers (as in gatebreaker.py)
+STEP = {"r": (1, 0), "l": (-1, 0), "d": (0, 1), "u": (0, -1), "R": (1, 1), "L": (-1, 1), "U": (1, -1), "Y": (-1, -1)}
+
+def crack(x, y, moves, c="o"):
+    """1 px crack from (x, y): r/l/d/u straight, R/L down-right/down-left, U/Y up-right/up-left."""
+    cells = [(x, y, c)]
+    for m in moves:
+        dx, dy = STEP[m]; x += dx; y += dy; cells.append((x, y, c))
+    return cells
+
+def glyph(x0, y0, rows):
+    """Cells of a small hand-drawn mark ("." keeps the pixel)."""
+    return [(x0 + i, y0 + j, c) for j, r in enumerate(rows) for i, c in enumerate(r) if c != "."]
+
+def apply(rows, cells):
+    g = [list(r) for r in rows]
+    for x, y, c in cells: g[y][x] = c
+    return ["".join(r) for r in g]
+
+def remap(rows, cells, mapping):
+    g = [list(r) for r in rows]
+    for x, y in cells: g[y][x] = mapping.get(g[y][x], g[y][x])
+    return ["".join(r) for r in g]
+
+def area(x0, y0, rows):
+    """Cell set of a mask drawn with '#'."""
+    return [(x0 + i, y0 + j) for j, r in enumerate(rows) for i, c in enumerate(r) if c == "#"]
+
+CORE_CELLS = [(x, y) for y in range(19, 27) for x in range(28, 37) if ROWS[y][x] in "6789"]
+PORT = [(31, 3), (32, 3), (33, 3)]                       # exhaust-stack port (rear coupling)
+
+# ---------------------------------------------------------------- damaged-0/1/2 (phase 2, HP < 1/2)
+# 'CORE OVERHEAT': the cut loop keeps turning; everything below is a fixed patch over each cut frame,
+# outside the cutter/drill cells, so the three damaged frames differ only where the cut frames do.
+# The damage carries by value and mass so phase 2 reads at 1x after the rotation (gate 4 review):
+# - three scorch masses (outline[1] core, rust[0] body, one-step-darker fringe) on the lit right shoulder,
+#   the shadow-side left shoulder and the core housing's lower left;
+# - a chunk of the shadow shoulder's silhouette bitten out (a notch up to 6 px deep over rows 9-13,
+#   screen bottom after the rotation);
+# - the lit (+x, screen-top) hazard panel torn wide open on fire (fire[1]-fire[3] interior, tongue toward
+#   +x), with a steel rib on its shadow side and bent lit lips (rust[3]);
+# - five seams glowing in 4-5 px runs of fire[1]-fire[2];
+# - the core's inner rings one value up (fire[4] diamond), the stack port hot; two short outline[0]
+#   cracks for texture.
+SOOT_MAP = {"#": {"1": "n", "2": "n", "3": "n", "4": "n"},          # soot core
+            "+": {"2": "1", "3": "1", "4": "1"},                    # charred body
+            "-": {"4": "3", "3": "2", "2": "1"}}                    # fringe: one value down
+
+def soot(x0, y0, rows):
+    return [(x0 + i, y0 + j, c) for j, r in enumerate(rows) for i, c in enumerate(r) if c in SOOT_MAP]
+
+SCORCH = (soot(43, 7, ["......-++--.",     # right shoulder (lit plate)
+                       "...-+++###-.",
+                       "..-+######+-",
+                       ".-+####+++-.",
+                       "-++###+--...",
+                       "-+##++-.....",
+                       ".-++-.......",
+                       "..--........"])
+          + soot(13, 6, ["...--+-...",     # left shoulder, round the bite
+                         "..-+###+-.",
+                         ".-+####++-",
+                         "-+###+++-.",
+                         "++##+-....",
+                         "+###+-....",
+                         "++#++-....",
+                         "-+++-.....",
+                         ".-+-......",
+                         "..-......."])
+          + soot(22, 25, [".-++-...",      # core housing, lower left
+                          "-+###+-.",
+                          "+####+-.",
+                          "-+##+-..",
+                          ".-+-...."]))
+BITE_EDGE = {9: 13, 10: 15, 11: 16, 12: 15, 13: 12}   # shadow shoulder: new outline x per row (notch)
+
+def bite(rows):
+    """Cut the notch: cells left of the new edge go transparent, every cell they expose becomes outline."""
+    g = [list(r) for r in rows]
+    gone = {(x, y) for y, edge in BITE_EDGE.items() for x in range(edge) if g[y][x] != "."}
+    for x, y in gone: g[y][x] = "."
+    for x, y in gone:
+        for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+            if (nx, ny) not in gone and g[ny][nx] != ".": g[ny][nx] = "o"
+    return ["".join(r) for r in g]
+
+CRACKS = (crack(47, 12, "LdL")                  # right shoulder, out of the scorch
+          + crack(41, 26, "LdL")                # core housing, lower right
+          + crack(30, 9, "rR"))                 # chest plate
+TEAR = glyph(52, 18, ["....o44..",             # lit hazard panel torn open on fire: void, steel rib on
+                      "..oon67o.",             # the shadow (-x) side, flames toward +x (screen up),
+                      ".on66787o",             # bent lit lips (rust[3]) at the rim
+                      "onb67887o",
+                      "onb66776o",
+                      ".onb666no",
+                      "..onnnno4",
+                      "...o44..."])
+SEAMS = (glyph(23, 17, ["67776"])               # under the chest
+         + glyph(38, 17, ["6776"])              # under the right shoulder
+         + glyph(46, 15, ["6776"])              # right shoulder / forearm
+         + glyph(20, 11, ["6", "7", "7", "6"])  # left shoulder / chest
+         + glyph(51, 27, ["6776"]))             # right forearm cuff
+HOT_CORE = {"7": "8", "8": "9"}
+
+def damage(rows):
+    g = [list(r) for r in rows]
+    for x, y, c in SCORCH: g[y][x] = SOOT_MAP[c].get(g[y][x], g[y][x])
+    rows = ["".join(r) for r in g]
+    rows = remap(rows, CORE_CELLS, HOT_CORE)
+    rows = bite(rows)
+    rows = apply(rows, CRACKS + TEAR + SEAMS + [(x, y, c) for (x, y), c in zip(PORT, "676")])
+    return rows
+
+DAMAGED = [damage(f) for f in FRAMES]
+for d, f in zip(DAMAGED, FRAMES):   # the damage patch never touches a moving cell
+    for y in range(47):
+        for x in range(65):
+            if d[y][x] != f[y][x]: assert not moving(x, y), (x, y)
+
+# ---------------------------------------------------------------- defeat (held at 0 HP)
+# Builds on the damaged patch (nothing heals; its seam and tear fires cool one to two values). Cutters stalled at cut-0 with hooks snapped to their
+# roots, drill snapped below the collar's third flute, core dark (outline / fire[0]) with two embers,
+# stack port out, the shadow side one value darker while the lit plates (chest, right shoulder, right
+# forearm and cutter, core housing) keep their values so it still reads as the Kiln head; embers sit in seams.
+BROKEN = {((10, 36), 1), ((10, 36), 2), ((54, 36), 0), ((54, 36), 1)}
+DARKEN = {"4": "3", "3": "2", "2": "1", "d": "c", "c": "b", "b": "a"}
+KEEP_LIT = set(area(26, 5, ["##############"] * 13)               # chest plate + stack base
+               + area(38, 6, ["####################"] * 11)       # right shoulder
+               + area(48, 17, ["###############"] * 13)          # right forearm and hazard panel
+               + area(22, 18, ["#####################"] * 12)    # core housing
+               + area(43, 30, ["######################"] * 17))  # lit (screen-top) cutter
+DEAD_CORE = {"6": "5", "7": "n", "8": "o", "9": "o"}
+COOL = {"6": "5", "7": "6", "8": "6"}   # the damaged seams and the tear fire burn down to embers
+SNAP = glyph(29, 38, ["ocdoboo",       # drill snapped: row 38 is the jagged break (fresh metal c/d on
+                      ".oo.o.."])      # the fracture), everything below row 39 gone
+EMBERS = (glyph(25, 16, [".7", "78"])          # chest seam
+          + glyph(14, 14, ["7.", "87"])        # left shoulder seam
+          + glyph(56, 21, ["7", "8"])          # inside the torn panel
+          + glyph(40, 27, ["67"])              # core-housing crack
+          + glyph(18, 19, ["6"]) + glyph(46, 24, ["7"]))   # rod sleeves
+CORE_EMBERS = [(31, 22, "6"), (33, 24, "5")]
+
+def defeat():
+    rows = build(0, BROKEN)
+    rows = damage(rows)
+    rows = remap(rows, [(x, y) for y in range(47) for x in range(65) if (x, y) not in KEEP_LIT], DARKEN)
+    rows = remap(rows, CORE_CELLS, DEAD_CORE)
+    rows = remap(rows, [(x, y) for y in range(47) for x in range(65) if (x, y) not in CORE_CELLS], COOL)
+    g = [list(r) for r in rows]
+    for y in range(39, 47):
+        for x in range(28, 37): g[y][x] = "."
+    rows = ["".join(r) for r in g]
+    return apply(rows, SNAP + EMBERS + CORE_EMBERS + [(x, y, c) for (x, y), c in zip(PORT, "n5n")])
+
+DEFEAT = defeat()
+pixlib.save_sprite("kilnHead", [pixlib.grid_image(f, LEGEND) for f in FRAMES + DAMAGED + [DEFEAT]])

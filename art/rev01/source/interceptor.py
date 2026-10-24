@@ -6,10 +6,14 @@ import sys; from pathlib import Path; sys.path.insert(0, str(Path(__file__).reso
 # (x <= 13), mirrored, so only the active parts change:
 #   pulse = engine glow on each pod's flat rear face (row 3, x5-8 outline): x5-7 light up,
 #           exhaust[1] rim with an exhaust[2] centre at x6 (3 px per pod, 6 px total).
-#   fire  = muzzle cue at the nose gun: needle[2] core at (13,21) (the first transparent pixel
-#           under the tip = muzzle socket), needle[1] rim at (12,21)/(14,21) and on the tip
-#           outline (13,20), so the flash stays joined to the barrel when outline[0] vanishes on
-#           the dark sky (4 px). Row 22 (canvas edge) stays empty.
+#   fire  = muzzle flash below the nose gun (canvas 27x25 since gate 4; rows 23-24 are empty in
+#           idle/pulse): the tip outline (13,20) turns needle[1] so the flash stays joined to the
+#           barrel when outline[0] vanishes on the dark sky, then a fan between the pods that
+#           opens away from the gun with a needle[2] hot core down the centre: row 21 n N n,
+#           row 22 n n N n n, row 23 three prongs n . n . n (11 px). Row 24 (canvas edge) stays
+#           empty. Fixed to the nose and widening away from it, it does not read as the
+#           hostileNeedle bullet (shaft behind a head that narrows to its point).
+#           Muzzle socket = (13,21), the first transparent pixel under the tip in idle.
 LEGEND = {
     ".": None,
     "o": ("outline", 0), "O": ("outline", 1),
@@ -42,6 +46,8 @@ HALF = [
     "........o2o..o",
     "........o1o...",
     ".........o....",
+    "..............",
+    "..............",
 ]
 
 def edit(half, cells):
@@ -51,7 +57,10 @@ def edit(half, cells):
     return ["".join(r) for r in out]
 
 PULSE = edit(HALF, {(5, 3): "e", (6, 3): "E", (7, 3): "e"})
-FIRE = edit(HALF, {(13, 20): "n", (12, 21): "n", (13, 21): "N"})
+FIRE = edit(HALF, {(13, 20): "n",
+                   (12, 21): "n", (13, 21): "N",
+                   (11, 22): "n", (12, 22): "n", (13, 22): "N",
+                   (11, 23): "n", (13, 23): "n"})
 
 def mirror(half): return [r + r[-2::-1] for r in half]
 
