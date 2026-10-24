@@ -1,0 +1,5 @@
+interface:
+  display_name: "Pixel"
+  short_description: "Pixel-art craft rules for sprites, tiles and palettes"
+policy:
+  allow_implicit_invocation: false

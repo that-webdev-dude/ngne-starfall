@@ -1,9 +1,10 @@
 {
   "source": "skills-manager",
-  "pin": "d4476c50548beda352155e2b3d89bf304e8e53a0",
+  "pin": "d586348e152e8198caa4ceed2f3ac6644ba247d3",
   "skills": {
     "codebase": ["claude","codex"],
     "codebase-design": ["claude","codex"],
+    "pixel": ["claude","codex"],
     "ponytail": ["claude","codex"]
   }
 }

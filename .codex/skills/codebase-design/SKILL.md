@@ -1,10 +1,10 @@
 ---
 name: codebase-design
 description: Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.
-x-source: skills-manager@d4476c5
-x-content-hash: c794d51ab453830f734578a8dbf085ad034c5fa1db8ba85d4d62978fa09670a7
+x-source: skills-manager@d586348
+x-content-hash: a1f71db739b1e9050a7c83ec4a71d11643b7848bcbf62a2f1d62ced042025630
 ---
-<!-- Vendored from skills-manager@d4476c5. Do not edit here: edit the source in the skills-manager repo and re-run `skills sync`. -->
+<!-- Vendored from skills-manager@d586348. Do not edit here: edit the source in the skills-manager repo and re-run `skills sync`. -->
 
 
 # Codebase Design

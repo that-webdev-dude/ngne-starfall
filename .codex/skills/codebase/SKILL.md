@@ -2,10 +2,10 @@
 name: codebase
 description: Review architectural friction, present evidence-backed deepening candidates in a visual report, and explore the candidate the user selects. Only use when the user explicitly invokes /codebase.
 disable-model-invocation: true
-x-source: skills-manager@d4476c5
-x-content-hash: 86b0c91935b49a1a8cee13f8e4bea6c8237fe46224c47061ce932ef0889faef5
+x-source: skills-manager@d586348
+x-content-hash: 86df120663aac89384acf9ee473ea88b23958e0d8ddde2f5d293438b94f85d39
 ---
-<!-- Vendored from skills-manager@d4476c5. Do not edit here: edit the source in the skills-manager repo and re-run `skills sync`. -->
+<!-- Vendored from skills-manager@d586348. Do not edit here: edit the source in the skills-manager repo and re-run `skills sync`. -->
 
 
 # Codebase
