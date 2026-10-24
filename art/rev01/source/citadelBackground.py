@@ -40,6 +40,7 @@ W, H = 640, 400
 NONE = -1
 DITHER = np.array([[0, 2], [3, 1]])               # 2x2 ordered dither
 RC = (319.5, 66.0); RR = 46.0                     # ring centre / radius (canvas coords)
+CALM = (230, 20, 410, 180)                        # portal region behind the boss (x0, y0, x1, y1)
 
 def bayer(h, w):
     return (np.tile(DITHER, (h // 2 + 1, w // 2 + 1))[:h, :w] + 0.5) / 4
@@ -128,6 +129,14 @@ def ring(img):
     lvl = np.minimum(lvl, 2)
     lvl = np.where(band, 3, lvl)
     lvl = np.where(core, 4, lvl)
+    # calm the portal behind the boss: inside the boss window the brightest two values drop one
+    # step and the bright rim thins; the window edges blend through the 2x2 ordered dither
+    wgt = np.clip(np.minimum.reduce([(xs - CALM[0]) / 10, (CALM[2] - xs) / 10,
+                                     (ys - CALM[1]) / 10, (CALM[3] - ys) / 10]), 0, 1)
+    calm = wgt > bayer(H, W)
+    thin = np.abs(e) < 0.6 + 1.0 * u
+    lvl = np.where(calm & (lvl == 3), 2, lvl)
+    lvl = np.where(calm & (lvl == 4), np.where(thin, 3, 2), lvl)
     m = lvl >= 0
     img[m] = np.array(RG)[np.clip(lvl[m], 0, 4)]
 
@@ -247,7 +256,7 @@ def far_tower(L, x0, w, top, base, r):
                 px(L, xx, yy, RG[0])
                 if r.random() < 0.5: px(L, xx, yy + 1, RG[0])
 
-def slab(L, x0, y0, length, tt, fh, r, lit=()):
+def slab(L, x0, y0, length, tt, fh, r, lit=(), blank=()):
     """Fortress terrace descending toward the playfield on a 2:1 slope: a wide lit walkway on
     top (merlons, flagstones), a facade below (pilasters, arcade, slot row) and a lit end face."""
     x_end = x0 + length
@@ -285,6 +294,7 @@ def slab(L, x0, y0, length, tt, fh, r, lit=()):
     ps = sorted(pil)
     for a, b in zip(ps, ps[1:]):                                  # arcade bays
         bay = k; k += 1
+        if bay in blank: continue                                 # variation: blank wall segment
         xa = a + 2 + ((a + 2 - x0) % 2)
         arch_lit = bay in lit
         for xx in range(xa, b - 1, 4):
@@ -307,7 +317,7 @@ def slab(L, x0, y0, length, tt, fh, r, lit=()):
         px(L, x_end, y, S6 if top else S3); px(L, x_end + 1, y, S5 if top else S2)
         px(L, x_end + 2, y, S0)
 
-def tower(L, cx, base, w, h, cap, win, r, foot=True):
+def tower(L, cx, base, w, h, cap, win, r, foot=True, nslit=None):
     x0 = cx - w // 2; x1 = x0 + w; top = base - h
     t1, t2 = 0.22 + 0.14 * r.random(), 0.58 + 0.12 * r.random()  # facet split varies per tower
     for i in range(w):
@@ -327,6 +337,8 @@ def tower(L, cx, base, w, h, cap, win, r, foot=True):
     if win in ("tall", "both"):
         wy0 = top + 6; wy1 = min(base - 6, wy0 + max(12, int(h * 0.55)))
         slits = [cx - 1 + (w >= 15 and w < 19)] if w < 19 else [cx - 5, cx + 3]
+        if nslit == 1: slits = [cx - 1]                       # variation: one centred slit
+        elif nslit == 3: slits = [cx - 7, cx - 1, cx + 5]     # variation: triple slit (w >= 21)
         for n, wx in enumerate(slits):
             y0w = wy0 + (3 if n == 0 and len(slits) > 1 else 0)
             rect(L, wx - 1, y0w - 2, wx + 4, wy1 + 1, S0)
@@ -435,19 +447,32 @@ def pod(L, x0, x1, y, pw, ph, r):
         px(L, cx + pw // 2 + ln, yy, S5)
         px(L, cx + pw // 2 + 1, yy + 1, S0)
 
-def side(layout, seed):
+def side(layout, seed, varied=True):
     r = np.random.default_rng(seed)
     L = layer(320)
     for x0, w, top in layout["far"]:
         far_tower(L, x0, w, top, H, r)
     rect(L, 0, 0, layout["solid"], H, F0)
-    for item in layout["near"]:
+    def draw(L, item, r):
+        opt = item[-1] if isinstance(item[-1], dict) else {}
+        item = item[:-1] if opt else item
         kind = item[0]
-        if kind == "slab": slab(L, *item[1:6], r, lit=item[6] if len(item) > 6 else ())
-        elif kind == "tower": tower(L, *item[1:7], r)
+        if kind == "slab": slab(L, *item[1:6], r, lit=item[6] if len(item) > 6 else (), **opt)
+        elif kind == "tower": tower(L, *item[1:7], r, **opt)
         elif kind == "pod": pod(L, *item[1:6], r)
         elif kind == "float":
             tower(L, *item[1:7], r, foot=False); float_tail(L, item[1], item[2], item[3])
+    vary, extra = (layout.get("vary", {}), layout.get("extra", {})) if varied else ({}, {})
+    for i, item in enumerate(layout["near"]):
+        if i in vary:
+            # Structural variation: the original item is still drawn (on a scratch layer) with the
+            # shared generator so every later item keeps its random draws; the variant gets its own.
+            draw(layer(320), item, r)
+            draw(L, vary[i], np.random.default_rng((seed, i)))
+        else:
+            draw(L, item, r)
+        for j, ex in enumerate(extra.get(i, ())):  # added pieces, drawn right after item i
+            draw(L, ex, np.random.default_rng((seed, i, 100 + j)))
     return L
 
 # Hand-placed layouts in inner coordinates (x = distance from the outer screen edge).
@@ -483,6 +508,13 @@ LEFT = {
         ("tower", 30, 392, 17, 56, "dome", "tall"),
         ("tower", 64, 409, 13, 44, "cluster", "slots"),
     ],
+    # rev01 pass 2: structural variations that break the repeated terrace / twin-slit rhythm
+    "vary": {
+        7: ("tower", 94, 160, 23, 80, "tiered", "tall", {"nslit": 3}),       # triple slit
+        8: ("slab", -6, 160, 112, 18, 34, (4,), {"blank": (1, 2)}),          # taller tier, blank wall
+        16: ("tower", 42, 299, 21, 54, "dome", "both", {"nslit": 1}),        # shorter, single slit
+    },
+    "extra": {8: [("tower", 44, 244, 7, 44, "flat", "none")]},             # buttress pier
 }
 RIGHT = {
     "solid": 12,
@@ -512,12 +544,19 @@ RIGHT = {
         ("tower", 78, 360, 15, 50, "onion", "tall"),
         ("tower", 102, 412, 19, 62, "dome", "tall"),
     ],
+    "vary": {
+        6: ("tower", 18, 126, 21, 84, "tiered", "tall"),                    # taller tower
+        10: ("tower", 106, 210, 23, 76, "dome", "both", {"nslit": 1}),       # single slit
+        11: ("slab", -6, 206, 94, 17, 18, (1,), {"blank": (2, 3, 4)}),       # shorter tier, blank wall
+        18: ("tower", 48, 345, 19, 52, "spire", "slots"),                    # shorter, slots only
+    },
+    "extra": {5: [("tower", 37, 172, 7, 34, "flat", "none")]},             # buttress pier
 }
 
 def build():
     left = side(LEFT, 21)
     right = side(RIGHT, 22)
-    img = sky(left, right)
+    img = sky(side(LEFT, 21, False), side(RIGHT, 22, False))   # haze follows the base massing
     ring(img)
     central(img)
     composite(img, left, 0)

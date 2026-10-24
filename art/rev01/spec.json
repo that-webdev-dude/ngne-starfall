@@ -1,6 +1,6 @@
 {
   "version": "rev01",
-  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer.",
+  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer. Gate 2 (owner, 24 Oct 2026): Phase 2 assets approved as stills; nova staging kept. Gate 3 (owner, 24 Oct 2026): Phase 3 assets and background tweaks approved as stills; the pass is complete.",
   "conventions": {
     "units": "pixels in the 640x360 logical view; 1 texel = 1 logical pixel, no runtime scaling",
     "origin": "top-left of each canvas, +x right, +y down",
@@ -702,7 +702,9 @@
       "frames": [
         "short",
         "medium",
-        "long"
+        "long",
+        "medium-left",
+        "medium-right"
       ],
       "animation": {
         "type": "loop",
@@ -710,15 +712,24 @@
           "short",
           "medium",
           "long",
+          "medium-left",
+          "medium",
+          "long",
+          "medium-right",
           "medium"
         ],
         "durationsMs": [
           80,
           80,
           80,
+          80,
+          80,
+          80,
+          80,
           80
         ]
-      }
+      },
+      "states": "lateral flicker: medium-left / medium-right are the medium flame with the tail bent 1 px to that side below row 4 (row 5 keeps a 2 px core so the flame stays connected); rows 0-1 never change in any frame, so the nozzle join stays fixed (short's row 2 is narrower by design)"
     },
     {
       "id": "primaryLance",
@@ -1160,15 +1171,41 @@
         13,
         11
       ],
-      "maxColors": 12,
+      "maxColors": 14,
       "ramps": [
         "outline",
         "steel",
-        "raider"
+        "raider",
+        "exhaust",
+        "needle"
       ],
       "frames": [
-        "interceptor"
-      ]
+        "idle",
+        "pulse",
+        "fire"
+      ],
+      "states": "idle; pulse = engine glow (exhaust ramp) on the pod rears one step brighter, alternates with idle as a 2-frame loop; fire = muzzle cue (needle ramp) at the nose gun for one frame when it shoots",
+      "sockets": {
+        "muzzle": [
+          0,
+          10
+        ],
+        "engines": [
+          [
+            -7,
+            -9
+          ],
+          [
+            7,
+            -9
+          ]
+        ]
+      },
+      "animation": {
+        "type": "state",
+        "note": "proposal: idle/pulse loop 120/120 ms; fire 70 ms"
+      },
+      "socketNote": "muzzle = first transparent pixel ahead of the nose tip (the fire cue's core); engines = first transparent pixel behind each pod's rear face"
     },
     {
       "id": "dart",
@@ -1182,21 +1219,35 @@
         6,
         12
       ],
-      "maxColors": 10,
+      "maxColors": 12,
       "ramps": [
         "outline",
         "steel",
-        "raider"
+        "raider",
+        "exhaust",
+        "needle"
       ],
       "frames": [
-        "dart"
+        "idle",
+        "pulse",
+        "fire"
       ],
       "sockets": {
         "muzzle": [
           0,
           12
+        ],
+        "engine": [
+          0,
+          -11
         ]
-      }
+      },
+      "states": "idle; pulse = engine glow (exhaust ramp) at the tail; fire = muzzle cue (needle ramp) at the muzzle socket. Must stay visible against Furnace edges",
+      "animation": {
+        "type": "state",
+        "note": "proposal: idle/pulse loop 100/100 ms; fire 70 ms"
+      },
+      "socketNote": "the dart fills its canvas: muzzle (0,12) is the nose tip pixel (the fire cue's core) and engine (0,-11) is the lit spine pixel; the first-transparent convention would fall outside the canvas"
     },
     {
       "id": "gunship",
@@ -1257,25 +1308,34 @@
         16,
         15
       ],
-      "maxColors": 14,
+      "maxColors": 16,
       "ramps": [
         "outline",
         "violet",
         "raider",
-        "brass"
+        "brass",
+        "fire",
+        "needle"
       ],
       "frames": [
-        "warden"
+        "idle",
+        "charge",
+        "fire"
       ],
       "sockets": {
         "leftMuzzle": [
           -8,
-          10
+          11
         ],
         "rightMuzzle": [
           8,
-          10
+          11
         ]
+      },
+      "states": "idle; charge = both gun apertures glow (fire ramp) as the telegraph, decorative lamps unchanged; fire = recoil of the gun mounts 1-2 px with needle-ramp muzzle flashes at the muzzle sockets",
+      "animation": {
+        "type": "state",
+        "note": "proposal: charge 200 ms, fire 70 ms"
       }
     },
     {
@@ -1289,22 +1349,31 @@
         14,
         14
       ],
-      "maxColors": 12,
+      "maxColors": 14,
       "ramps": [
         "outline",
         "olive",
         "brass",
-        "steel"
+        "steel",
+        "fire"
       ],
       "frames": [
-        "minelayer"
+        "idle",
+        "open",
+        "release"
       ],
       "sockets": {
         "mineRelease": [
           0,
-          10
+          9
         ]
-      }
+      },
+      "states": "idle; open = the mine bay doors at the mineRelease socket open 2 px with a fire-ramp glow inside; release = doors fully open with the mine's diamond showing in the bay (the game spawns the mine at the socket on this frame)",
+      "animation": {
+        "type": "state",
+        "note": "proposal: open 120 ms, release 120 ms, back to idle"
+      },
+      "socketNote": "centre of the mine shown in the bay on the release frame; the game spawns its mine there"
     },
     {
       "id": "gatebreaker",
@@ -1417,7 +1486,9 @@
         "fire"
       ],
       "frames": [
-        "kilnHead"
+        "cut-0",
+        "cut-1",
+        "cut-2"
       ],
       "orientation": "same as today's source; the engine rotates it by exactly -90 degrees",
       "sockets": {
@@ -1441,7 +1512,22 @@
           22,
           13
         ]
-      }
+      },
+      "states": "3-frame loop: the two saw cutters turn (teeth advance one position per frame) and the fluted drill spins (flutes advance one step per frame); everything else identical. Checked as the assembled chain after the -90 degree rotation",
+      "animation": {
+        "type": "loop",
+        "order": [
+          "cut-0",
+          "cut-1",
+          "cut-2"
+        ],
+        "durationsMs": [
+          80,
+          80,
+          80
+        ]
+      },
+      "integration": "chain check (Phase 3, stills): at a fixed 45 px joint spacing there is no gap or overlap, with 10-11 px (head to segment 1) and 22 px (segment to segment) of bare code link. The game's phase-lag term makes the spacing 27-63 px at 640: at 27 px segment 1 overlaps the head's rear stack by 7 px, which no art compression can absorb; at 63 px the chain reads as beads on a rope. Consumer fix: keep the minimum spacing >= 34 px (e.g. base 52 with a +-18 lag) or cap the lag term, and draw the head above the segments. After the -90 degree rotation the drill points screen +x (the head leads to the right), matching the game's trailing segments at x - 34(i+1)."
     },
     {
       "id": "kilnSegment",
@@ -1461,7 +1547,8 @@
         "rust"
       ],
       "frames": [
-        "kilnSegment"
+        "idle",
+        "compressed"
       ],
       "orientation": "same as kilnHead",
       "sockets": {
@@ -1469,15 +1556,33 @@
           0,
           0
         ],
-        "frontCoupling": [
-          0,
-          11
-        ],
-        "rearCoupling": [
-          0,
-          -11
-        ]
-      }
+        "frontCoupling": {
+          "idle": [
+            0,
+            11
+          ],
+          "compressed": [
+            0,
+            10
+          ]
+        },
+        "rearCoupling": {
+          "idle": [
+            0,
+            -11
+          ],
+          "compressed": [
+            0,
+            -10
+          ]
+        }
+      },
+      "states": "idle; compressed = the coupling bellows at both couplings shorten by 1-2 px (canvas y) when the chain turns, so links never show a gap or an overlap; the engine draws a code link between joints",
+      "animation": {
+        "type": "state",
+        "note": "the consumer shows 'compressed' while the angle between adjacent joints is changing"
+      },
+      "idleChange": "Phase 3: the fluted coupling stubs became bellows rings (rows 0-3 and 19-22) so compression has something to show; the hull is unchanged"
     },
     {
       "id": "starfallEngine",
@@ -1499,7 +1604,13 @@
         "steel"
       ],
       "frames": [
-        "starfallEngine"
+        "phase-1",
+        "phase-2",
+        "phase-3",
+        "surge-1",
+        "surge-2",
+        "surge-3",
+        "defeat"
       ],
       "sockets": {
         "leftEmitter": [
@@ -1518,7 +1629,51 @@
           0,
           30
         ]
+      },
+      "states": "hull only; the two destructible emitters live in starfallEmitter. phase-1/2/3 = the hull at full / <2/3 / <1/3 HP: each phase adds damage that reads at 1x (exposed lit machinery, torn panels, reactor flare); surge-N = phase-N with the core cue (core and corona brighter, bone[1] plus) for the curtain/ring telegraph, so damage never disappears during the cue; defeat = darkened hull, core dark, embers (the game tints it as it falls). The lower emitter stays hull art; emitter wells stay drawn in every frame",
+      "animation": {
+        "type": "state",
+        "note": "proposal: surge-N held for the 0.7 s cue in phase N"
       }
+    },
+    {
+      "id": "starfallEmitter",
+      "canvas": [
+        27,
+        27
+      ],
+      "pivot": [
+        13,
+        13
+      ],
+      "maxColors": 16,
+      "ramps": [
+        "outline",
+        "engine",
+        "glow",
+        "bone",
+        "steel",
+        "fire"
+      ],
+      "frames": [
+        "idle",
+        "charge",
+        "firing",
+        "down"
+      ],
+      "attach": "one instance per starfallEngine leftEmitter / rightEmitter socket, drawn above the hull; the right instance is drawn flipped in x. idle/charge/firing while the emitter lives, 'down' once destroyed (replaces the code 20x20 rect)",
+      "states": "idle = the approved emitter lens and bone ring; charge = lens brightens to glow[2] with a glow[1] halo (0.7 s cue before its fan); firing = lens white-hot (bone[1]/glow[2]) with a short flare at the socket; down = ring cracked, lens dark (glow[0]/outline), a small fire",
+      "sockets": {
+        "muzzle": [
+          0,
+          12
+        ]
+      },
+      "animation": {
+        "type": "state",
+        "note": "proposal: charge held for the cue, firing 90 ms"
+      },
+      "socketNote": "muzzle (0,12) matches the game's socket + 12 px spawn point and lands on the housing's lower rim; the first transparent pixel under the lens in idle is (0,10); negate dx for the flipped right instance"
     },
     {
       "id": "explosion",
@@ -1644,7 +1799,8 @@
       ],
       "frames": [
         "breakwater"
-      ]
+      ],
+      "pass2": "local tweak: lower the contrast of the planet clouds and rim in the boss entrance area (upper centre, roughly x 160-480, y 20-150 of the 640x400 canvas); keep the open centre"
     },
     {
       "id": "furnaceBackground",
@@ -1663,7 +1819,8 @@
       ],
       "frames": [
         "furnace"
-      ]
+      ],
+      "pass2": "owner decision: stays dim. Add only sparse, dim depth cues in the dark centre (a few faint distant girders / drifting rock silhouettes 1-2 values above the space colour); no new orange accents"
     },
     {
       "id": "citadelBackground",
@@ -1682,7 +1839,8 @@
       ],
       "frames": [
         "citadel"
-      ]
+      ],
+      "pass2": "local tweaks: break up the repeated terrace and window rhythms at the left and right edges with a few larger structural variations; calm the luminous portal where it sits behind the boss (upper centre) by lowering its contrast; stay dim"
     }
   ],
   "codeDrawn": {

@@ -1,7 +1,8 @@
 """Stage 2 background, Furnace Belt: an asteroid mining belt seen from above.
 
 Dark space with a faint warm haze, rusty cratered asteroids and mining gantries on both edges,
-dim ember-lit furnace vats and windows, and an open dark centre for play.
+dim ember-lit furnace vats and windows, and an open dark centre for play with a few faint distant
+girder and rock silhouettes as depth cues.
 Everything is drawn as palette indices on a 640x400 grid with one light (upper-left);
 ordered (Bayer 4x4) dither is used only at haze band edges, in the vat melt and at the edge of the melt's light spill.
 Run from art/rev01:  python -I source/furnaceBackground.py"""
@@ -472,6 +473,50 @@ def crane(base, elbow, tip, pal):
     rect(tx - 3, ty, tx + 4, ty + 1, S[3])
     put(tx - 2, ty + 6, S[2]); put(tx + 1, ty + 6, S[1])
 
+
+# ---------------------------------------------------------------- centre depth cues
+CUE_BOX = (140, 40, 500, 380)          # x0, y0, x1, y1: the only area the cues may touch
+CUE_KEEP_OUT = (276, 364)              # centre column (player lane): no cue crosses it
+
+def girder(x0, y0, length, angle, pal, rng, depth=7, pitch=9):
+    """Far truss girder seen as a silhouette: two rails with zigzag lacing, one end snapped off."""
+    body, edge = pal
+    ca, sa = math.cos(angle), math.sin(angle)
+    nx, ny = -sa, ca                                          # rail normal (pointing "down" the truss)
+    def P_(u, v): return (x0 + u * ca + v * nx, y0 + u * sa + v * ny)
+    m = Image.new("L", (W, H), 0); d = ImageDraw.Draw(m)
+    cut = length - rng.randint(8, 18)                         # bottom rail breaks short of the top one
+    d.line([P_(0, 0), P_(length, 0)], fill=2, width=1)        # lit top edge
+    d.line([P_(0, 1), P_(length, 1)], fill=1, width=1)
+    for v in (depth - 1, depth):
+        d.line([P_(0, v), P_(cut, v)], fill=1, width=1)
+    u, up = 0.0, True
+    while u + pitch <= cut:
+        a, b = (P_(u, 1), P_(u + pitch, depth - 1)) if up else (P_(u, depth - 1), P_(u + pitch, 1))
+        d.line([a, b], fill=1, width=1)
+        u += pitch; up = not up
+    d.line([P_(cut + 2, 1), P_(cut - 3, depth)], fill=1, width=1)   # snapped stub
+    a = np.array(m)
+    canvas[a == 1] = body
+    canvas[a == 2] = edge
+
+def draw_depth_cues():
+    """Sparse, dim distant silhouettes in the dark centre, one or two values above the space colour:
+    two snapped girders and three drifting rocks, each kept clear of the player lane and painted only over sky."""
+    before = canvas.copy()
+    crng = random.Random(SEED + 101)                          # own stream: the rest of the scene is untouched
+    pal = (P("haze", 0), P("far", 0))
+    girder(166, 80, 80, math.radians(-17), pal, crng, depth=10, pitch=12)
+    girder(386, 296, 74, math.radians(28), pal, crng, depth=9, pitch=11)
+    for cx, cy, r, sq in ((436, 150, 19, 0.7), (212, 238, 14, 0.78), (470, 232, 10, 0.85)):
+        rock(cx, cy, r, list(pal), crng, craters=0, squash=sq, thresholds=[0.62], lump=0.35)
+    x0, y0, x1, y1 = CUE_BOX
+    region = np.zeros((H, W), bool); region[y0:y1, x0:x1] = True
+    region[:, CUE_KEEP_OUT[0]:CUE_KEEP_OUT[1]] = False
+    sky = np.isin(before, list(SKY))
+    keep = region & sky
+    canvas[~keep] = before[~keep]
+
 # ---------------------------------------------------------------- scene
 def build():
     rng = random.Random(SEED)
@@ -609,6 +654,7 @@ def build():
     rock(508, 20, 5, cool[:3], rng)
 
     for v in VATS: glow_spill(*v)
+    draw_depth_cues()
     lut = np.array([pixlib.rgb(c) for c in PALETTE], dtype=np.uint8)
     return Image.fromarray(lut[canvas], "RGB")
 

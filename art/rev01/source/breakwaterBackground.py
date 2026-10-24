@@ -409,6 +409,22 @@ rimLine = inside & (edge < 1.0)
 rimIn = inside & (edge >= 1.0) & (edge < 1.6 + 2.6 * np.clip(t - 0.5, 0, 1) * 2)   # wider on the lit side
 body = np.where(rimLine, np.select([t > 0.62, t > 0.34], [P("rim", 1), P("rim", 0)], P("planet", 4)), body)
 body = np.where(rimIn & (t > 0.48), P("rim", 0), body)
+# boss entrance: lower the cloud and rim contrast behind the boss only (canvas x 160-480, y 20-170).
+# Weight w is 1 in the core and feathers to exactly 0 at the region edges; the step-downs fade in
+# through a 4x4 ordered dither so no hard seam shows. Each level drops a tone one step on its own ramp
+# (or into the planet ramp) using existing stage colours only.
+def ramp01(v, a, b): return np.clip((v - a) / (b - a), 0, 1)
+wB = (np.minimum(ramp01(px_, 160, 215), ramp01(480 - px_, 0, 55)) * ramp01(py_, 20, 55)
+      * (px_ < 480) * (py_ < 170))
+BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]])
+thr = (BAYER[py_.astype(int) % 4, px_.astype(int) % 4] + 0.5) / 16
+step1 = wB > 0.5 * thr                 # fades in over w 0..0.5
+step2 = wB > 0.5 + 0.5 * thr           # fades in over w 0.5..1
+b0 = body.copy()
+body = np.where(step1 & (b0 == P("cloud", 1)), P("cloud", 0), body)
+body = np.where(step2 & (b0 == P("cloud", 0)), P("planet", 3), body)
+body = np.where(step1 & (b0 == P("rim", 1)), P("rim", 0), body)
+body = np.where(step2 & np.isin(b0, [P("rim", 0), P("rim", 1)]), P("planet", 4), body)
 region = C[ys]
 region[inside] = body[inside]
 # faint halo just outside the limb on the lit half

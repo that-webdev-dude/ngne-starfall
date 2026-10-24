@@ -1,14 +1,28 @@
 import sys; from pathlib import Path; sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools")); import pixlib
 
-# Starfall Engine (stage 3 boss): violet star-shaped alien engine. Long blades radiate from two
-# side emitter housings; bone spires and ribbed steel pods flank a tall hull with the core.
-# Left half incl. centre column 71, mirrored. Light from the top (screen north).
+# Starfall Engine (stage 3 boss): violet star-shaped alien engine. 143x111, pivot (71,48).
+# Long blades radiate from two side emitter housings; bone spires and ribbed steel pods flank a
+# tall hull with the core. Light from the top (screen north).
 # Weak points (glow ramp): core (71,48), emitters (30,47)/(112,47), lower emitter (71,78).
-# Blades are two hard facets split on a spine: the facet that faces up is lit with a 1 px
-# engine[2] rim on its leading edge, the other facet is engine[0].
-# Core: steel[3]/bone[1] four-point star in a glow[2] -> glow[1] corona, gripped by bone talons
-# (lit pair on top, thin dark pair below). Emitters: magenta glow lenses in a bone ring broken by
-# three clamps (wide lit one on top, dark gaps lower left/right); the ring thins at the bottom.
+#
+# HALF is the approved rev01 art (left half incl. centre column 71, mirrored to APPROVED), kept
+# verbatim. Everything else is a patch over it, so the frames stay in sync:
+#   finish()  rev01 finish pass -> FULL (phase-1 with the emitters, what starfallEmitter is cut
+#             from): stepped blade armour (upper plane engine[1] with a 1 px lit top edge, 1 px
+#             outline[1] ledges, lower planes engine[0]), steel[2] edge trim on the blade edges that
+#             sit against the Citadel portal, contact shadows, recessed couplers/ribs by the core.
+#   well()    hull only: the two side emitters (lens, bone ring, clamps) are the separate
+#             starfallEmitter sprite (source/starfallEmitter.py runs this file); the hull keeps the
+#             housing rim around an empty well -> P1.
+#   frames    phase-1, phase-2, phase-3, surge-1, surge-2, surge-3, defeat: patches over P1
+#             (phase3 builds on phase2, surge-N on phase-N, defeat on phase3), cell lists in
+#             full-canvas coordinates, not mirrored.
+#
+# Blades: two hard facets split on a spine; the facet that faces up is engine[1], the other
+# engine[0]. Core: steel[3]/bone[1] four-point star in a glow[2] -> glow[1] corona, gripped by bone
+# talons. Emitters: magenta glow lenses in a bone ring broken by three clamps (wide lit one on top,
+# dark gaps lower left/right). The silhouette touches the canvas only at the centre spire tip
+# (row 0) and the tail tip (row 110), as approved.
 LEGEND = {
     ".": None,
     "o": ("outline", 0), "q": ("outline", 1),
@@ -130,5 +144,238 @@ HALF = [
     "......................................................................o1",  # 109
     ".......................................................................o",  # 110 tail tip
 ]
-rows = [r + r[-2::-1] for r in HALF]
-pixlib.save_sprite("starfallEngine", [pixlib.grid_image(rows, LEGEND)])
+
+W, H, CX = 143, 111, 71
+APPROVED = [r + r[-2::-1] for r in HALF]     # the approved rev01 art, emitters included
+
+# ---------------------------------------------------------------- helpers (full-canvas coordinates)
+N4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
+
+def mirrored(cells):
+    return set(cells) | {(W - 1 - x, y) for x, y in cells}
+
+def left(cells):
+    return {(x, y) for x, y in cells if x <= CX}
+
+def flood(rows, seed, chars):
+    """4-connected region of `chars` around `seed`."""
+    seen, todo = set(), [seed]
+    while todo:
+        x, y = todo.pop()
+        if (x, y) in seen or not (0 <= x < W and 0 <= y < H) or rows[y][x] not in chars: continue
+        seen.add((x, y))
+        todo += [(x + dx, y + dy) for dx, dy in N4]
+    return seen
+
+def apply(rows, cells, mirror=False):
+    """Copy of rows with cells [(x, y, c)] written on top (optionally mirrored about column 71)."""
+    g = [list(r) for r in rows]
+    for x, y, c in cells:
+        g[y][x] = c
+        if mirror: g[y][W - 1 - x] = c
+    return ["".join(r) for r in g]
+
+def remap(rows, cells, mapping):
+    """Copy of rows with the characters of `cells` mapped."""
+    g = [list(r) for r in rows]
+    for x, y in cells: g[y][x] = mapping.get(g[y][x], g[y][x])
+    return ["".join(r) for r in g]
+
+def glyph(x0, y0, art):
+    """Cells of a small hand-drawn mark ("." keeps the pixel)."""
+    return [(x0 + i, y0 + j, c) for j, r in enumerate(art) for i, c in enumerate(r) if c != "."]
+
+STEP = {"r": (1, 0), "l": (-1, 0), "d": (0, 1), "u": (0, -1), "R": (1, 1), "L": (-1, 1), "U": (1, -1), "Y": (-1, -1)}
+
+def crack(x, y, moves, c="o"):
+    """1 px crack from (x, y): r/l/d/u straight, R/L down-right/down-left, U/Y up-right/up-left."""
+    cells = [(x, y, c)]
+    for m in moves:
+        dx, dy = STEP[m]; x += dx; y += dy; cells.append((x, y, c))
+    return cells
+
+# ---------------------------------------------------------------- regions of the approved art (left half)
+UB = flood(APPROVED, (25, 28), "1235")       # upper blade
+LB = flood(APPROVED, (20, 65), "1235")       # lower blade
+CB = flood(APPROVED, (60, 8), "123")         # crown blade
+# emitter: lens, bone ring and clamps, everything inside the housing (the housing rim stays hull)
+EMITTER_X, EMITTER_Y = 30, 47                # leftEmitter socket (-41, -1)
+RING_HW = {38: 5, 39: 6, 40: 7, 41: 8, 45: 10, 46: 10, 47: 10, 48: 10, 49: 10, 53: 7, 54: 6, 55: 4, 56: 2}   # bone ring outer half-widths (9 elsewhere)
+EMITTER = {(EMITTER_X + dx, y) for y in range(38, 57) for dx in range(-RING_HW.get(y, 9), RING_HW.get(y, 9) + 1)}
+EMITTER |= {(x, y) for x in range(28, 33) for y in range(35, 38)}   # top clamp, below its cap row
+# core: corona (glow) and star inside the bone ring
+CORE_BOX = {(x, y) for x in range(61, 82) for y in range(39, 58)}
+CORONA = {(x, y) for x, y in CORE_BOX if APPROVED[y][x] in "567"}
+STAR = {(x, y) for x, y in CORE_BOX if APPROVED[y][x] == "d"}
+
+# ---------------------------------------------------------------- finish pass (phase-1)
+# Blades become stepped armour: an upper plane (engine[1], 1 px lit top edge) steps down at a 1 px
+# outline[1] ledge onto lower planes that tilt away from the light (engine[0]). Ledges run square
+# to the blade across both facets.
+def finish(rows):
+    cells = []
+    for x, y in UB:                              # upper blade: tip plane / ledge x+y=53 / root plane
+        c, s = rows[y][x], x + y
+        if s == 53: cells.append((x, y, "q"))
+        elif s > 53 and c in "23": cells.append((x, y, "1"))
+        elif s < 53 and c == "3": cells.append((x, y, "c"))      # steel edge trim (portal separation)
+    for x, y in LB:                              # lower blade: root / ledge / mid / ledge / tip
+        c, d = rows[y][x], x - y
+        if d in (-49, -62): cells.append((x, y, "q"))
+        elif -62 < d < -49 and c == "3": cells.append((x, y, "2"))
+        elif d < -62 and c in "23": cells.append((x, y, "1"))
+        elif c == "2" and (rows[y - 1][x] == "q" or rows[y][x + 1] == "q") and (x, y - 1) not in LB:
+            cells.append((x, y, "1"))           # contact shadow under the emitter housing
+    cells.append((21, 69, "1"))                  # the glow seam starts under ledge 1 (no q/5 checker)
+    for x, y in CB:                              # crown blade: steel edge trim on its lit edge
+        if rows[y][x] == "3" and y <= 17: cells.append((x, y, "c"))
+    # contact shadow on the crown plate along the crown blade's lower edge
+    seam = {(x, y) for x in range(58, 66) for y in range(17, 26) if rows[y][x] == "q" and any((x + dx, y + dy) in CB for dx, dy in N4)}
+    for x, y in seam:
+        for dx, dy in ((1, 0), (0, 1)):
+            if rows[y + dy][x + dx] == "3" and (x + dx, y + dy) not in CB: cells.append((x + dx, y + dy, "2"))
+    # recessed machinery: the steel couplers and ribs flanking the core sit one step darker
+    mach = {(x, y) for x in range(43, 57) for y in range(44, 52)} | {(x, y) for x in range(45, 53) for y in range(23, 71)}
+    rows = apply(rows, cells, mirror=True)
+    return remap(rows, mirrored(mach), {"d": "c", "c": "b", "b": "a"})
+
+FULL = finish(APPROVED)                      # phase-1 with the emitters: what starfallEmitter is cut from
+
+# ---------------------------------------------------------------- emitter well (hull only)
+# The housing rim stays; inside it a recess: outline rim, shadowed north wall, lit south wall,
+# engine[0] floor and the steel[0] bearing ring the lens sits on.
+def well(rows):
+    m = EMITTER
+    border = {(x, y) for x, y in m if any((x + dx, y + dy) not in m for dx, dy in N4)}
+    bearing = {(x, y) for x, y in m if 6 <= ((x - EMITTER_X) ** 2 + (y - EMITTER_Y) ** 2) ** 0.5 < 7}
+    cells = []
+    for x, y in m:
+        near = any((x + dx, y + dy) in border for dx, dy in N4)
+        if (x, y) in border: c = "o"
+        elif near: c = "q" if y < EMITTER_Y else "2" if y > EMITTER_Y + 2 else "1"
+        elif (x, y) in bearing: c = "a"
+        else: c = "1"
+        cells.append((x, y, c))
+    return apply(rows, cells, mirror=True)
+
+P1 = well(FULL)
+
+# ---------------------------------------------------------------- damage states (2/3, 1/3 HP)
+# Each phase adds damage that reads at 1x; nothing heals. Torn plates: a jagged outline[0] edge
+# around an outline[1] void with lit steel ribs inside (steel[2] with a steel[3] glint over
+# steel[1], one void row between ribs). Flares: 3x3 glow[2] bursts on seams. Cracks (outline[0],
+# 1:1 / 2:1 steps) are detail on top. Not mirrored, so the symmetry breaks.
+def rows_mask(spans, mirror=False):
+    """{y: (x0, x1)} -> cells (left-half spans, optionally moved to the right half)."""
+    m = {(x, y) for y, (x0, x1) in spans.items() for x in range(x0, x1 + 1)}
+    return {(W - 1 - x, y) for x, y in m} if mirror else m
+
+def tear(mask):
+    """Cells of a torn-open plate over `mask`: outline[0] torn edge, outline[1] void, a lattice of
+    lit steel inside (steel[2] ribs with a steel[3] glint at the lit end, steel[1] spar between)."""
+    border = {(x, y) for x, y in mask if any((x + dx, y + dy) not in mask for dx, dy in N4)}
+    inner = mask - border
+    y0 = min(y for _, y in inner)
+    xs_all = sorted(x for x, _ in inner)
+    spar = xs_all[len(xs_all) // 2]
+    cells = [(x, y, "o") for x, y in border]
+    for x, y in inner:
+        xs = sorted(xx for xx, yy in inner if yy == y)
+        if (y - y0) % 2 == 0: c = "b" if x == spar else "q"      # void between ribs, spar crossing it
+        elif x == xs[-1] and len(xs) > 2: c = "q"                # rib ends short of the shadowed side
+        else: c = "d" if x == xs[0] else "c"                     # rib, glint at its lit end
+        cells.append((x, y, c))
+    return cells
+
+def flare(x, y):
+    """3x3 glow[2] burst centred on a seam pixel."""
+    return glyph(x - 1, y - 1, ["676", "777", "676"])
+
+TEAR_UB = tear(rows_mask({14: (15, 16), 15: (15, 17), 16: (15, 18), 17: (15, 19), 18: (15, 20), 19: (16, 21),
+                          20: (16, 22), 21: (17, 23), 22: (17, 24), 23: (18, 24), 24: (19, 24), 25: (21, 23)}))              # left upper blade tip plane
+TEAR_LB = tear(rows_mask({65: (14, 15), 66: (13, 16), 67: (13, 17), 68: (12, 18), 69: (12, 19), 70: (11, 20),
+                          71: (11, 20), 72: (12, 21), 73: (13, 20), 74: (14, 18)}, mirror=True))                           # right lower blade mid plane
+TEAR_CL = tear(rows_mask({40: (55, 58), 41: (54, 59), 42: (54, 59), 43: (54, 59), 44: (54, 59), 45: (55, 59),
+                          46: (55, 58), 47: (56, 58)}))   # core housing, left side
+TEAR_CR = tear(rows_mask({49: (56, 58), 50: (55, 58), 51: (55, 59), 52: (54, 59), 53: (54, 59), 54: (54, 60),
+                          55: (54, 59), 56: (55, 59), 57: (56, 58)}, mirror=True))  # right side, lower
+# right lower blade tip plane torn away: void inside the outline, the steel spar along the spine
+# (steel[2] with a steel[3] top edge) and two steel[1] cross ribs left standing
+TIP_GONE = []
+for x, y in LB:
+    if x - y < -62:
+        c = "c" if x + y == 85 else "d" if x + y == 84 else "b" if x - y in (-66, -71) else "q"
+        TIP_GONE.append((W - 1 - x, y, c))
+    elif x - y == -62:
+        TIP_GONE.append((W - 1 - x, y, "o"))      # the plate's torn edge
+
+RIGHT_UB_TIP_LIT = {(W - 1 - x, y) for x, y in UB if x + y < 53 and P1[y][x] in "2c"}
+
+D2 = (TEAR_UB + TEAR_LB
+      + crack(12, 66, "RRdR")                     # left lower blade, mid plate
+      + crack(125, 58, "LdLd")                    # right lower blade, root plate
+      + crack(77, 35, "RRdR")                     # core housing, right
+      + flare(25, 28)                             # left upper blade ledge
+      + flare(79, 28))                            # right dome seam
+
+def phase2(rows):
+    rows = remap(rows, RIGHT_UB_TIP_LIT, {"2": "1", "c": "b"})   # one blade's lit facet goes dark
+    rows = remap(rows, CORONA, {"5": "6", "6": "7"})              # corona one value brighter
+    return apply(rows, D2)
+
+D3 = (TEAR_CL + TEAR_CR + TIP_GONE
+      + crack(23, 21, "LdLd")                     # left upper blade, tip plate (beside the tear)
+      + crack(66, 34, "LdL")                      # core housing, left
+      + crack(76, 64, "RdRr")                     # lower hull plate
+      + crack(61, 26, "dLdR")                     # left side panel
+      + flare(11, 73)                             # left lower blade ledge 2
+      + flare(89, 42))                            # right pod / hull seam
+
+def phase3(rows):
+    rows = phase2(rows)
+    rows = apply(rows, [(x, y, "9") for x, y in CORONA if APPROVED[y][x] == "7"])   # reactor at glow[2], bone[1] centre
+    return apply(rows, D3)
+
+# ---------------------------------------------------------------- surge-N (held for the 0.7 s cue)
+# core cue for the curtain and ring attacks on top of phase-N, so damage never disappears: the
+# corona one step up (the original core's glow[2] cells go bone[1] from phase 2 on) and a 5 px
+# bone[1] plus on the core socket; the star pixels between its arms go glow[2] so the plus reads
+PLUS = [(71, 48 + d) for d in range(-2, 3)] + [(71 + d, 48) for d in (-2, -1, 1, 2)]
+
+def surge(rows, n):
+    rows = remap(rows, CORONA, {"5": "6", "6": "7"})
+    if n >= 2: rows = apply(rows, [(x, y, "9") for x, y in CORONA if APPROVED[y][x] == "7"])
+    pocket = [(x, y, "7") for x in range(69, 74) for y in range(46, 51) if (x, y) in STAR and (x, y) not in PLUS]
+    return apply(rows, pocket + [(x, y, "9") for x, y in PLUS])
+
+# ---------------------------------------------------------------- defeat
+# phase-3 darkened one step (tears included); the spires and the lower emitter stay lit so it does
+# not go dead; core dark (glow[0] / outline, dead steel star); embers (glow ramp) in the seams
+DARKEN = {"3": "2", "2": "1", "d": "c", "c": "b", "b": "a", "9": "8"}
+SPIRES = {(x, y) for x in range(47, 54) for y in range(6, 23)} | {(x, y) for x in range(69, 74) for y in range(0, 23)}
+LOWER_EMITTER = {(x, y) for x in range(58, 85) for y in range(67, 85)}
+KEEP_LIT = mirrored(SPIRES) | LOWER_EMITTER
+DE = ([(10, 72, "6"), (11, 73, "7"), (12, 74, "6")]          # left lower blade ledge 2
+      + [(53, 41, "6"), (53, 42, "7")]                       # left pod / hull seam
+      + [(121, 56, "7"), (120, 57, "6")]                     # right housing / lower blade seam
+      + [(25, 35, "6"), (26, 35, "7")]                       # left housing top arc
+      + [(60, 59, "6"), (61, 60, "7"), (62, 61, "6")]        # lower hull seam
+      + [(125, 46, "6"), (125, 47, "7")]                     # right side spike / housing seam
+      + [(68, 45, "6"), (74, 51, "5")])                      # two embers left in the dead core
+
+def defeat(rows):
+    rows = phase3(rows)
+    rows = remap(rows, [(x, y) for y in range(H) for x in range(W) if (x, y) not in KEEP_LIT and (x, y) not in CORE_BOX], DARKEN)
+    rows = remap(rows, CORONA, {"9": "5", "7": "5", "6": "q", "5": "q"})
+    rows = remap(rows, STAR, {"d": "a"})
+    rows = remap(rows, [(x, y) for x, y in CORE_BOX if (x, y) not in CORONA and (x, y) not in STAR], {"9": "8"})
+    return apply(rows, DE)
+
+P2, P3 = phase2(P1), phase3(P1)
+FRAMES = [P1, P2, P3, surge(P1, 1), surge(P2, 2), surge(P3, 3), defeat(P1)]
+
+if __name__ == "__main__":
+    if "--dump" in sys.argv:
+        n = int(sys.argv[sys.argv.index("--dump") + 1])
+        print(chr(10).join(f"{i:3d} {r}" for i, r in enumerate(FRAMES[n])))
+    pixlib.save_sprite("starfallEngine", [pixlib.grid_image(rows, LEGEND) for rows in FRAMES])

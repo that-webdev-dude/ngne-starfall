@@ -2,7 +2,7 @@
 
 Spec for moving Starfall from a 480x270 view with runtime-shrunk paintings to a 640x360 view with sprites drawn at their final size. The machine-readable version is [spec.json](spec.json); this file explains it. Nothing in `src/` has changed yet.
 
-**Revision pass in progress.** The owner's review [FEEDBACK.md](FEEDBACK.md) is the brief for the current pass; its proposals (7 bank poses on 31×33, 40–65 ms pose transitions, a hold-to-charge plasma of about 0.9 s, a 12-frame / 620 ms nova, 17 plasma effect frames, 7 flash counterparts, the projectile sizes) are the working defaults in spec.json and are marked "proposal" there. Status per asset is in the table below.
+**Revision pass complete (gates 1–3 approved by the owner, 24 Oct 2026, stills only).** The owner's review [FEEDBACK.md](FEEDBACK.md) was the brief for the pass; its proposals (7 bank poses on 31×33, 40–65 ms pose transitions, a hold-to-charge plasma of about 0.9 s, a 12-frame / 620 ms nova, 17 plasma effect frames, 7 flash counterparts, the projectile sizes) are the working defaults in spec.json and are marked "proposal" there. Status per asset is in the table below.
 
 Sources: rules tagged *(book)* come from the pixel-art skill ("Pixel Art for Game Developers"). Untagged numbers are choices for this project.
 
@@ -12,26 +12,26 @@ Scope of every approval so far: **stills only**. No playback, collision or gamep
 
 | Asset | Revision | Approved by | Scope | Pending in this pass |
 |---|---|---|---|---|
-| player | Phase 2 build (7 poses) | pending owner (gate 2) | — | study N1 approved at gate 1 |
-| playerFlash | Phase 2 build | pending owner (gate 2) | — | |
-| exhaust | rev01 | rev01 README | stills | lateral flicker, Phase 3 |
-| primaryLance, hostileBead, hostileNeedle, hostileOrb | Phase 2 build | pending owner (gate 2) | — | study approved at gate 1; needle has 3 direction frames |
-| plasmaCharge, plasmaReady, plasmaMuzzle, plasmaShot, plasmaImpact | Phase 2 build | pending owner (gate 2) | — | |
-| nova, novaCalm | Phase 2 build (12 + 2 frames) | pending owner (gate 2) | — | study approved at gate 1; staging decision open |
-| interceptor | rev01 | rev01 README | stills | engine pulse + firing cue, Phase 3 |
-| dart | rev01 | rev01 README | stills | engine pulse + firing cue, Phase 3 |
-| gunship | Phase 2 build (4 frames, canvas 39×35) | pending owner (gate 2) | — | |
-| warden | rev01 | rev01 README | stills | one functional action, Phase 3 |
-| minelayer | rev01 | rev01 README | stills | one functional action, Phase 3 |
-| gatebreaker, gatebreakerTurret | Phase 2 build | pending owner (gate 2) | — | hull idle / core telegraph / 3 wrecks; turret idle / telegraph / firing / down |
-| kilnHead, kilnSegment | rev01 | rev01 README | stills | cutter/drill motion, coupling compression, Phase 3 |
-| starfallEngine | rev01 | rev01 README | stills | layered armour, emitter states, Phase 3 |
-| explosion, hitSpark, heavyBreakup | Phase 2 build | pending owner (gate 2) | — | explosion frames 3–4 pulled off row 30 |
-| breakwaterBackground | rev01 | rev01 README | stills | local contrast in the boss entrance area, Phase 3 |
-| furnaceBackground | rev01 | rev01 README | stills | sparse dim depth cues only (stays dim by owner decision), Phase 3 |
-| citadelBackground | rev01 | rev01 README | stills | break repeated terraces, calm the portal behind the boss, Phase 3 |
+| player | Phase 2 build (7 poses) | owner, gate 2, 24 Oct 2026 | stills | study N1 approved at gate 1 |
+| playerFlash | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | |
+| exhaust | Phase 3 build (5 frames) | owner, gate 3, 24 Oct 2026 | stills | short/medium/long unchanged |
+| primaryLance, hostileBead, hostileNeedle, hostileOrb | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; needle has 3 direction frames |
+| plasmaCharge, plasmaReady, plasmaMuzzle, plasmaShot, plasmaImpact | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | |
+| nova, novaCalm | Phase 2 build (12 + 2 frames) | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; staging decision open |
+| interceptor | Phase 3 build (idle / pulse / fire) | owner, gate 3, 24 Oct 2026 | stills | |
+| dart | Phase 3 build (idle / pulse / fire) | owner, gate 3, 24 Oct 2026 | stills | |
+| gunship | Phase 2 build (4 frames, canvas 39×35) | owner, gate 2, 24 Oct 2026 | stills | |
+| warden | Phase 3 build (idle / charge / fire) | owner, gate 3, 24 Oct 2026 | stills | |
+| minelayer | Phase 3 build (idle / open / release) | owner, gate 3, 24 Oct 2026 | stills | |
+| gatebreaker, gatebreakerTurret | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | hull idle / core telegraph / 3 wrecks; turret idle / telegraph / firing / down |
+| kilnHead, kilnSegment | Phase 3 build (3-frame cut loop; idle / compressed) | owner, gate 3, 24 Oct 2026 | stills | segment couplings became bellows; chain spacing is a code fix (spec note) |
+| starfallEngine, starfallEmitter | Phase 3 build (7 hull frames; emitter idle / charge / firing / down) | owner, gate 3, 24 Oct 2026 | stills | |
+| explosion, hitSpark, heavyBreakup | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | explosion frames 3–4 pulled off row 30 |
+| breakwaterBackground | Phase 3 tweak (boss entrance contrast) | owner, gate 3, 24 Oct 2026 | stills | |
+| furnaceBackground | Phase 3 tweak (5 dim depth cues) | owner, gate 3, 24 Oct 2026 | stills | stays dim by owner decision |
+| citadelBackground | Phase 3 tweak (edge variations, calmer portal) | owner, gate 3, 24 Oct 2026 | stills | |
 
-New approvals are recorded here only when the owner gives them, with the revision and the scope checked.
+Approvals are recorded here only when the owner gives them, with the revision and the scope checked. Nothing has been checked in playback, for collisions or in gameplay; integration into `src/` is out of scope of this pass.
 
 ## Summary
 
@@ -108,7 +108,7 @@ All canvases are odd×odd, so a symmetric ship has a 1 px centre column and the 
 |---|---|---|---|---|---|
 | player | 31×33 | 7 (bank-left-3 … neutral … bank-right-3) | 16 | 9% | 34×45, 17% |
 | playerFlash | 31×33 | 7 (one per pose) | 16 | 9% | — |
-| exhaust | 7×15, pivot (3,0) | 3 | 5 | — | 7×21 |
+| exhaust | 7×15, pivot (3,0) | 5 (short, medium, long, medium-left, medium-right) | 5 | — | 7×21 |
 | primaryLance | 3×11 | 1 | 4 | — | code 3×11 |
 | hostileBead | 9×9 | 1 | 4 | — | code 9 ring |
 | hostileNeedle | 13×13 | 3 (0°, 22.5°, 45°) | 4 | — | — |
@@ -122,15 +122,16 @@ All canvases are odd×odd, so a symmetric ship has a 1 px centre column and the 
 | hitSpark | 11×11 | 3 | 5 | — | code burst |
 | heavyBreakup | 47×47 | 8 | 8 | — | — |
 | gatebreakerTurret | 27×45, pivot (13,14) | 4 (idle, telegraph, firing, down) | 20 | — | part of the hull + code 20×25 rect |
-| interceptor | 27×23 | 1 | 12 | 6% | 40×33, 12% |
-| dart (Sweeper) | 13×25 | 1 | 10 | 7% | 14×27, 10% |
+| interceptor | 27×23 | 3 (idle, pulse, fire) | 14 | 6% | 40×33, 12% |
+| dart (Sweeper) | 13×25 | 3 (idle, pulse, fire) | 12 | 7% | 14×27, 10% |
 | gunship | 39×35, pivot (19,15) | 4 (idle, fire, vent-a, vent-b) | 17 | 9% | 42×32, 12% |
-| warden | 33×31 | 1 | 14 | 9% | 36×35, 13% |
-| minelayer | 29×29 | 1 | 12 | 8% | 30×32, 12% |
+| warden | 33×31 | 3 (idle, charge, fire) | 16 | 9% | 36×35, 13% |
+| minelayer | 29×29 | 3 (idle, open, release) | 14 | 8% | 30×32, 12% |
 | Gatebreaker | 159×79 | 5 (idle, telegraph, wreck ×3) | 24 | 24.8% width / 21.9% height | 110×56, 22.9% width |
-| Kiln head | 65×47 | 1 | 20 | — | 66×48 |
-| Kiln segment | 41×23 | 1 | 14 | — | 40×22 |
-| Starfall Engine | 143×111, pivot (71,48) | 1 | 24 | 22.3% width / 30.8% height | 104×81, 21.7% width / 30% height |
+| Kiln head | 65×47 | 3 (cut loop) | 20 | — | 66×48 |
+| Kiln segment | 41×23 | 2 (idle, compressed) | 14 | — | 40×22 |
+| Starfall Engine | 143×111, pivot (71,48) | 7 (phase ×3, surge ×3, defeat) | 24 | 22.3% width / 30.8% height | 104×81, 21.7% width / 30% height |
+| starfallEmitter | 27×27 | 4 (idle, charge, firing, down) | 16 | — | part of the hull + code 20×20 rect |
 | explosion | 31×31 | 6 | 6 | — | 56×56 |
 | backgrounds ×3 | 640×400, pivot (320,200) | 1 each | 32 | full screen | 480×270 |
 
@@ -153,7 +154,8 @@ Banking is **whole-body**: each of the seven poses is a solid hull rolling, re-l
 | Sprite | Type | Order | Durations (ms) |
 |---|---|---|---|
 | player | input pose | bank-left-3 … neutral … bank-right-3 | 40–65 per level (proposal) |
-| exhaust | loop | short, medium, long, medium | 80, 80, 80, 80 |
+| exhaust | loop | short, medium, long, medium-left, medium, long, medium-right, medium | 80 ×8 |
+| kilnHead | loop | cut-0, cut-1, cut-2 | 80 ×3 |
 | explosion | once | 0–5 | 45, 50, 65, 65, 65, 75 (365 total) |
 | plasmaReady | loop | a, b | 120, 120 |
 | plasmaMuzzle | once | 0–1 | 40, 50 |
@@ -195,7 +197,7 @@ The nova is baked frames with a fixed origin (the trigger position) and explicit
 All sockets (exhaust nozzles, muzzles, turrets, couplings, emitters, weak points) are measured from the finished art and stored in spec.json as offsets from the pivot with +y down. Kiln sockets are in the sprite's own canvas coordinates, before the engine's −90° rotation. The player's exhaust, primary-muzzle and plasma-muzzle sockets are recorded per pose; neutral and the extreme banks carry the study A measurements, the intermediate levels are interpolated, and all seven are re-measured in Phase 2. A muzzle socket is the first transparent pixel straight ahead of the muzzle centre; an exhaust socket is the nozzle-exit centre on the row below it.
 
 Integration notes from the art pass:
-- The Gatebreaker's turrets are separate sprites (`gatebreakerTurret`, one instance per socket, the right one drawn flipped in x) with their own idle / telegraph / firing / down frames, because the game fires and destroys them separately; the hull keeps the wells. The Starfall Engine's destroyed-emitter overlay (20×20) is still undersized; Phase 3.
+- The Gatebreaker's turrets are separate sprites (`gatebreakerTurret`, one instance per socket, the right one drawn flipped in x) with their own idle / telegraph / firing / down frames, because the game fires and destroys them separately; the hull keeps the wells. The Starfall Engine's emitters are likewise separate sprites (`starfallEmitter`, right instance x-flipped) with idle / charge / firing / down frames.
 - The player's nozzle bottoms are open so the flame joins without a gap, so always draw the exhaust under the ship. Plasma effects attach at the plasma muzzle and draw above the hull.
 - Lighting on the Kiln parts was drawn for their on-screen orientation: canvas +x ends up as screen top.
 

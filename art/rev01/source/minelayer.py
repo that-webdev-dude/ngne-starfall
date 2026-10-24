@@ -5,12 +5,20 @@ import sys; from pathlib import Path; sys.path.insert(0, str(Path(__file__).reso
 # pistons and exhaust stacks, a recessed bay holding three lit mines, a steel mine-bay door
 # and two steel claws at the bottom (toward the player). Light from the top: the north rim
 # is lit, the south rim falls into shadow; inside the recess the walls invert.
+# Frames (spec order): idle, open, release. Only the mine-bay door changes (x12-16, rows
+# 21-23, between the frame outlines at x11/x17; the leaves meet at the x14 seam). The
+# leaves slide outward under the frame; the shadowed upper lip of the opening is outline[1].
+#   open    = each leaf slides 1 px: 3 px gap (x13-15), lip on row 21, fire[2] glow below.
+#   release = leaves fully retracted (5 px gap): the top half of a mine (diamond, centre
+#             (14, 23)) in brass[1] rim / brass[2] core / fire[3] centre against the dark bay interior (outline[1]).
+# The three mines in the recess are lamps and never change.
 LEGEND = {
     ".": None,
     "O": ("outline", 0), "o": ("outline", 1),
     "g": ("olive", 0), "h": ("olive", 1), "i": ("olive", 2),
     "a": ("brass", 0), "b": ("brass", 1), "c": ("brass", 2),
     "1": ("steel", 0), "2": ("steel", 1), "3": ("steel", 2), "4": ("steel", 3),
+    "f": ("fire", 2), "F": ("fire", 3),  # bay glow; F the released mine's centre
 }
 # Left half incl. centre column 14; mirrored.
 HALF = [
@@ -46,5 +54,26 @@ HALF = [
     "......OO.......",  # 28
 ]
 assert len(HALF) == 29 and all(len(r) == 15 for r in HALF), [len(r) for r in HALF]
-rows = [r + r[-2::-1] for r in HALF]
-pixlib.save_sprite("minelayer", [pixlib.grid_image(rows, LEGEND)])
+
+def door(half, rows):
+    """Replace the left half of the door (x12-14, rows 21-23) with `rows` (3 chars each)."""
+    out = [list(r) for r in half]
+    for y, r in enumerate(rows): out[21 + y][12:15] = r
+    return ["".join(r) for r in out]
+
+OPEN = door(HALF, [
+    "3oo",  # 21 leaf edge x12 | shadowed lip
+    "2ff",  # 22 glow
+    "1ff",  # 23
+])
+RELEASE = door(HALF, [
+    "oob",  # 21 lip | mine tip
+    "obc",  # 22 bay interior | rim, core
+    "bcF",  # 23 rim, core, centre (14, 23); the lip outline below hides the lower half
+])
+
+def mirror(half): return [r + r[-2::-1] for r in half]
+
+FRAMES = [mirror(h) for h in (HALF, OPEN, RELEASE)]
+rows = FRAMES[0]
+pixlib.save_sprite("minelayer", [pixlib.grid_image(f, LEGEND) for f in FRAMES])
