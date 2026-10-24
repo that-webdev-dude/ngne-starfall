@@ -1,6 +1,6 @@
 {
   "version": "rev01",
-  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer. Gate 2 (owner, 24 Oct 2026): Phase 2 assets approved as stills; nova staging kept. Gate 3 (owner, 24 Oct 2026): Phase 3 assets and background tweaks approved as stills; the pass is complete. Completion pass (gate 4, approved by the owner 24 Oct 2026 as stills + GIFs): Kiln death states, player death, reduced-motion cue sprites, mine and pickup sprites, beam warning marker, motion review fixes. Entries added in this pass carry 'pass': 'gate 4'. Open owner decisions: nova fade-2/3 (never visible on screen), odd beam lane widths, mine radius 6 vs 7.",
+  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer. Gate 2 (owner, 24 Oct 2026): Phase 2 assets approved as stills; nova staging kept. Gate 3 (owner, 24 Oct 2026): Phase 3 assets and background tweaks approved as stills; the pass is complete. Completion pass (gate 4, approved by the owner 24 Oct 2026 as stills + GIFs): Kiln death states, player death, reduced-motion cue sprites, mine and pickup sprites, beam warning marker, motion review fixes. Entries added in this pass carry 'pass': 'gate 4'. Open owner decisions: nova fade-2/3 (never visible on screen), odd beam lane widths, mine radius 6 vs 7. Presentation pass (gate 5, approved by the owner 24 Oct 2026 as stills, including the ringed charge-ready static, low hull at hull <= 1 and the 2.6 s stage card): HUD, 5x7 font, charge/boss bars, pause/options, stage cards, result plates; entries carry 'pass': 'gate 5' and the top-level 'presentation' section holds layout, layer order and text colours.",
   "conventions": {
     "units": "pixels in the 640x360 logical view; 1 texel = 1 logical pixel, no runtime scaling",
     "origin": "top-left of each canvas, +x right, +y down",
@@ -44,7 +44,7 @@
     }
   },
   "palette": {
-    "note": "One shared indexed palette. Ramps are contiguous and ordered dark -> light. Index 0 is transparent. Indices 1-55 are the original hull and environment ramps and are never recoloured; 56-76 are effect ramps added for the projectile, plasma and nova vocabulary.",
+    "note": "One shared indexed palette. Ramps are contiguous and ordered dark -> light. Index 0 is transparent. Indices 1-55 are the original hull and environment ramps and are never recoloured; 56-76 are effect ramps added for the projectile, plasma and nova vocabulary. 77-83 (panel, alert) are the presentation ramps added at gate 5 because ui's 3 text entries cannot also carry plates, tracks and danger.",
     "ramps": [
       {
         "name": "outline",
@@ -258,9 +258,30 @@
           "#fffce8"
         ],
         "usedBy": "nova ring: gold body, white-hot front"
+      },
+      {
+        "name": "panel",
+        "first": 77,
+        "colors": [
+          "#08121f",
+          "#122030",
+          "#1e3247",
+          "#3a5873"
+        ],
+        "use": "HUD bands, plates, panels, bar tracks, disabled text (gate 5); low saturation so the HUD stays below the gameplay layer"
+      },
+      {
+        "name": "alert",
+        "first": 81,
+        "colors": [
+          "#4a1d28",
+          "#a8454e",
+          "#ee8f86"
+        ],
+        "use": "boss health, danger text (game over, phase banners), low-hull label (gate 5); muted against the bead/needle hostile ramps"
       }
     ],
-    "size": 77,
+    "size": 84,
     "backgrounds": "each stage background has its own palette of at most 32 colours; it must not use any colour of the fire, glow, pickup or cockpit ramps, nor of the effect ramps (plasma, bead, needle, orb, nova), and its lightest value (Rec. 709 luma) stays below the steel ramp's lightest (216.0)"
   },
   "sprites": [
@@ -2170,6 +2191,739 @@
       },
       "geometry": "each triangle: flat orb[0] top rim row, sides stepping 1:1 below it to a 1 px tip (11 wide x 7 tall incl. the rim; one vertical rim pixel at each top corner); 1 px gap between the triangles; content rows 1-15",
       "integration": "replaces the '!' text and 9x3 bar in combat-render.ts while !firing. The lane colours there are still the pre-rev01 ones (#fc798f/#ffb2bb warning, #dc80ff/#ffedff firing) and the firing glow is drawn width + 4: both must follow codeDrawn.beamLane. Lane widths at 640: Starfall 12 x 4/3 = 16, Warden 10 x 4/3 = 13.3 (not whole); an even lane cannot centre on the odd marker (owner decision: odd widths)"
+    },
+    {
+      "pass": "gate 5",
+      "id": "font",
+      "canvas": [
+        5,
+        7
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 1,
+      "ramps": [
+        "ui"
+      ],
+      "frames": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "colon",
+        "slash",
+        "minus",
+        "period",
+        "plus",
+        "exclaim",
+        "comma",
+        "apostrophe",
+        "less",
+        "greater"
+      ],
+      "characters": {
+        "A": "A",
+        "B": "B",
+        "C": "C",
+        "D": "D",
+        "E": "E",
+        "F": "F",
+        "G": "G",
+        "H": "H",
+        "I": "I",
+        "J": "J",
+        "K": "K",
+        "L": "L",
+        "M": "M",
+        "N": "N",
+        "O": "O",
+        "P": "P",
+        "Q": "Q",
+        "R": "R",
+        "S": "S",
+        "T": "T",
+        "U": "U",
+        "V": "V",
+        "W": "W",
+        "X": "X",
+        "Y": "Y",
+        "Z": "Z",
+        "0": "0",
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9",
+        "colon": ":",
+        "slash": "/",
+        "minus": "-",
+        "period": ".",
+        "plus": "+",
+        "exclaim": "!",
+        "comma": ",",
+        "apostrophe": "'",
+        "less": "<",
+        "greater": ">"
+      },
+      "role": "5x7 monospaced HUD/menu font, upper case: A-Z, 0-9 and : / - . + ! , ' < >. 1 px strokes, no anti-aliasing, all glyphs in ui[2] (the consumer recolours by mask, presentation.font)",
+      "metrics": "cell 5x7, advance 6, line height 9; cap height 7 (rows 0-6); baseline = row 6 (no descenders: comma and apostrophe sit inside the cell); punctuation centred on the cell's middle column where symmetric",
+      "edges": "the canvas is the glyph cell: strokes may touch every edge (edge rule exception)",
+      "integration": "replaces the 3x5 GLYPHS table in src/ui/bitmap-text.ts; text width is 6n-1; frames are named by character (punctuation by name, see 'characters')",
+      "design": "as built (gate 5): stems on columns 0 and 4 (single stems column 2); middle bars on row 3; round corners drop the corner pixel (one 1 px step) for C D G J O Q S U, the bowls of B P R and 0 2 3 5 6 8 9; 0 is slashed, 1 has a flag and foot, 5 has a flat square top, 8 is round both sides, 2 has a rounded top vs flat Z",
+      "readability": "every text colour reads at 1x on panel[0]/[1]; disabled (panel[3]) and label (ui[0]) weaken on bright background areas, so text other than score pops always sits on a plate or band"
+    },
+    {
+      "pass": "gate 5",
+      "id": "hudPip",
+      "canvas": [
+        7,
+        7
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "outline",
+        "panel",
+        "hero",
+        "needle"
+      ],
+      "frames": [
+        "full",
+        "empty",
+        "low-a",
+        "low-b"
+      ],
+      "role": "one hull point: full in the hero ramp (player identity), empty as a panel socket with the same outer shape, low-a/low-b the full pip with a needle[1] emissive (codeDrawn.lowHullCue meaning) at hull <= 1",
+      "animation": {
+        "type": "loop",
+        "order": [
+          "low-a",
+          "low-b"
+        ],
+        "durationsMs": [
+          250,
+          250
+        ],
+        "totalMs": 500,
+        "note": "~2 Hz like lowHullCue; reduced motion uses hudCalm pip-low"
+      },
+      "layout": "presentation.layout.topRowA.hullPips",
+      "edges": "the canvas is the pip: may touch edges",
+      "design": "as built (gate 5): outline[0] rim; full = hero[3] top row, hero[2] body, hero[1] bottom row; empty = dark recess with a panel[2] lip; low-a = full + 3x3 needle[1] core; low-b = full + 1 px needle[1] centre"
+    },
+    {
+      "pass": "gate 5",
+      "id": "novaBar",
+      "canvas": [
+        85,
+        5
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 7,
+      "ramps": [
+        "outline",
+        "panel",
+        "nova"
+      ],
+      "frames": [
+        "track",
+        "fill",
+        "ready-a",
+        "ready-b"
+      ],
+      "role": "nova recharge timer: track = empty socket; fill = the full bar in nova[0]/nova[1] (the consumer draws columns [0, ceil(85 * nova)) of it over the track); ready-a/b = full bar with a nova[3] cue, same silhouette",
+      "animation": {
+        "type": "loop",
+        "order": [
+          "ready-a",
+          "ready-b"
+        ],
+        "durationsMs": [
+          300,
+          300
+        ],
+        "totalMs": 600,
+        "note": "only while nova is ready; reduced motion uses hudCalm nova-ready"
+      },
+      "layout": "presentation.layout.topRowA.novaBar (x 546..630, rows 6..10)",
+      "edges": "the canvas is the bar",
+      "design": "as built (gate 5): every frame shares one mask (slot with cut corners); fill rows 1-3 nova[1]/nova[1]/nova[0], same in every column and no end cap, so any clip width ends cleanly; ready-a nova[3]/[2]/[1], ready-b nova[2]/[1]/[1]"
+    },
+    {
+      "pass": "gate 5",
+      "id": "chargeBar",
+      "canvas": [
+        61,
+        7
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 8,
+      "ramps": [
+        "outline",
+        "panel",
+        "plasma"
+      ],
+      "frames": [
+        "empty",
+        "level-1",
+        "level-2",
+        "level-3",
+        "ready-a",
+        "ready-b"
+      ],
+      "role": "plasma charge: three cells lit one per plasmaCharge level (charge-1/2/3 at ~0.3/0.6/0.9 s); ready-a/b = all cells plus the plasmaReady meaning (plasma[3]/[4] accent); same cue meanings and colour order as the on-ship plasmaCharge / plasmaReady, never resembling damage",
+      "states": {
+        "empty": "not charging",
+        "level-1": "charge > 0",
+        "level-2": ">= 1/3",
+        "level-3": ">= 2/3",
+        "ready-a/ready-b": "full (plasmaReady is shown at the muzzle)"
+      },
+      "animation": {
+        "type": "loop",
+        "order": [
+          "ready-a",
+          "ready-b"
+        ],
+        "durationsMs": [
+          120,
+          120
+        ],
+        "totalMs": 240,
+        "note": "in step with plasmaReady; reduced motion uses hudCalm charge-ready"
+      },
+      "layout": "presentation.layout.bottom.chargeBar (x 200..260, rows 344..350)",
+      "edges": "the canvas is the bar",
+      "design": "as built (gate 5): cells at columns 0-18, 21-39, 42-60; lit cell plasma[2]/[1]/[0] top to bottom; ready-a plasma[3]/[2]/[1] + a 13 px plasma[4] core on row 3 inset 2 px; ready-b without the core"
+    },
+    {
+      "pass": "gate 5",
+      "id": "bossBar",
+      "canvas": [
+        241,
+        5
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "outline",
+        "panel",
+        "alert"
+      ],
+      "frames": [
+        "track",
+        "fill"
+      ],
+      "role": "boss health: track = empty socket; fill = full bar in alert[1]/alert[2] (the consumer draws columns [0, ceil(241 * fraction)) over the track)",
+      "layout": "presentation.layout.topRowB.bossBar (x 200..440, rows 23..27)",
+      "edges": "the canvas is the bar",
+      "design": "as built (gate 5): fill alert[2]/[1]/[0]; track floor panel[1] (panel[0] vanished on the band)"
+    },
+    {
+      "pass": "gate 5",
+      "id": "bossBarMark",
+      "canvas": [
+        3,
+        9
+      ],
+      "pivot": [
+        1,
+        4
+      ],
+      "maxColors": 4,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui",
+        "alert"
+      ],
+      "frames": [
+        "ahead",
+        "passed"
+      ],
+      "role": "phase threshold tick crossing the boss bar (1 px above and below it): ahead = phase still to come, passed = boss health is below the threshold",
+      "layout": "presentation.layout.topRowB.bossMarks",
+      "edges": "the canvas is the mark",
+      "design": "as built (gate 5): 3x9 I-beam with panel[0] columns that notch the fill; ahead ui[0], passed panel[3]"
+    },
+    {
+      "pass": "gate 5",
+      "id": "hudPlate",
+      "canvases": [
+        [
+          5,
+          13
+        ],
+        [
+          1,
+          13
+        ],
+        [
+          5,
+          13
+        ]
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 4,
+      "ramps": [
+        "outline",
+        "panel"
+      ],
+      "frames": [
+        "left",
+        "fill",
+        "right"
+      ],
+      "role": "3-slice backing plate behind HUD text groups inside the bands (score, chain, hull, nova, stage, charge, timer); quieter than any text on it",
+      "layout": "presentation.layout (\u2026Plate entries, plateRows)",
+      "edges": "slices meet edge to edge"
+    },
+    {
+      "pass": "gate 5",
+      "id": "bannerPlate",
+      "canvases": [
+        [
+          9,
+          21
+        ],
+        [
+          1,
+          21
+        ],
+        [
+          9,
+          21
+        ],
+        [
+          9,
+          21
+        ],
+        [
+          1,
+          21
+        ],
+        [
+          9,
+          21
+        ]
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 7,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui",
+        "alert"
+      ],
+      "frames": [
+        "left",
+        "fill",
+        "right",
+        "left-alert",
+        "fill-alert",
+        "right-alert"
+      ],
+      "role": "3-slice centre banner plate (stage/sector messages, PHASE n banners); alert variant changes only accents, never the silhouette",
+      "layout": "presentation.layout.banner",
+      "edges": "slices meet edge to edge",
+      "design": "as built (gate 5): 3 px chamfers, engraved rules rows 3-4 and 16-17, a 4x7 chevron per cap 4 px clear of the text; alert changes only rules (alert[0]) and chevrons (alert[1])"
+    },
+    {
+      "pass": "gate 5",
+      "id": "hudCalm",
+      "canvases": [
+        [
+          7,
+          7
+        ],
+        [
+          85,
+          5
+        ],
+        [
+          61,
+          7
+        ]
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 10,
+      "ramps": [
+        "outline",
+        "panel",
+        "hero",
+        "needle",
+        "nova",
+        "plasma"
+      ],
+      "frames": [
+        "pip-low",
+        "nova-ready",
+        "charge-ready"
+      ],
+      "role": "reduced-motion static counterparts of the HUD loops: each reads as low / ready without any motion, distinct from full pip, full fill and level-3; same canvas and silhouette as the looping frames",
+      "integration": "presentation.reducedMotion.map",
+      "design": "as built (gate 5): masks identical to low-a / ready-a. pip-low = low-a with an outline[0] pinhole (needle ring around a dark centre: reads in greyscale). nova-ready = nova[3] ring (rows 1 and 3, end columns) around a nova[1] core row. charge-ready = per cell a plasma[3] ring, 1 px dark gap and the 13 px plasma[4] core (plasmaReadyCalm in cell form). Rings are single-shade (10-colour budget); bar walls use outline[0] for panel[0] (3 RGB steps apart)"
+    },
+    {
+      "pass": "gate 5",
+      "id": "menuPanel",
+      "canvases": [
+        [
+          7,
+          7
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          7,
+          7
+        ]
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "outline",
+        "panel"
+      ],
+      "frames": [
+        "top-left",
+        "top",
+        "top-right",
+        "left",
+        "fill",
+        "right",
+        "bottom-left",
+        "bottom",
+        "bottom-right"
+      ],
+      "role": "9-slice panel for pause, settings, controls and result screens; light from the top (top edge one step lighter than the bottom)",
+      "layout": "presentation.screens.panel",
+      "edges": "slices meet edge to edge"
+    },
+    {
+      "pass": "gate 5",
+      "id": "panelRule",
+      "canvases": [
+        [
+          5,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 4,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui"
+      ],
+      "frames": [
+        "left",
+        "fill",
+        "right"
+      ],
+      "role": "3-slice divider under a panel title",
+      "layout": "presentation.screens.panel.rule"
+    },
+    {
+      "pass": "gate 5",
+      "id": "menuItem",
+      "canvases": [
+        [
+          5,
+          15
+        ],
+        [
+          1,
+          15
+        ],
+        [
+          5,
+          15
+        ],
+        [
+          5,
+          15
+        ],
+        [
+          1,
+          15
+        ],
+        [
+          5,
+          15
+        ],
+        [
+          5,
+          15
+        ],
+        [
+          1,
+          15
+        ],
+        [
+          5,
+          15
+        ]
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 8,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui"
+      ],
+      "frames": [
+        "left",
+        "fill",
+        "right",
+        "left-focused",
+        "fill-focused",
+        "right-focused",
+        "left-disabled",
+        "fill-disabled",
+        "right-disabled"
+      ],
+      "role": "3-slice menu row: normal, focused (ui[1] accents at both caps, like today's warm side bars), disabled; focus must read without colour alone (cap shape changes)",
+      "layout": "presentation.screens.panel.item"
+    },
+    {
+      "pass": "gate 5",
+      "id": "optionToggle",
+      "canvas": [
+        19,
+        9
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui"
+      ],
+      "frames": [
+        "off",
+        "on"
+      ],
+      "role": "on/off switch for SOUND and REDUCED MOTION; on/off differ in knob position and fill, readable in greyscale",
+      "layout": "presentation.screens.panel.settingsItem"
+    },
+    {
+      "pass": "gate 5",
+      "id": "optionMeter",
+      "canvas": [
+        29,
+        7
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 5,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui"
+      ],
+      "frames": [
+        "level-0",
+        "level-1",
+        "level-2",
+        "level-3",
+        "level-4"
+      ],
+      "role": "4-cell volume meter for MUSIC and EFFECTS (0, 25, 50, 75, 100)",
+      "layout": "presentation.screens.panel.settingsItem"
+    },
+    {
+      "pass": "gate 5",
+      "id": "stageCard",
+      "canvas": [
+        241,
+        61
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 12,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui",
+        "navy",
+        "rust",
+        "engine"
+      ],
+      "frames": [
+        "orbital-breakwater",
+        "furnace-belt",
+        "midnight-citadel"
+      ],
+      "role": "stage title card: frame + authored large stage numeral (1/2/3) + one motif per stage in a muted ramp (Breakwater navy, Furnace rust, Citadel engine); the stage name and 'SECTOR 0n' are drawn by code in the 5x7 font into the text slots",
+      "textSlots": {
+        "sector": {
+          "x": 72,
+          "y": 16,
+          "text": "SECTOR 0n",
+          "color": "label"
+        },
+        "name": {
+          "x": 72,
+          "y": 30,
+          "text": "stage name, max 18 chars (107 px)",
+          "color": "heading"
+        }
+      },
+      "animation": {
+        "type": "state",
+        "note": "owner, gate 5: shown 2600 ms at stage start, no motion (cut in, cut out), identical in reduced motion"
+      },
+      "layout": "presentation.layout.stageCard (x 200..440, rows 120..180)",
+      "design": "as built (gate 5): chamfered plate filling the canvas; octagonal numeral bay x 7..53 and motif bay x 188..234 (rows 7..53); block numerals 25x37 (the 1 is 20 wide), ui[0] face, ui[2] top edges, panel[2] shadow; motifs: ringed planet (navy), beehive kiln with flame (rust), five-spire floating citadel (engine); engraved groove rows 25-26 x 72..178 between the text slots; three 7x3 stage pips at x 72/81/90 rows 45..47, ui[0] up to the current stage, panel[2] after",
+      "measuredColors": "12 over the strip (8 per frame); outline unused (panel[0] is the key line)"
+    },
+    {
+      "pass": "gate 5",
+      "id": "resultPlate",
+      "canvas": [
+        301,
+        45
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "maxColors": 12,
+      "ramps": [
+        "outline",
+        "panel",
+        "ui",
+        "nova",
+        "alert"
+      ],
+      "frames": [
+        "sector-secured",
+        "campaign-complete",
+        "signal-lost"
+      ],
+      "role": "result title plates with authored large lettering: SECTOR SECURED, THE SKY IS YOURS, SIGNAL LOST; victory accents in ui[1]/nova, game over in alert; the lettering is one consistent display face (about 9-11 px cap height, 1 px strokes or 2 px stems drawn as pixels, not scaled 5x7)",
+      "layout": "presentation.screens.result.plate (x 170..470, rows 60..104)",
+      "design": "as built (gate 5): 5 px chamfered plate with a 3 px inset engraved frame; title rows 16..26 + shadow row 27, centred on column 150 (even widths sit half a pixel left); accent rule on row 21 ending in diamonds at x 14 and 286: sector-secured one nova diamond per side, campaign-complete three, signal-lost a dashed alert rule (4 on, 3 off) with hollow diamonds",
+      "displayFace": {
+        "capHeight": 11,
+        "stem": 2,
+        "widths": "9 px; E, L 8; T, Y 10; I 2",
+        "gap": 2,
+        "wordSpace": 8,
+        "tones": "rows 0-5 light, 6-10 dark, 1 px drop shadow; victory ui[2]/ui[1] shadow nova[0], game over alert[2]/alert[1] shadow alert[0]",
+        "glyphs": "A C D E G H I K L N O R S T U Y (only those the three titles use)"
+      },
+      "measuredColors": "12 over the strip (9/9/7 per frame); outline unused"
     }
   ],
   "codeDrawn": {
@@ -2257,5 +3011,371 @@
       "gatebreaker": 1.445,
       "starfallEngine": 1.375
     }
+  },
+  "presentation": {
+    "pass": "gate 5",
+    "note": "Gate 5 presentation pass. Coordinates are in the 640x360 view, x/y of the top-left pixel, inclusive ranges. Layout numbers are working values; agents report measured ones and the orchestrator writes them.",
+    "textRule": "One pixel density: all text is the 5x7 font at 1x. Never scale text or sprites at runtime; large words (result titles) and numerals (stage cards) are authored inside their plates.",
+    "font": {
+      "sprite": "font",
+      "cell": [
+        5,
+        7
+      ],
+      "advance": 6,
+      "spaceAdvance": 6,
+      "lineHeight": 9,
+      "monospace": true,
+      "width": "6 * characters - 1",
+      "case": "upper only; the consumer upper-cases input",
+      "missingGlyph": "advance only (draw nothing)",
+      "drawing": "the strip is ui[2]; the consumer uses opaque pixels as a mask and draws them in the text colour it needs (textColors)"
+    },
+    "textColors": {
+      "label": "ui[0]",
+      "value": "ui[1]",
+      "heading": "ui[2]",
+      "danger": "alert[2]",
+      "disabled": "panel[3]",
+      "novaReady": "nova[3]",
+      "chainActive": "ui[1] (chain > 1)",
+      "chainIdle": "ui[0]",
+      "scorePop": "ui[1]",
+      "focused": "ui[1]"
+    },
+    "bands": {
+      "top": {
+        "rows": [
+          0,
+          31
+        ],
+        "fill": "panel[0]",
+        "edge": "panel[1] on row 31"
+      },
+      "bottom": {
+        "rows": [
+          336,
+          359
+        ],
+        "fill": "panel[0]",
+        "edge": "panel[1] on row 336"
+      },
+      "opacity": 1.0,
+      "drawnBy": "code (rects)",
+      "playfield": "player clamp y 57..319 (pivot); hull bottom row 335 stays above the bottom band; the exhaust tail passes under it (HUD layer above exhaust)"
+    },
+    "layout": {
+      "topRowA": {
+        "textRows": [
+          5,
+          11
+        ],
+        "plateRows": [
+          2,
+          14
+        ],
+        "wordmark": {
+          "text": "STARFALL",
+          "x": 8,
+          "color": "heading"
+        },
+        "score": {
+          "text": "7 digits, zero-padded",
+          "x": 62,
+          "color": "value"
+        },
+        "scorePlate": [
+          4,
+          106
+        ],
+        "chain": {
+          "text": "CHAIN <n>X (max 9 chars)",
+          "x": 116,
+          "color": "chainActive / chainIdle"
+        },
+        "chainPlate": [
+          112,
+          172
+        ],
+        "hullLabel": {
+          "text": "HULL",
+          "x": 392,
+          "color": "label; danger at low hull"
+        },
+        "hullPips": {
+          "sprite": "hudPip",
+          "x": [
+            420,
+            430,
+            440,
+            450,
+            460
+          ],
+          "y": 5,
+          "note": "x/y are each pip's top-left; every HUD and screen sprite has pivot (0,0)"
+        },
+        "hullPlate": [
+          388,
+          470
+        ],
+        "nova": {
+          "text": "NOVA <n>S / NOVA READY",
+          "x": 480,
+          "color": "label; novaReady when full"
+        },
+        "novaBar": {
+          "sprite": "novaBar",
+          "x": 546,
+          "y": 6
+        },
+        "novaPlate": [
+          476,
+          634
+        ]
+      },
+      "topRowB": {
+        "phase": "boss only",
+        "bossName": {
+          "textRows": [
+            13,
+            19
+          ],
+          "x": "320 - floor((6n-1)/2)",
+          "color": "heading"
+        },
+        "bossBar": {
+          "sprite": "bossBar",
+          "x": 200,
+          "y": 23
+        },
+        "bossMarks": {
+          "sprite": "bossBarMark",
+          "x": "200 + round(240 * t) - 1",
+          "y": 21,
+          "thresholds": {
+            "gatebreaker": [
+              0.5
+            ],
+            "kilnSerpent": [
+              0.5
+            ],
+            "starfallEngine": [
+              0.3333,
+              0.6667
+            ]
+          }
+        }
+      },
+      "bottom": {
+        "textRows": [
+          344,
+          350
+        ],
+        "plateRows": [
+          341,
+          353
+        ],
+        "stage": {
+          "text": "0<n> / <STAGE NAME> (max 23 chars)",
+          "x": 8,
+          "color": "label"
+        },
+        "stagePlate": [
+          4,
+          148
+        ],
+        "chargeLabel": {
+          "text": "PLASMA",
+          "x": 160,
+          "color": "label"
+        },
+        "chargeBar": {
+          "sprite": "chargeBar",
+          "x": 200,
+          "y": 344
+        },
+        "chargePlate": [
+          156,
+          264
+        ],
+        "controlsHint": {
+          "text": "SPACE/MOUSE FIRE   B NOVA   ESC PAUSE (37 chars, 221 px)",
+          "x": 368,
+          "color": "label",
+          "plate": "none"
+        },
+        "timer": {
+          "text": "M:SS / MM:SS",
+          "x": "right edge 631",
+          "color": "label"
+        },
+        "timerPlate": [
+          599,
+          634
+        ]
+      },
+      "plates": {
+        "sprite": "hudPlate",
+        "rule": "left cap at the plate's first column, fill repeated, right cap ending at its last column; rows from plateRows"
+      },
+      "banner": {
+        "sprite": "bannerPlate",
+        "rows": [
+          158,
+          178
+        ],
+        "textRows": [
+          165,
+          171
+        ],
+        "centreX": 320,
+        "width": "textWidth + 22 (11 px each side): caps 9 px + fill (width - 18)",
+        "variants": "normal caps for stage/sector text, alert caps for PHASE banners",
+        "replaces": "the centre banner rect + text in combat-render.ts"
+      },
+      "stageCard": {
+        "sprite": "stageCard",
+        "x": 200,
+        "y": 120,
+        "replaces": "the stage-start centre banner (bannerTime 3.5 s)"
+      },
+      "scorePops": "font at 1x in scorePop colour, no plate"
+    },
+    "layers": {
+      "order": "bottom to top; the consumer maps these to its layer numbers",
+      "list": [
+        "background + starfield",
+        "hulls: enemies, bosses and parts, mines, pickups, player exhaust, player, playerFlash, playerCalm",
+        "effects: explosions, hit sparks, debris, breakups, plasma charge/ready/muzzle at the player muzzle",
+        "HUD: bands, plates, bars, HUD text, centre banner, stage card, score pops",
+        "nova ring (nova, novaCalm)",
+        "beam lanes (warning and firing) and beamWarning marker",
+        "bullets: primaryLance, plasmaShot + trail, hostileBead, hostileNeedle, hostileOrb, plasmaImpact",
+        "player core marker (hitbox)",
+        "full-screen flash (off in reduced motion)",
+        "pause / result scene: dim overlay, panels, text"
+      ],
+      "rules": [
+        "bullets, beam lanes and the player core are never under the HUD, the banner or the stage card",
+        "hulls may pass under the HUD bands, banner and card (they enter from above the top band)",
+        "the nova ring passes over the HUD but under lanes and bullets, so it never hides a threat",
+        "HUD saturation stays below the gameplay layer: plates and text use panel/ui/alert; cue fills use their gameplay ramp's lower entries, with the light entries only for ready/low states"
+      ]
+    },
+    "screens": {
+      "dim": {
+        "fill": "panel[0]",
+        "opacity": 0.85,
+        "drawnBy": "code",
+        "note": "over the frozen stage for pause and result"
+      },
+      "panel": {
+        "sprite": "menuPanel",
+        "x": [
+          200,
+          440
+        ],
+        "centreY": 180,
+        "height": "40 + 19 * items; controls page 40 + 19 + 11 * lines + 4; result panel 23 + 11 * statLines + 19 * items",
+        "titleRows": "panelTop + 10 .. + 16, centred, heading colour",
+        "rule": "panelRule at panelTop + 22, x 212..428",
+        "itemsTop": "panelTop + 32",
+        "itemStep": 19,
+        "item": {
+          "sprite": "menuItem",
+          "x": [
+            216,
+            424
+          ],
+          "height": 15,
+          "textRow": "itemTop + 4"
+        },
+        "settingsItem": "label left at itemX + 8; control right-aligned to itemX + 200 (optionMeter / optionToggle), vertically centred on the item",
+        "top": "180 - floor(height / 2) (even heights sit half a row high)"
+      },
+      "pause": {
+        "title": "FLIGHT PAUSED",
+        "items": [
+          "RESUME FLIGHT",
+          "SETTINGS",
+          "CONTROLS",
+          "RETURN TO TITLE"
+        ]
+      },
+      "settings": {
+        "title": "SETTINGS",
+        "items": [
+          "MUSIC [optionMeter]",
+          "EFFECTS [optionMeter]",
+          "SOUND [optionToggle]",
+          "REDUCED MOTION [optionToggle]",
+          "BACK"
+        ],
+        "integration": "labels become fixed words with a control; today's 'MUSIC 100' / 'REDUCED MOTION ON' strings move into the control state",
+        "sound": "SOUND toggle on = !settings.muted (inverted from the stored flag); meters level = round(value * 4)"
+      },
+      "controls": {
+        "title": "FLIGHT CONTROLS",
+        "lines": 8,
+        "lineStep": 11,
+        "lineX": 224,
+        "then": "BACK item",
+        "linesTop": "itemsTop",
+        "backItemTop": "itemsTop + 11 * lines + 4",
+        "note": "gate 5 as built: lineX matches the settings label column; +4 rows before BACK"
+      },
+      "result": {
+        "plate": {
+          "sprite": "resultPlate",
+          "x": 170,
+          "y": 60
+        },
+        "panel": "menuPanel x 170..470, top row 116; stats lines at top + 10, step 11, centred (score in value colour, others label); itemsTop = top + 10 + 11 * statLines + 5; bottom = last item bottom + 12. The longest message (ALL THREE SECTORS LIBERATED / CAMPAIGN COMPLETE, 281 px) leaves ~6 px inside the groove",
+        "frames": {
+          "clear, stage 1-2": "sector-secured",
+          "clear, stage 3": "campaign-complete",
+          "dead": "signal-lost"
+        },
+        "note": "the clear banner (combat-collision.ts, NAME SECURED / STARFALL / VICTORY) overlaps the plate meaning; result stats colours map to textColors (score value, others label), all lines centred"
+      },
+      "footer": {
+        "text": "ARROWS SELECT   ENTER CONFIRM",
+        "row": 344,
+        "centreX": 320,
+        "color": "label (ui[0]); the dim overlay counts as a band, so the footer needs no plate (panel[3] was too weak)"
+      },
+      "integration": [
+        "click hit areas become the item rects (x 216..424, rows itemTop..itemTop+14), for press and drag start",
+        "menuY constants become itemsTop = panelTop + 32",
+        "page titles are 1x heading text; result titles move into resultPlate (no scale-2 text)",
+        "controls hitbox line uses heading ui[2] (today 0xbaffdb is outside the palette)",
+        "dim is panel[0] at 0.85; item plates are opaque sprites",
+        "disabled item state is unused today",
+        "the title screen (kind title) is outside this pass; its items also need the new rects"
+      ]
+    },
+    "lowHull": {
+      "threshold": "hull <= 1 of 5 (owner, gate 5)",
+      "cue": "hudPip low-a/low-b on the remaining pip(s), hullLabel in danger colour; matches codeDrawn.lowHullCue (needle[1], ~2 Hz)"
+    },
+    "reducedMotion": {
+      "rule": "nothing in the HUD or screens blinks; each looping cue has a static counterpart in hudCalm",
+      "map": {
+        "hudPip low-a/low-b": "hudCalm pip-low",
+        "novaBar ready-a/ready-b": "hudCalm nova-ready",
+        "chargeBar ready-a/ready-b": "hudCalm charge-ready"
+      },
+      "owner": "ringed charge-ready static approved (owner, gate 5)"
+    },
+    "stageStart": "the card needs its own 2.6 s timer and the stage-start banner suppressed while it shows (stage.ts sets run.banner = stage.name, bannerTime 3.5); slot text SECTOR 0n uses index + 1; frames are picked by stage id (they match stages.ts ids)",
+    "integration": [
+      "layer order: combat-render.ts draws the HUD on layers 40-46 above bullets (13-16) and the nova (17); presentation.layers needs HUD < nova < lanes < bullets < core; bands become opaque (today 0.92)",
+      "RunState has no plasma charge field yet, so chargeBar has no data (hold-to-charge is not implemented)",
+      "no low-hull state in code (threshold hull <= 1 is a proposal); pips are still 7x5 rects",
+      "banners need a kind (stage/sector vs PHASE) to pick the alert plate and danger text; today colour is chosen from run.phase and seconds",
+      "the Gatebreaker enrages at hp/2 but never sets bossPhase or a banner; its 0.5 mark is its only phase cue",
+      "boss name x becomes 320 - floor((6n-1)/2); Kiln (<hp/2) and Engine (<hp/3, <2hp/3) thresholds match the marks",
+      "bars: draw the track, then columns [0, ceil(w * fraction)) of the fill frame"
+    ]
   }
 }

@@ -8,7 +8,7 @@ Sources: rules tagged *(book)* come from the pixel-art skill ("Pixel Art for Gam
 
 ## Status
 
-Scope of every approval so far: **stills only** (gates 1–3) and **stills + GIFs** (gate 4). No engine playback, collision or gameplay check has been done for any asset; gate 4's GIFs are offline renders at the spec timings. "rev01 README" means the approval was recorded in the first README of this pack without a named approver; it is treated as the owner's approval of the stills.
+Scope of every approval so far: **stills only** (gates 1–3) and **stills + GIFs** (gate 4); the presentation pass as **stills** (gate 5, owner, 24 Oct 2026). No engine playback, collision or gameplay check has been done for any asset; gate 4's GIFs are offline renders at the spec timings. "rev01 README" means the approval was recorded in the first README of this pack without a named approver; it is treated as the owner's approval of the stills.
 
 | Asset | Revision | Approved by | Scope | Pending in this pass |
 |---|---|---|---|---|
@@ -36,13 +36,15 @@ Scope of every approval so far: **stills only** (gates 1–3) and **stills + GIF
 | playerCalm, plasmaReadyCalm | gate 4 build (reduced-motion cues) | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
 | mine, pickup | gate 4 build (replace code-drawn) | owner, gate 4, 24 Oct 2026 | stills + GIFs | minelayer release frame shows the full-scale mine; mine radius 6 vs 7 open |
 | beamWarning | gate 4 build (replaces the code-drawn marker) | owner, gate 4, 24 Oct 2026 | stills + GIFs | odd lane widths open |
+| font, hudPip, novaBar, chargeBar, bossBar, bossBarMark, hudPlate, bannerPlate, hudCalm | gate 5 build (presentation) | owner, gate 5, 24 Oct 2026 | stills | hudPip full brightened in review; ringed charge-ready static approved |
+| menuPanel, panelRule, menuItem, optionToggle, optionMeter, stageCard, resultPlate | gate 5 build (presentation) | owner, gate 5, 24 Oct 2026 | stills | stage card 2.6 s, pips and groove kept |
 
 Approvals are recorded here only when the owner gives them, with the revision and the scope checked. Nothing has been checked in playback, for collisions or in gameplay; integration into `src/` is out of scope of this pass.
 
 ## Summary
 
 - Logical view becomes **640x360**, shown at a whole-number scale only: 2× Steam Deck, 3× 1080p, 4× 1440p, 6× 4K.
-- Every sprite is redrawn at its **final size**: whole-number, odd×odd canvas, binary transparency, colours from one **77-entry indexed palette** (55 hull/environment entries plus 21 effect entries).
+- Every sprite is redrawn at its **final size**: whole-number, odd×odd canvas, binary transparency, colours from one **84-entry indexed palette** (55 hull/environment entries, 21 effect entries, 7 presentation entries added at gate 5).
 - Ships get smaller relative to the screen (player 17% → 9% of screen height). Bosses keep about the same screen share.
 - World constants scale by exactly 4/3 (640/480 = 360/270), so timing and screen-relative speeds don't change.
 
@@ -72,7 +74,7 @@ Compute `k` in device pixels, not CSS pixels. With Windows display scaling at 12
 
 ## Palette
 
-One shared indexed palette, 77 entries. Index 0 is transparent *(book: reserve index 0 as the key colour)*. Ramps are contiguous and ordered dark → light *(book: keep each ramp in contiguous slots so it can be edited or swapped as a unit)*. Swatches with a greyscale value check are in [palette.png](palette.png).
+One shared indexed palette, 84 entries. Index 0 is transparent *(book: reserve index 0 as the key colour)*. Ramps are contiguous and ordered dark → light *(book: keep each ramp in contiguous slots so it can be edited or swapped as a unit)*. Swatches with a greyscale value check are in [palette.png](palette.png).
 
 | Indices | Ramp | Used by |
 |---|---|---|
@@ -98,8 +100,10 @@ One shared indexed palette, 77 entries. Index 0 is transparent *(book: reserve i
 | 65–67 | needle | aimed fast hostile fire |
 | 68–71 | orb | heavy hostile plasma, beam lane and warning |
 | 72–76 | nova | nova ring |
+| 77–80 | panel | HUD bands, plates, panels, bar tracks, disabled text (gate 5) |
+| 81–83 | alert | boss health, danger text, low-hull label (gate 5) |
 
-Ramps 1–55 were picked by hand from the dominant colours of the current art (`tools/sample_colors.py`), so each faction keeps its present look. Ramps 56–76 are the effect ramps added in this pass; existing hull ramps are never recoloured to make effects.
+Ramps 1–55 were picked by hand from the dominant colours of the current art (`tools/sample_colors.py`), so each faction keeps its present look. Ramps 56–76 are the effect ramps added in this pass; existing hull ramps are never recoloured to make effects. Ramps 77–83 (panel, alert) were added at gate 5 because ui's three text entries cannot also carry plates, tracks and danger; the palette is now 84 entries.
 
 Rules:
 - Each sprite has a colour budget (`maxColors` in spec.json). The book's guide for a small character is about 13–14 colours *(book, inferred)*.
@@ -146,6 +150,17 @@ All canvases are odd×odd, so a symmetric ship has a 1 px centre column and the 
 | pickup | 17×17 | 3 (base, bright, peak) | 5 | — | code 15 square |
 | beamWarning | 13×17, pivot (6,8) | 2 (marker, marker-dim) | 4 | — | code triangles |
 | backgrounds ×3 | 640×400, pivot (320,200) | 1 each | 32 | full screen | 480×270 |
+| font | 5×7, pivot (0,0) | 46 (A–Z, 0–9, `: / - . + ! , ' < >`) | 1 | — | code 3×5 |
+| hudPip | 7×7 | 4 (full, empty, low-a, low-b) | 6 | — | code 7×5 rect |
+| novaBar | 85×5, pivot (0,0) | 4 (track, fill, ready-a, ready-b) | 7 | — | code 70×2 rect |
+| chargeBar | 61×7, pivot (0,0) | 6 (empty, level-1..3, ready-a, ready-b) | 8 | — | — |
+| bossBar / bossBarMark | 241×5 / 3×9 | 2 (track, fill) / 2 (ahead, passed) | 6 / 4 | — | code 180×4 rect |
+| hudPlate / bannerPlate | 3-slice, 13 / 21 rows | 3 / 6 (normal + alert) | 4 / 7 | — | code rect |
+| hudCalm | per frame 7×7, 85×5, 61×7 | 3 (pip-low, nova-ready, charge-ready) | 10 | — | — |
+| menuPanel / panelRule / menuItem | 9-slice / 3-slice / 3-slice ×3 states | 9 / 3 / 9 | 6 / 4 / 8 | — | code rects |
+| optionToggle / optionMeter | 19×9 / 29×7 | 2 / 5 | 6 / 5 | — | text values |
+| stageCard | 241×61, pivot (0,0) | 3 (one per stage) | 12 | — | centre banner |
+| resultPlate | 301×45, pivot (0,0) | 3 (sector-secured, campaign-complete, signal-lost) | 12 | — | 3×5 text at 2× |
 
 Size decisions:
 - **Fodder is smaller than the player.** The interceptor (3 HP) was wider than the player; now it's 27 px against the player's 31.
@@ -199,6 +214,7 @@ Reduced motion / flashes (approved at gate 4 as art; timings are proposals; `pla
 | Charge ready | `plasmaReady` loop at the muzzle | `plasmaReadyCalm`: one static 9×9 ring-and-core frame at the muzzle, visible through both cues above |
 | Low hull | emissive blinking at ~2 Hz | same emissive, held steady |
 | Death | `playerDeath` | `playerDeath` (no full-screen flash) |
+| HUD loops (low-hull pips, nova ready, charge ready) | `hudPip` low-a/b, `novaBar` ready-a/b, `chargeBar` ready-a/b | `hudCalm` pip-low / nova-ready / charge-ready (static, gate 5) |
 
 ### Projectiles and effects
 
@@ -225,6 +241,30 @@ Integration notes from the art pass:
 - The Gatebreaker's turrets are separate sprites (`gatebreakerTurret`, one instance per socket, the right one drawn flipped in x) with their own idle / telegraph / firing / down frames, because the game fires and destroys them separately; the hull keeps the wells. The Starfall Engine's emitters are likewise separate sprites (`starfallEmitter`, right instance x-flipped) with idle / charge / firing / down frames.
 - The player's nozzle bottoms are open so the flame joins without a gap, so always draw the exhaust under the ship. Plasma effects attach at the plasma muzzle and draw above the hull.
 - Lighting on the Kiln parts was drawn for their on-screen orientation: canvas +x ends up as screen top.
+
+## Presentation (gate 5, approved as stills by the owner, 24 Oct 2026)
+
+Owner choices (24 Oct 2026): two HUD bands, 5×7 font, full scope (HUD, pause/options, stage cards, victory/game-over). Machine-readable layout, colours and layer order are in spec.json `presentation`; coordinates are top-left pixels in the 640×360 view, ranges inclusive.
+
+- **One pixel density.** All text is the 5×7 font at 1×; nothing is scaled at runtime. Large words (result titles) and stage numerals are authored inside their plates.
+- **Font:** monospaced, cell 5×7, advance 6, line height 9, so a string is `6n − 1` px wide. The strip is ui[2]; the consumer draws glyphs as masks in the text colour it needs (label ui[0], value ui[1], heading ui[2], danger alert[2], disabled panel[3]).
+- **Bands:** top rows 0–31, bottom rows 336–359, opaque panel[0] with a panel[1] inner edge, drawn by code. The player's hull stays above row 336 (clamp y ≤ 319); its exhaust tail passes under the bottom band.
+
+```text
+top band (rows 0-31), plates on rows 2-14
+ [STARFALL 0001234] [CHAIN 3X]  BOSS NAME  [HULL ooooo] [NOVA 9S ===]
+  x 4..106          x 112..172 [==|==|===]  x 388..470   x 476..634
+                               x 200..440, rows 13-29 (boss only)
+bottom band (rows 336-359), plates on rows 341-353
+ [01 / ORBITAL BREAKWATER] [PLASMA |||]  controls hint     [1:23]
+  x 4..148                  x 156..264   x 368..588      x 599..634
+```
+
+Layer order, bottom to top: background → hulls (enemies, bosses, mines, pickups, exhaust, player) → effects (explosions, sparks, debris, plasma charge at the muzzle) → **HUD** (bands, plates, bars, text, banner, stage card, score pops) → nova ring → beam lanes and warning marker → bullets (player and hostile) → player core marker → full-screen flash → pause/result scene. Bullets, beam lanes and the core are never under the HUD, banner or card; hulls may pass under them; the nova passes over the HUD but never over a threat.
+
+HUD saturation stays below the gameplay layer: plates and text use panel/ui/alert; cue fills use their gameplay ramp's lower entries (nova bar: nova, charge bar: plasma, pips: hero), with the light entries only for ready and low states. Low hull is hull ≤ 1 (owner, gate 5): pips switch to low-a/low-b (needle[1] emissive, ~2 Hz, `codeDrawn.lowHullCue`) and the HULL label turns danger. Reduced motion: nothing in the HUD blinks; `hudCalm` holds a static frame for each loop.
+
+Screens: pause, settings, controls and result use a dim overlay (panel[0] at 85%), a 9-slice `menuPanel` (x 200–440, centred on row 180), `menuItem` rows 209 × 15 at a 19-row step, `optionToggle` for SOUND and REDUCED MOTION and `optionMeter` for MUSIC and EFFECTS. The stage card (241×61 at x 200, row 120) replaces the stage-start banner for 2.6 s (owner, gate 5); its name and `SECTOR 0n` are drawn by code in slots. The result plate (301×45 at x 170, row 60) carries the title; stats and items sit on a panel below it.
 
 ## Gameplay numbers (proposal)
 
@@ -284,3 +324,5 @@ It checks spec consistency (ramps, canvases, pivots, animation data, every socke
 | `tools/validate.py` | spec consistency, per-file checks, background rules, sockets, source rebuild |
 | `tools/render_palette.py` | regenerates `palette.png` |
 | `tools/sample_colors.py` | dominant colours of the current art (input used to choose the ramps) |
+
+Integration notes for the presentation pass (layer numbers, missing charge and low-hull state, banner kinds, menu hit areas) are listed in spec.json `presentation.integration` and `presentation.screens.integration`.
