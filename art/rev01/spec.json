@@ -1,114 +1,1773 @@
 {
   "version": "rev01",
+  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer.",
   "conventions": {
     "units": "pixels in the 640x360 logical view; 1 texel = 1 logical pixel, no runtime scaling",
     "origin": "top-left of each canvas, +x right, +y down",
     "pivot": "canvas pixel the game position maps to; sockets are offsets from the pivot, +y down",
     "canvas": "odd width and odd height, so a symmetric ship has a 1 px centre column and the pivot sits on a whole pixel (also after the engine's -90 degree rotation of the Kiln parts); backgrounds are exempt",
     "alpha": "binary: palette index 0 is transparent, every other pixel fully opaque",
-    "frames": "one full palette-index grid per frame (baked frames), stored as a horizontal strip PNG, frames left to right in 'order'"
+    "frames": "one full palette-index grid per frame (baked frames), stored as a horizontal strip PNG, frames left to right in 'frames' order; a sprite with 'canvases' lists one canvas per frame instead of one shared 'canvas'",
+    "sockets": "a socket is [dx, dy] from the pivot, a list of them, or an object keyed by frame name when it moves per pose; a per-pose socket must be given for every frame",
+    "bounds": "'damage' is the collision shape the game may use (circle radius from the pivot, or a rect [w, h] centred on it); 'glow' is the decorative extent that promises no damage",
+    "muzzles": "a muzzle socket is the first transparent pixel straight ahead of the muzzle centre (the pixel a shot is spawned on); exhaust sockets are the centre of the nozzle exit on the row below it",
+    "edges": "no opaque pixel on a canvas edge row or column, except where the canvas is exactly the sprite's shape (primaryLance 3x11, hostileNeedle head columns)"
   },
   "viewport": {
-    "logical": [640, 360],
-    "previous": [480, 270],
+    "logical": [
+      640,
+      360
+    ],
+    "previous": [
+      480,
+      270
+    ],
     "worldScaleFromPrevious": 1.3333333333333333,
-    "presentation": "integer scale k = floor(min(screenW / 640, screenH / 360)) in device pixels, k >= 1; the remainder is letterbox/pillarbox in the clear colour",
+    "presentation": "integer scale k = floor(min(screenW / 640, screenH / 360)) in device pixels; the remainder is letterbox/pillarbox in the clear colour",
+    "smallWindowPolicy": "if the formula gives k = 0 (viewport smaller than 640x360 device pixels) use k = 1, centre the 640x360 canvas and let the viewport clip it equally on both sides; never scale by a fraction, so the pixel grid stays whole. Such windows are not a supported play target.",
     "integerScales": {
-      "1280x720": 2, "1280x800 (Steam Deck)": 2, "1920x1080": 3, "1920x1200": 3,
-      "2560x1440": 4, "3440x1440": 4, "3840x2160": 6
+      "1280x720": 2,
+      "1280x800 (Steam Deck)": 2,
+      "1920x1080": 3,
+      "1920x1200": 3,
+      "2560x1440": 4,
+      "3440x1440": 4,
+      "3840x2160": 6
     },
-    "optionalTallMode": { "logical": [640, 400], "use": "16:10 screens only; the extra 40 rows hold background and HUD, never playfield" }
+    "optionalTallMode": {
+      "logical": [
+        640,
+        400
+      ],
+      "use": "16:10 screens only; the extra 40 rows hold background and HUD, never playfield"
+    }
   },
   "palette": {
-    "note": "One shared indexed palette. Ramps are contiguous and ordered dark -> light. Index 0 is transparent.",
+    "note": "One shared indexed palette. Ramps are contiguous and ordered dark -> light. Index 0 is transparent. Indices 1-55 are the original hull and environment ramps and are never recoloured; 56-76 are effect ramps added for the projectile, plasma and nova vocabulary.",
     "ramps": [
-      { "name": "outline", "first": 1, "colors": ["#0b0f1c", "#1a1d2a"] },
-      { "name": "steel", "first": 3, "colors": ["#3a3d4a", "#62656e", "#9a9ca0", "#d6d9d4"] },
-      { "name": "hero", "first": 7, "colors": ["#1f3b56", "#2f6a8c", "#5fa6c4", "#b9e6f0"] },
-      { "name": "cockpit", "first": 11, "colors": ["#c46a1f", "#ffb14a"] },
-      { "name": "exhaust", "first": 13, "colors": ["#0b2fd0", "#1892fb", "#6fd6fc", "#f0fdff"] },
-      { "name": "raider", "first": 17, "colors": ["#3a0f17", "#7a1c22", "#b0302a", "#e86048"] },
-      { "name": "brass", "first": 21, "colors": ["#5c4224", "#8f6a48", "#c99a5b"] },
-      { "name": "violet", "first": 24, "colors": ["#2b1b3d", "#4e2b5f", "#7f4f96"] },
-      { "name": "navy", "first": 27, "colors": ["#1f2a44", "#34476a", "#5a7099"] },
-      { "name": "rust", "first": 30, "colors": ["#3a1d14", "#723219", "#b2552a", "#e08a45"] },
-      { "name": "olive", "first": 34, "colors": ["#2a3833", "#4f5f50", "#8a8b66"] },
-      { "name": "engine", "first": 37, "colors": ["#3e2148", "#6a4777", "#9c7aa8"] },
-      { "name": "glow", "first": 40, "colors": ["#6b1050", "#d02a8f", "#ff8fd8"] },
-      { "name": "bone", "first": 43, "colors": ["#8a6e5c", "#d6c0a2"] },
-      { "name": "fire", "first": 45, "colors": ["#6b1a05", "#dd3701", "#f58a0c", "#fbd23a", "#fff6d0"] },
-      { "name": "pickup", "first": 50, "colors": ["#174d47", "#56dba4", "#b3ffd5"] },
-      { "name": "ui", "first": 53, "colors": ["#8aabbf", "#ffd39c", "#dde9e3"] }
+      {
+        "name": "outline",
+        "first": 1,
+        "colors": [
+          "#0b0f1c",
+          "#1a1d2a"
+        ]
+      },
+      {
+        "name": "steel",
+        "first": 3,
+        "colors": [
+          "#3a3d4a",
+          "#62656e",
+          "#9a9ca0",
+          "#d6d9d4"
+        ]
+      },
+      {
+        "name": "hero",
+        "first": 7,
+        "colors": [
+          "#1f3b56",
+          "#2f6a8c",
+          "#5fa6c4",
+          "#b9e6f0"
+        ]
+      },
+      {
+        "name": "cockpit",
+        "first": 11,
+        "colors": [
+          "#c46a1f",
+          "#ffb14a"
+        ]
+      },
+      {
+        "name": "exhaust",
+        "first": 13,
+        "colors": [
+          "#0b2fd0",
+          "#1892fb",
+          "#6fd6fc",
+          "#f0fdff"
+        ]
+      },
+      {
+        "name": "raider",
+        "first": 17,
+        "colors": [
+          "#3a0f17",
+          "#7a1c22",
+          "#b0302a",
+          "#e86048"
+        ]
+      },
+      {
+        "name": "brass",
+        "first": 21,
+        "colors": [
+          "#5c4224",
+          "#8f6a48",
+          "#c99a5b"
+        ]
+      },
+      {
+        "name": "violet",
+        "first": 24,
+        "colors": [
+          "#2b1b3d",
+          "#4e2b5f",
+          "#7f4f96"
+        ]
+      },
+      {
+        "name": "navy",
+        "first": 27,
+        "colors": [
+          "#1f2a44",
+          "#34476a",
+          "#5a7099"
+        ]
+      },
+      {
+        "name": "rust",
+        "first": 30,
+        "colors": [
+          "#3a1d14",
+          "#723219",
+          "#b2552a",
+          "#e08a45"
+        ]
+      },
+      {
+        "name": "olive",
+        "first": 34,
+        "colors": [
+          "#2a3833",
+          "#4f5f50",
+          "#8a8b66"
+        ]
+      },
+      {
+        "name": "engine",
+        "first": 37,
+        "colors": [
+          "#3e2148",
+          "#6a4777",
+          "#9c7aa8"
+        ]
+      },
+      {
+        "name": "glow",
+        "first": 40,
+        "colors": [
+          "#6b1050",
+          "#d02a8f",
+          "#ff8fd8"
+        ]
+      },
+      {
+        "name": "bone",
+        "first": 43,
+        "colors": [
+          "#8a6e5c",
+          "#d6c0a2"
+        ]
+      },
+      {
+        "name": "fire",
+        "first": 45,
+        "colors": [
+          "#6b1a05",
+          "#dd3701",
+          "#f58a0c",
+          "#fbd23a",
+          "#fff6d0"
+        ]
+      },
+      {
+        "name": "pickup",
+        "first": 50,
+        "colors": [
+          "#174d47",
+          "#56dba4",
+          "#b3ffd5"
+        ]
+      },
+      {
+        "name": "ui",
+        "first": 53,
+        "colors": [
+          "#8aabbf",
+          "#ffd39c",
+          "#dde9e3"
+        ]
+      },
+      {
+        "name": "plasma",
+        "first": 56,
+        "colors": [
+          "#0a3f52",
+          "#1590a4",
+          "#3fdede",
+          "#a8fbf2",
+          "#f4ffff"
+        ],
+        "usedBy": "player primary lance, charged plasma (charge, ready, muzzle, shot, impact), player flash, charge-ready and low-hull cues"
+      },
+      {
+        "name": "bead",
+        "first": 61,
+        "colors": [
+          "#3a1026",
+          "#b53555",
+          "#ff7585",
+          "#ffd3d8"
+        ],
+        "usedBy": "ordinary hostile fire (round bead with a dark rim)"
+      },
+      {
+        "name": "needle",
+        "first": 65,
+        "colors": [
+          "#7c1708",
+          "#ff4e23",
+          "#ffbe82"
+        ],
+        "usedBy": "aimed fast hostile fire (needle / arrowhead)"
+      },
+      {
+        "name": "orb",
+        "first": 68,
+        "colors": [
+          "#3f0b57",
+          "#9426c9",
+          "#e36cff",
+          "#fcd4ff"
+        ],
+        "usedBy": "heavy hostile plasma orb, beam hazard lane and its warning"
+      },
+      {
+        "name": "nova",
+        "first": 72,
+        "colors": [
+          "#6e3306",
+          "#cf7210",
+          "#f4b02c",
+          "#ffe27e",
+          "#fffce8"
+        ],
+        "usedBy": "nova ring: gold body, white-hot front"
+      }
     ],
-    "size": 56,
-    "backgrounds": "each stage background has its own palette of at most 32 colours; it must not use the fire, glow, pickup or cockpit ramps, and its lightest value stays below the steel ramp's lightest"
+    "size": 77,
+    "backgrounds": "each stage background has its own palette of at most 32 colours; it must not use any colour of the fire, glow, pickup or cockpit ramps, nor of the effect ramps (plasma, bead, needle, orb, nova), and its lightest value (Rec. 709 luma) stays below the steel ramp's lightest (216.0)"
   },
   "sprites": [
-    { "id": "player", "replaces": "player-bank.png", "canvas": [31, 33], "pivot": [15, 16], "maxColors": 16,
-      "ramps": ["outline", "steel", "hero", "cockpit"],
-      "frames": ["bank-left", "neutral", "bank-right"],
-      "animation": { "type": "input-pose", "transitionMs": 65 },
-      "sockets": { "exhaust": { "bank-left": [[-3, 15], [4, 15]], "neutral": [[-4, 15], [4, 15]], "bank-right": [[-4, 15], [3, 15]] } } },
-    { "id": "exhaust", "replaces": "exhaust.png", "canvas": [7, 15], "pivot": [3, 0], "maxColors": 5,
-      "ramps": ["exhaust"],
-      "frames": ["short", "medium", "long"],
-      "animation": { "type": "loop", "order": ["short", "medium", "long", "medium"], "durationsMs": [80, 80, 80, 80] } },
-    { "id": "interceptor", "replaces": "interceptor.png", "canvas": [27, 23], "pivot": [13, 11], "maxColors": 12,
-      "ramps": ["outline", "steel", "raider"], "frames": ["interceptor"] },
-    { "id": "dart", "usedBy": "Sweeper", "replaces": "dart.png", "canvas": [13, 25], "pivot": [6, 12], "maxColors": 10,
-      "ramps": ["outline", "steel", "raider"], "frames": ["dart"],
-      "sockets": { "muzzle": [0, 12] } },
-    { "id": "gunship", "replaces": "gunship.png", "canvas": [39, 31], "pivot": [19, 15], "maxColors": 14,
-      "ramps": ["outline", "steel", "brass", "violet"], "frames": ["gunship"],
-      "sockets": { "leftMuzzle": [-15, 15], "rightMuzzle": [15, 15], "reactor": [0, -3] } },
-    { "id": "warden", "replaces": "warden.png", "canvas": [33, 31], "pivot": [16, 15], "maxColors": 14,
-      "ramps": ["outline", "violet", "raider", "brass"], "frames": ["warden"],
-      "sockets": { "leftMuzzle": [-8, 10], "rightMuzzle": [8, 10] } },
-    { "id": "minelayer", "replaces": "minelayer.png", "canvas": [29, 29], "pivot": [14, 14], "maxColors": 12,
-      "ramps": ["outline", "olive", "brass", "steel"], "frames": ["minelayer"],
-      "sockets": { "mineRelease": [0, 10] } },
-    { "id": "gatebreaker", "replaces": "gatebreaker.png", "canvas": [159, 79], "pivot": [79, 39], "maxColors": 24,
-      "ramps": ["outline", "steel", "navy", "raider", "brass", "fire"], "frames": ["gatebreaker"],
-      "sockets": { "core": [0, 1], "leftTurret": [-47, 4], "rightTurret": [47, 4], "leftMuzzles": [[-50, 32], [-44, 32]], "rightMuzzles": [[44, 32], [50, 32]] } },
-    { "id": "kilnHead", "replaces": "kiln-head.png", "canvas": [65, 47], "pivot": [32, 23], "maxColors": 20,
-      "ramps": ["outline", "steel", "rust", "fire"], "frames": ["kilnHead"],
+    {
+      "id": "player",
+      "replaces": "player-bank.png",
+      "canvas": [
+        31,
+        33
+      ],
+      "pivot": [
+        15,
+        16
+      ],
+      "maxColors": 16,
+      "ramps": [
+        "outline",
+        "steel",
+        "hero",
+        "cockpit"
+      ],
+      "frames": [
+        "bank-left-3",
+        "bank-left-2",
+        "bank-left-1",
+        "neutral",
+        "bank-right-1",
+        "bank-right-2",
+        "bank-right-3"
+      ],
+      "animation": {
+        "type": "input-pose",
+        "transitionMs": [
+          40,
+          65
+        ],
+        "note": "proposal: adjacent pose levels are traversed in 40-65 ms while input changes; poses are input states, not a loop; the return to neutral is immediate. Final thresholds need playback."
+      },
+      "design": "compact armed spacecraft: armoured prow, recessed cockpit, substantial engine pods, visible weapon housings, negative spaces between hull sections; blue/cyan identity with a small warm cockpit accent. Banks are whole-body rolls (raised pod shows its top, lowered pod its side/underside, canopy displaces, hull overlaps, extreme silhouette narrows), re-lit per pose. The pivot (gameplay core) stays fixed.",
+      "socketStatus": "measured from the finished 7-pose art by source/player.py (Phase 2); playerFlash shares them",
+      "sockets": {
+        "exhaust": {
+          "bank-left-3": [
+            [
+              -6,
+              14
+            ],
+            [
+              9,
+              14
+            ]
+          ],
+          "bank-left-2": [
+            [
+              -8,
+              14
+            ],
+            [
+              10,
+              14
+            ]
+          ],
+          "bank-left-1": [
+            [
+              -10,
+              14
+            ],
+            [
+              11,
+              14
+            ]
+          ],
+          "neutral": [
+            [
+              -11,
+              14
+            ],
+            [
+              11,
+              14
+            ]
+          ],
+          "bank-right-1": [
+            [
+              -11,
+              14
+            ],
+            [
+              10,
+              14
+            ]
+          ],
+          "bank-right-2": [
+            [
+              -10,
+              14
+            ],
+            [
+              8,
+              14
+            ]
+          ],
+          "bank-right-3": [
+            [
+              -9,
+              14
+            ],
+            [
+              6,
+              14
+            ]
+          ]
+        },
+        "primaryMuzzle": {
+          "bank-left-3": [
+            [
+              -6,
+              -13
+            ],
+            [
+              7,
+              -13
+            ]
+          ],
+          "bank-left-2": [
+            [
+              -7,
+              -13
+            ],
+            [
+              8,
+              -13
+            ]
+          ],
+          "bank-left-1": [
+            [
+              -8,
+              -13
+            ],
+            [
+              9,
+              -13
+            ]
+          ],
+          "neutral": [
+            [
+              -9,
+              -13
+            ],
+            [
+              9,
+              -13
+            ]
+          ],
+          "bank-right-1": [
+            [
+              -9,
+              -13
+            ],
+            [
+              8,
+              -13
+            ]
+          ],
+          "bank-right-2": [
+            [
+              -8,
+              -13
+            ],
+            [
+              7,
+              -13
+            ]
+          ],
+          "bank-right-3": [
+            [
+              -7,
+              -13
+            ],
+            [
+              6,
+              -13
+            ]
+          ]
+        },
+        "plasmaMuzzle": {
+          "bank-left-3": [
+            -1,
+            -15
+          ],
+          "bank-left-2": [
+            -1,
+            -15
+          ],
+          "bank-left-1": [
+            0,
+            -15
+          ],
+          "neutral": [
+            0,
+            -15
+          ],
+          "bank-right-1": [
+            0,
+            -15
+          ],
+          "bank-right-2": [
+            1,
+            -15
+          ],
+          "bank-right-3": [
+            1,
+            -15
+          ]
+        }
+      }
+    },
+    {
+      "id": "playerFlash",
+      "canvas": [
+        31,
+        33
+      ],
+      "pivot": [
+        15,
+        16
+      ],
+      "maxColors": 16,
+      "ramps": [
+        "outline",
+        "steel",
+        "hero",
+        "cockpit",
+        "plasma"
+      ],
+      "frames": [
+        "bank-left-3",
+        "bank-left-2",
+        "bank-left-1",
+        "neutral",
+        "bank-right-1",
+        "bank-right-2",
+        "bank-right-3"
+      ],
+      "role": "damage flash: one high-value counterpart per bank pose, same silhouette and sockets as player; shown for one brief flash when hit, then the invulnerability cue takes over",
+      "cuePriority": "proposal: damage flash first (overrides everything for its duration), then the invulnerability bright/dim alternation (runtime opacity, the core marker stays visible), while the charge-ready cue stays visible at the plasma muzzle throughout; the low-hull cue is persistent and separate from the temporary damage state",
+      "sockets": {
+        "exhaust": {
+          "bank-left-3": [
+            [
+              -6,
+              14
+            ],
+            [
+              9,
+              14
+            ]
+          ],
+          "bank-left-2": [
+            [
+              -8,
+              14
+            ],
+            [
+              10,
+              14
+            ]
+          ],
+          "bank-left-1": [
+            [
+              -10,
+              14
+            ],
+            [
+              11,
+              14
+            ]
+          ],
+          "neutral": [
+            [
+              -11,
+              14
+            ],
+            [
+              11,
+              14
+            ]
+          ],
+          "bank-right-1": [
+            [
+              -11,
+              14
+            ],
+            [
+              10,
+              14
+            ]
+          ],
+          "bank-right-2": [
+            [
+              -10,
+              14
+            ],
+            [
+              8,
+              14
+            ]
+          ],
+          "bank-right-3": [
+            [
+              -9,
+              14
+            ],
+            [
+              6,
+              14
+            ]
+          ]
+        },
+        "primaryMuzzle": {
+          "bank-left-3": [
+            [
+              -6,
+              -13
+            ],
+            [
+              7,
+              -13
+            ]
+          ],
+          "bank-left-2": [
+            [
+              -7,
+              -13
+            ],
+            [
+              8,
+              -13
+            ]
+          ],
+          "bank-left-1": [
+            [
+              -8,
+              -13
+            ],
+            [
+              9,
+              -13
+            ]
+          ],
+          "neutral": [
+            [
+              -9,
+              -13
+            ],
+            [
+              9,
+              -13
+            ]
+          ],
+          "bank-right-1": [
+            [
+              -9,
+              -13
+            ],
+            [
+              8,
+              -13
+            ]
+          ],
+          "bank-right-2": [
+            [
+              -8,
+              -13
+            ],
+            [
+              7,
+              -13
+            ]
+          ],
+          "bank-right-3": [
+            [
+              -7,
+              -13
+            ],
+            [
+              6,
+              -13
+            ]
+          ]
+        },
+        "plasmaMuzzle": {
+          "bank-left-3": [
+            -1,
+            -15
+          ],
+          "bank-left-2": [
+            -1,
+            -15
+          ],
+          "bank-left-1": [
+            0,
+            -15
+          ],
+          "neutral": [
+            0,
+            -15
+          ],
+          "bank-right-1": [
+            0,
+            -15
+          ],
+          "bank-right-2": [
+            1,
+            -15
+          ],
+          "bank-right-3": [
+            1,
+            -15
+          ]
+        }
+      },
+      "socketStatus": "identical to player, pose by pose (same silhouettes)"
+    },
+    {
+      "id": "exhaust",
+      "replaces": "exhaust.png",
+      "canvas": [
+        7,
+        15
+      ],
+      "pivot": [
+        3,
+        0
+      ],
+      "maxColors": 5,
+      "ramps": [
+        "exhaust"
+      ],
+      "frames": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "animation": {
+        "type": "loop",
+        "order": [
+          "short",
+          "medium",
+          "long",
+          "medium"
+        ],
+        "durationsMs": [
+          80,
+          80,
+          80,
+          80
+        ]
+      }
+    },
+    {
+      "id": "primaryLance",
+      "canvas": [
+        3,
+        11
+      ],
+      "pivot": [
+        1,
+        5
+      ],
+      "maxColors": 4,
+      "ramps": [
+        "plasma"
+      ],
+      "frames": [
+        "lance"
+      ],
+      "role": "player primary fire: narrow cyan/white lance, pointed head at the top, short fading tail; may be rendered by code from this sprite's colours",
+      "bounds": {
+        "damage": [
+          3,
+          9
+        ],
+        "glow": [
+          3,
+          11
+        ]
+      },
+      "proposal": "size from FEEDBACK.md priority 2"
+    },
+    {
+      "id": "hostileBead",
+      "canvas": [
+        9,
+        9
+      ],
+      "pivot": [
+        4,
+        4
+      ],
+      "maxColors": 4,
+      "ramps": [
+        "bead"
+      ],
+      "frames": [
+        "bead"
+      ],
+      "role": "ordinary hostile fire: round coral/pink bead with a dark separation rim",
+      "bounds": {
+        "damage": 3,
+        "glow": 4
+      },
+      "proposal": "size from FEEDBACK.md priority 2"
+    },
+    {
+      "id": "hostileNeedle",
+      "canvas": [
+        13,
+        13
+      ],
+      "pivot": [
+        6,
+        6
+      ],
+      "maxColors": 4,
+      "ramps": [
+        "needle",
+        "outline"
+      ],
+      "frames": [
+        "needle-0",
+        "needle-22",
+        "needle-45"
+      ],
+      "role": "aimed fast hostile fire: red/orange needle or arrowhead, drawn pointing down (+y) and rotated by the renderer toward its velocity",
+      "bounds": {
+        "damage": [
+          3,
+          11
+        ],
+        "glow": [
+          5,
+          11
+        ]
+      },
+      "proposal": "size from FEEDBACK.md priority 2",
+      "directions": "frames point down (+y) rotated 0, 22.5 and 45 degrees clockwise on screen (tip swings from straight down toward -x). The 16 directions are angle = k*90 + {0, 22.5, 45, 67.5} degrees: frames needle-0, needle-22, needle-45 and needle-22 mirrored across the down-left diagonal (PIL TRANSVERSE), each then turned k quarter turns clockwise. Colours are symmetric, so mirroring flips no lighting. Centre of mass of every frame is on the pivot."
+    },
+    {
+      "id": "hostileOrb",
+      "canvas": [
+        13,
+        13
+      ],
+      "pivot": [
+        6,
+        6
+      ],
+      "maxColors": 5,
+      "ramps": [
+        "orb",
+        "outline"
+      ],
+      "frames": [
+        "orb"
+      ],
+      "role": "heavy hostile plasma: magenta/pink orb or diamond, visibly distinct from the player's elongated plasma",
+      "bounds": {
+        "damage": 4,
+        "glow": 6
+      },
+      "proposal": "size from FEEDBACK.md priority 2",
+      "decision": "gate 1: round orb (study B hostileOrb)"
+    },
+    {
+      "id": "plasmaCharge",
+      "canvas": [
+        15,
+        15
+      ],
+      "pivot": [
+        7,
+        7
+      ],
+      "maxColors": 5,
+      "ramps": [
+        "plasma"
+      ],
+      "frames": [
+        "charge-1",
+        "charge-2",
+        "charge-3"
+      ],
+      "attach": "player plasmaMuzzle, drawn above the hull",
+      "role": "three charge levels gathering energy toward the plasma muzzle; each must read on every bank pose",
+      "animation": {
+        "type": "state",
+        "note": "proposal: charge accumulates while fire is held, about 0.9 s to full (levels at ~0.3 / 0.6 / 0.9 s); releasing early fires nothing"
+      }
+    },
+    {
+      "id": "plasmaReady",
+      "canvas": [
+        15,
+        15
+      ],
+      "pivot": [
+        7,
+        7
+      ],
+      "maxColors": 5,
+      "ramps": [
+        "plasma"
+      ],
+      "frames": [
+        "ready-a",
+        "ready-b"
+      ],
+      "attach": "player plasmaMuzzle, drawn above the hull",
+      "role": "ready pulse held at the muzzle while the charge is full; local, must not resemble being hit",
+      "animation": {
+        "type": "loop",
+        "order": [
+          "ready-a",
+          "ready-b"
+        ],
+        "durationsMs": [
+          120,
+          120
+        ]
+      }
+    },
+    {
+      "id": "plasmaMuzzle",
+      "canvas": [
+        19,
+        19
+      ],
+      "pivot": [
+        9,
+        9
+      ],
+      "maxColors": 5,
+      "ramps": [
+        "plasma"
+      ],
+      "frames": [
+        "muzzle-0",
+        "muzzle-1"
+      ],
+      "attach": "player plasmaMuzzle, drawn above the hull",
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          40,
+          50
+        ]
+      }
+    },
+    {
+      "id": "plasmaShot",
+      "canvas": [
+        15,
+        23
+      ],
+      "pivot": [
+        7,
+        11
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "plasma"
+      ],
+      "frames": [
+        "shot-0",
+        "shot-1",
+        "shot-2",
+        "shot-3"
+      ],
+      "role": "charged plasma projectile core: broad cyan/teal capsule with a hot centre and turbulent edge; the trailing energy is separate (code-drawn fading particles in the plasma ramp), subordinate to the core",
+      "bounds": {
+        "damage": [
+          11,
+          19
+        ],
+        "glow": [
+          13,
+          21
+        ]
+      },
+      "animation": {
+        "type": "loop",
+        "order": [
+          "shot-0",
+          "shot-1",
+          "shot-2",
+          "shot-3"
+        ],
+        "durationsMs": [
+          60,
+          60,
+          60,
+          60
+        ]
+      },
+      "proposal": "core canvas from FEEDBACK.md priority 2; damage rect [11,19] covers the hot front (study B), for the consumer to confirm"
+    },
+    {
+      "id": "plasmaImpact",
+      "canvas": [
+        35,
+        35
+      ],
+      "pivot": [
+        17,
+        17
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "plasma",
+        "outline"
+      ],
+      "frames": [
+        "impact-0",
+        "impact-1",
+        "impact-2",
+        "impact-3",
+        "impact-4",
+        "impact-5"
+      ],
+      "role": "plasma impact: hot contact burst and expanding fragments, distinct from the orange explosion",
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          40,
+          45,
+          55,
+          60,
+          65,
+          75
+        ]
+      }
+    },
+    {
+      "id": "nova",
+      "pivot": "centre of each frame",
+      "maxColors": 6,
+      "ramps": [
+        "nova",
+        "outline"
+      ],
+      "frames": [
+        "ignite-0",
+        "ignite-1",
+        "expand-0",
+        "expand-1",
+        "expand-2",
+        "expand-3",
+        "expand-4",
+        "expand-5",
+        "fade-0",
+        "fade-1",
+        "fade-2",
+        "fade-3"
+      ],
+      "canvases": [
+        [
+          15,
+          15
+        ],
+        [
+          23,
+          23
+        ],
+        [
+          83,
+          83
+        ],
+        [
+          193,
+          193
+        ],
+        [
+          323,
+          323
+        ],
+        [
+          473,
+          473
+        ],
+        [
+          643,
+          643
+        ],
+        [
+          823,
+          823
+        ],
+        [
+          1025,
+          1025
+        ],
+        [
+          1205,
+          1205
+        ],
+        [
+          1415,
+          1415
+        ],
+        [
+          1545,
+          1545
+        ]
+      ],
+      "radii": {
+        "note": "proposal: outer ring radius per frame, px from the origin. Canvas = 2R+3 for ignite/expand frames (1 px margin) and 2(R+12)+1 for fade frames (embers drift up to 10 px outward). Band width: 4 px at r10, 5 at r40, 8 at r110, 9 from r200 on, as 1 px white front + 1-2 yellow + gold body + 1-2 orange, with inner tabs up to 3 px (study C)",
+        "outer": [
+          6,
+          10,
+          40,
+          95,
+          160,
+          235,
+          320,
+          410,
+          500,
+          590,
+          695,
+          760
+        ],
+        "requiredMax": 694,
+        "derivation": "farthest visible corner from any legal player position: player clamp [24..616]x[57..319] in the 640x360 view (the 480x270 clamp scaled by 4/3); the worst case is a low origin to a top corner, (24,319) to (640,0) = 693.7 px, so fade-2 (r695) is the corner-reach frame",
+        "staging": "re-staged after Phase 2 build 1: from the screen centre the farthest visible point is ~406 px, so the coherent ring now ends at r410 (expand-5) and thinning starts on screen; the corner reach (690) falls on fade-2, so fade-2 keeps ~40% of the circumference with its front intact on the kept arcs. Trade-off recorded for gate 2: from a central origin the farthest visible point is ~406-452 px, so the fade frames (r500+) are seen only when the player is near an edge or corner; thinning from r300-400 would show dissipation in normal play but weaken the corner reach"
+      },
+      "origin": "fixed at the player position when the nova is triggered; the ring does not follow the ship",
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          40,
+          40,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          60,
+          60,
+          60,
+          60
+        ],
+        "totalMs": 620,
+        "note": "proposal from FEEDBACK.md priority 3; the bullet-clear/damage event fires on trigger, not after the ignition frames"
+      },
+      "layering": "above hulls, smoke and the explosion; below hostile bullet cores, the beam lane and the HUD; interior stays transparent",
+      "reducedMotion": "a quieter alternative with an equally clear activation cue is delivered with the frames (Phase 2)",
+      "storage": "gate 1 decision: delivered as full frames in the strip; the consumer packs them into a sparse 32x32 tile atlas (only non-empty tiles, with offsets), about 1.7 M texels",
+      "fade": "fade-0 (r500) keeps ~75% of the circumference with chunks up to 5-6 px under an intact white front; fade-1 (r590) ~55%, chunks up to 4 px; fade-2 (r690) ~40%, chunks up to 3 px, front intact on kept arcs; fade-3 (r760) ~20%, mostly embers"
+    },
+    {
+      "id": "novaCalm",
+      "canvas": [
+        223,
+        223
+      ],
+      "pivot": [
+        111,
+        111
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "nova",
+        "outline"
+      ],
+      "frames": [
+        "calm-ring",
+        "calm-broken"
+      ],
+      "role": "reduced-motion / low-flash nova: ignite-1 of the nova strip is held about 120 ms at the ship as a local flare, then one thin static ring at r=110 (1 px white front + 1 px gold) is shown, swapped once for its broken version; cleared bullets become in-place ember clusters (consumer)",
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          150,
+          150
+        ]
+      },
+      "source": "source/novaCalm.py imports the ring geometry from source/nova.py"
+    },
+    {
+      "id": "interceptor",
+      "replaces": "interceptor.png",
+      "canvas": [
+        27,
+        23
+      ],
+      "pivot": [
+        13,
+        11
+      ],
+      "maxColors": 12,
+      "ramps": [
+        "outline",
+        "steel",
+        "raider"
+      ],
+      "frames": [
+        "interceptor"
+      ]
+    },
+    {
+      "id": "dart",
+      "usedBy": "Sweeper",
+      "replaces": "dart.png",
+      "canvas": [
+        13,
+        25
+      ],
+      "pivot": [
+        6,
+        12
+      ],
+      "maxColors": 10,
+      "ramps": [
+        "outline",
+        "steel",
+        "raider"
+      ],
+      "frames": [
+        "dart"
+      ],
+      "sockets": {
+        "muzzle": [
+          0,
+          12
+        ]
+      }
+    },
+    {
+      "id": "gunship",
+      "replaces": "gunship.png",
+      "canvas": [
+        39,
+        35
+      ],
+      "pivot": [
+        19,
+        15
+      ],
+      "maxColors": 17,
+      "ramps": [
+        "outline",
+        "steel",
+        "brass",
+        "violet",
+        "fire",
+        "needle"
+      ],
+      "frames": [
+        "idle",
+        "fire",
+        "vent-a",
+        "vent-b"
+      ],
+      "sockets": {
+        "leftMuzzle": [
+          -15,
+          16
+        ],
+        "rightMuzzle": [
+          15,
+          16
+        ],
+        "reactor": [
+          0,
+          -3
+        ]
+      },
+      "states": "idle; fire = recoil (barrels and collars 1-2 px up/back, muzzle flash in the needle ramp at the muzzle sockets); vent-a/vent-b = charge vent (reactor housing opens, fire-ramp glow) shown before the volley as the telegraph",
+      "animation": {
+        "type": "state",
+        "note": "proposal: vent-a 120 ms, vent-b 120 ms (looped twice as telegraph), fire 70 ms, back to idle"
+      },
+      "canvasNote": "grew from 39x31 to 39x35 (pivot unchanged) so the fire frame's muzzle flash has rows 31-34; the hull and sockets are unchanged",
+      "socketNote": "muzzles are the first transparent pixel under the barrels' closing outline in idle (row 31); in the fire frame they land inside the flash"
+    },
+    {
+      "id": "warden",
+      "replaces": "warden.png",
+      "canvas": [
+        33,
+        31
+      ],
+      "pivot": [
+        16,
+        15
+      ],
+      "maxColors": 14,
+      "ramps": [
+        "outline",
+        "violet",
+        "raider",
+        "brass"
+      ],
+      "frames": [
+        "warden"
+      ],
+      "sockets": {
+        "leftMuzzle": [
+          -8,
+          10
+        ],
+        "rightMuzzle": [
+          8,
+          10
+        ]
+      }
+    },
+    {
+      "id": "minelayer",
+      "replaces": "minelayer.png",
+      "canvas": [
+        29,
+        29
+      ],
+      "pivot": [
+        14,
+        14
+      ],
+      "maxColors": 12,
+      "ramps": [
+        "outline",
+        "olive",
+        "brass",
+        "steel"
+      ],
+      "frames": [
+        "minelayer"
+      ],
+      "sockets": {
+        "mineRelease": [
+          0,
+          10
+        ]
+      }
+    },
+    {
+      "id": "gatebreaker",
+      "replaces": "gatebreaker.png",
+      "canvas": [
+        159,
+        79
+      ],
+      "pivot": [
+        79,
+        39
+      ],
+      "maxColors": 24,
+      "ramps": [
+        "outline",
+        "steel",
+        "navy",
+        "raider",
+        "brass",
+        "fire"
+      ],
+      "frames": [
+        "idle",
+        "telegraph",
+        "wreck-1",
+        "wreck-2",
+        "wreck-3"
+      ],
+      "sockets": {
+        "core": [
+          0,
+          1
+        ],
+        "leftTurret": [
+          -47,
+          4
+        ],
+        "rightTurret": [
+          47,
+          4
+        ]
+      },
+      "states": "hull only; the turret heads and barrels live in gatebreakerTurret. idle; telegraph = the core brightens with a fire[4] centre (cue for the hull's curtain and ring attacks); wreck-1/2/3 = staged destruction (plates cracked and dark, fires in the seams, core gone) shown at 2/3, 1/3 and 0 HP. The turret wells stay drawn in every hull frame so a dead turret's 'down' frame sits in a housing.",
+      "animation": {
+        "type": "state",
+        "note": "proposal: telegraph held for the 0.55 s cue; wreck frames are hull states"
+      }
+    },
+    {
+      "id": "gatebreakerTurret",
+      "canvas": [
+        27,
+        45
+      ],
+      "pivot": [
+        13,
+        14
+      ],
+      "maxColors": 20,
+      "ramps": [
+        "outline",
+        "steel",
+        "navy",
+        "raider",
+        "brass",
+        "fire"
+      ],
+      "frames": [
+        "idle",
+        "telegraph",
+        "firing",
+        "down"
+      ],
+      "attach": "one instance per gatebreaker leftTurret / rightTurret socket, drawn above the hull; the right instance is drawn flipped in x (lighting is top-down, so the flip is safe; this keeps the off-centre mantlet border mirrored as in the approved art). The game shows idle/telegraph/firing while that turret lives and 'down' once it is destroyed",
+      "states": "idle = the approved turret head, collar and barrels; telegraph = rim and bolts glow in the fire ramp, barrel tips fire[3]; firing = barrels 2 px up, housing compressed 1 px, 5x5 muzzle flashes at the muzzle sockets; down = charred, cracked housing with a torn breach, barrel stubs only, a small persistent fire",
+      "sockets": {
+        "muzzles": [
+          [
+            -3,
+            29
+          ],
+          [
+            3,
+            29
+          ]
+        ]
+      },
+      "animation": {
+        "type": "state",
+        "note": "proposal: telegraph held for the 0.55 s cue, firing 90 ms"
+      },
+      "socketNote": "muzzles are the first transparent pixel under each barrel in idle; for the flipped right instance negate dx"
+    },
+    {
+      "id": "kilnHead",
+      "replaces": "kiln-head.png",
+      "canvas": [
+        65,
+        47
+      ],
+      "pivot": [
+        32,
+        23
+      ],
+      "maxColors": 20,
+      "ramps": [
+        "outline",
+        "steel",
+        "rust",
+        "fire"
+      ],
+      "frames": [
+        "kilnHead"
+      ],
       "orientation": "same as today's source; the engine rotates it by exactly -90 degrees",
-      "sockets": { "core": [0, 0], "rearCoupling": [0, -23], "drill": [0, 21], "leftCutter": [-22, 13], "rightCutter": [22, 13] } },
-    { "id": "kilnSegment", "replaces": "kiln-segment.png", "canvas": [41, 23], "pivot": [20, 11], "maxColors": 14,
-      "ramps": ["outline", "steel", "rust"], "frames": ["kilnSegment"],
+      "sockets": {
+        "core": [
+          0,
+          0
+        ],
+        "rearCoupling": [
+          0,
+          -23
+        ],
+        "drill": [
+          0,
+          21
+        ],
+        "leftCutter": [
+          -22,
+          13
+        ],
+        "rightCutter": [
+          22,
+          13
+        ]
+      }
+    },
+    {
+      "id": "kilnSegment",
+      "replaces": "kiln-segment.png",
+      "canvas": [
+        41,
+        23
+      ],
+      "pivot": [
+        20,
+        11
+      ],
+      "maxColors": 14,
+      "ramps": [
+        "outline",
+        "steel",
+        "rust"
+      ],
+      "frames": [
+        "kilnSegment"
+      ],
       "orientation": "same as kilnHead",
-      "sockets": { "core": [0, 0], "frontCoupling": [0, 11], "rearCoupling": [0, -11] } },
-    { "id": "starfallEngine", "replaces": "starfall-engine.png", "canvas": [143, 111], "pivot": [71, 48], "maxColors": 24,
-      "ramps": ["outline", "engine", "glow", "bone", "steel"], "frames": ["starfallEngine"],
-      "sockets": { "leftEmitter": [-41, -1], "rightEmitter": [41, -1], "core": [0, 0], "lowerEmitter": [0, 30] } },
-    { "id": "explosion", "replaces": "explosion.png", "canvas": [31, 31], "pivot": [15, 15], "maxColors": 6,
-      "ramps": ["fire", "outline"],
-      "frames": ["explosion-0", "explosion-1", "explosion-2", "explosion-3", "explosion-4", "explosion-5"],
-      "animation": { "type": "once", "durationsMs": [45, 50, 65, 65, 65, 75] } },
-    { "id": "breakwaterBackground", "replaces": "orbital-breakwater.png", "canvas": [640, 400], "pivot": [320, 200], "maxColors": 32,
-      "ramps": ["own stage palette"], "frames": ["breakwater"] },
-    { "id": "furnaceBackground", "replaces": "furnace-background.png", "canvas": [640, 400], "pivot": [320, 200], "maxColors": 32,
-      "ramps": ["own stage palette"], "frames": ["furnace"] },
-    { "id": "citadelBackground", "replaces": "citadel-background.png", "canvas": [640, 400], "pivot": [320, 200], "maxColors": 32,
-      "ramps": ["own stage palette"], "frames": ["citadel"] }
+      "sockets": {
+        "core": [
+          0,
+          0
+        ],
+        "frontCoupling": [
+          0,
+          11
+        ],
+        "rearCoupling": [
+          0,
+          -11
+        ]
+      }
+    },
+    {
+      "id": "starfallEngine",
+      "replaces": "starfall-engine.png",
+      "canvas": [
+        143,
+        111
+      ],
+      "pivot": [
+        71,
+        48
+      ],
+      "maxColors": 24,
+      "ramps": [
+        "outline",
+        "engine",
+        "glow",
+        "bone",
+        "steel"
+      ],
+      "frames": [
+        "starfallEngine"
+      ],
+      "sockets": {
+        "leftEmitter": [
+          -41,
+          -1
+        ],
+        "rightEmitter": [
+          41,
+          -1
+        ],
+        "core": [
+          0,
+          0
+        ],
+        "lowerEmitter": [
+          0,
+          30
+        ]
+      }
+    },
+    {
+      "id": "explosion",
+      "replaces": "explosion.png",
+      "canvas": [
+        31,
+        31
+      ],
+      "pivot": [
+        15,
+        15
+      ],
+      "maxColors": 6,
+      "ramps": [
+        "fire",
+        "outline"
+      ],
+      "frames": [
+        "explosion-0",
+        "explosion-1",
+        "explosion-2",
+        "explosion-3",
+        "explosion-4",
+        "explosion-5"
+      ],
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          45,
+          50,
+          65,
+          65,
+          65,
+          75
+        ]
+      },
+      "margin": "no opaque pixel on the canvas edge rows/columns"
+    },
+    {
+      "id": "hitSpark",
+      "canvas": [
+        11,
+        11
+      ],
+      "pivot": [
+        5,
+        5
+      ],
+      "maxColors": 5,
+      "ramps": [
+        "plasma"
+      ],
+      "frames": [
+        "spark-0",
+        "spark-1",
+        "spark-2"
+      ],
+      "role": "player shot hitting a hull: small cyan contact spark, drawn above the hull at the impact point",
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          30,
+          40,
+          50
+        ]
+      }
+    },
+    {
+      "id": "heavyBreakup",
+      "canvas": [
+        47,
+        47
+      ],
+      "pivot": [
+        23,
+        23
+      ],
+      "maxColors": 8,
+      "ramps": [
+        "fire",
+        "outline",
+        "steel"
+      ],
+      "frames": [
+        "breakup-0",
+        "breakup-1",
+        "breakup-2",
+        "breakup-3",
+        "breakup-4",
+        "breakup-5",
+        "breakup-6",
+        "breakup-7"
+      ],
+      "role": "mid-tier enemy death (gunship, warden, minelayer): hull splits into 3-4 plates that fly apart with fire between them, then embers; distinct from the fodder explosion",
+      "animation": {
+        "type": "once",
+        "durationsMs": [
+          45,
+          50,
+          55,
+          60,
+          65,
+          70,
+          80,
+          90
+        ]
+      }
+    },
+    {
+      "id": "breakwaterBackground",
+      "replaces": "orbital-breakwater.png",
+      "canvas": [
+        640,
+        400
+      ],
+      "pivot": [
+        320,
+        200
+      ],
+      "maxColors": 32,
+      "ramps": [
+        "own stage palette"
+      ],
+      "frames": [
+        "breakwater"
+      ]
+    },
+    {
+      "id": "furnaceBackground",
+      "replaces": "furnace-background.png",
+      "canvas": [
+        640,
+        400
+      ],
+      "pivot": [
+        320,
+        200
+      ],
+      "maxColors": 32,
+      "ramps": [
+        "own stage palette"
+      ],
+      "frames": [
+        "furnace"
+      ]
+    },
+    {
+      "id": "citadelBackground",
+      "replaces": "citadel-background.png",
+      "canvas": [
+        640,
+        400
+      ],
+      "pivot": [
+        320,
+        200
+      ],
+      "maxColors": 32,
+      "ramps": [
+        "own stage palette"
+      ],
+      "frames": [
+        "citadel"
+      ]
+    }
   ],
   "codeDrawn": {
-    "note": "Drawn with frame.rect today and already crisp; keep them in code and only change the sizes.",
-    "hostileBullet": { "ring": 9, "fill": 7, "highlight": 3, "ringColor": "#351a39", "highlightColor": "#ffeddf" },
-    "playerShot": { "width": 3, "height": 11, "color": "#ffe0a4" },
-    "pickup": { "outer": 15, "inner": 13, "cross": [9, 3] },
-    "mine": { "diamond": 13, "core": 7, "centre": 3 },
-    "playerCore": { "outer": 7, "inner": 3 }
+    "note": "Code rendering stays allowed. Projectiles now have authored sprites above (primaryLance, hostileBead, hostileNeedle, hostileOrb, plasmaShot); the renderer may draw them from those sprites or reproduce them with rects using the same ramp colours, as long as shape and size match. Shape is assigned to behaviour consistently (one shape per weapon role), never picked per shot. Dangerous cores sit above hulls, smoke and debris; trails are subordinate to the core.",
+    "beamLane": {
+      "role": "stable bright lane with a distinct pre-fire warning",
+      "width": "follows the agreed collision geometry (beam.width in the game); art adds no width",
+      "firing": {
+        "separation": "orb[0], 1 px each edge, inside the width",
+        "edge": "orb[1], 2 px",
+        "body": "orb[2]",
+        "core": "orb[3], centre 6 px",
+        "pulse": "orb[3] 6-row marks on the body/core boundary every 32 rows, scrolling down (proposal)"
+      },
+      "warning": {
+        "lane": "orb[1] at 30% opacity",
+        "boundary": "orb[2] at 75%, dashed 6 on / 4 off, scrolling",
+        "marker": "two stacked 11x7 down-triangles at the emitter end, orb[0] rim, upper orb[2], lower orb[3], blinking"
+      },
+      "proposal": "study B colour table; opacities to confirm in play"
+    },
+    "plasmaTrail": {
+      "role": "fading particles behind plasmaShot",
+      "colors": [
+        "plasma[1]",
+        "plasma[2]"
+      ],
+      "sizes": [
+        3,
+        2,
+        1
+      ]
+    },
+    "pickup": {
+      "outer": 15,
+      "inner": 13,
+      "cross": [
+        9,
+        3
+      ]
+    },
+    "mine": {
+      "diamond": 13,
+      "core": 7,
+      "centre": 3
+    },
+    "playerCore": {
+      "outer": 7,
+      "inner": 3
+    },
+    "readyCue": {
+      "role": "on-ship charge-ready cue: the plasmaReady pulse at the muzzle plus a 1 px plasma[3] rim on the prow; HUD charge bar is the consumer's",
+      "proposal": true
+    },
+    "lowHullCue": {
+      "role": "persistent low-hull warning: a 2x2 needle[1] emissive on each pod rear (rows 21-25 of the player canvas, on the aft section above the collar), blinking at ~2 Hz; separate from the damage flash",
+      "proposal": true
+    }
   },
   "gameplay": {
-    "note": "Proposals. All world constants scale by 4/3 so timing and screen-relative speeds stay as they are; collision radii follow the new sprite sizes.",
+    "note": "Proposals. All world constants scale by 4/3 so timing and screen-relative speeds stay as they are; collision radii follow the new sprite sizes. The plasma damage, cooldown/resource cost and boss interaction are design decisions to settle in play.",
     "playerRadius": 5,
     "hostileBulletRadius": 4,
-    "enemyRadius": {
-      "Interceptor": 9, "Gunship": 13, "Sweeper": 8, "Gatebreaker": 42, "GatebreakerTurret": 15,
-      "Minelayer": 11, "Warden": 12, "Mine": 7, "KilnHead": 21, "KilnSegment": 14,
-      "StarfallEngine": 38, "EngineEmitter": 13
+    "plasma": {
+      "chargeSeconds": 0.9,
+      "release": "full charge only; early release fires nothing; primary fire keeps running while held",
+      "damageRadius": 5
     },
-    "bossWeakpointScale": { "gatebreaker": 1.445, "starfallEngine": 1.375 }
+    "enemyRadius": {
+      "Interceptor": 9,
+      "Gunship": 13,
+      "Sweeper": 8,
+      "Gatebreaker": 42,
+      "GatebreakerTurret": 15,
+      "Minelayer": 11,
+      "Warden": 12,
+      "Mine": 7,
+      "KilnHead": 21,
+      "KilnSegment": 14,
+      "StarfallEngine": 38,
+      "EngineEmitter": 13
+    },
+    "bossWeakpointScale": {
+      "gatebreaker": 1.445,
+      "starfallEngine": 1.375
+    }
   }
 }

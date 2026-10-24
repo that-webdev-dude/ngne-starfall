@@ -4,9 +4,13 @@ A sprite source (source/<id>.py) draws each frame as a list of equal-length stri
 character per pixel, and maps characters to palette entries with a legend:
     legend = {".": None, "o": ("outline", 0), "s": ("steel", 2)}   # (ramp name, index in ramp)
 Backgrounds may instead map characters (or pass integer arrays) to their own "#rrggbb" colours."""
-import json
+import json, shutil, sys
 from pathlib import Path
 from PIL import Image
+sys.dont_write_bytecode = True
+# `python -I` ignores PYTHONDONTWRITEBYTECODE and this module's own .pyc is written while it is
+# being imported, so remove the cache folder here to keep art/rev01 clean.
+shutil.rmtree(Path(__file__).resolve().parent / "__pycache__", ignore_errors=True)
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = json.loads((ROOT / "spec.json").read_text())
@@ -34,15 +38,23 @@ def grid_image(rows: list[str], legend: dict) -> Image.Image:
     return image
 
 def strip(frames: list[Image.Image]) -> Image.Image:
-    w, h = frames[0].size
-    out = Image.new("RGBA", (w * len(frames), h))
-    for i, f in enumerate(frames): out.paste(f, (i * w, 0))
+    """Frames left to right, top-aligned; the strip is as tall as the tallest frame."""
+    out = Image.new("RGBA", (sum(f.width for f in frames), max(f.height for f in frames)))
+    x = 0
+    for f in frames: out.paste(f, (x, 0)); x += f.width
     return out
 
+def canvases(sprite_id: str) -> list[tuple[int, int]]:
+    """One (w, h) per frame: the shared 'canvas', or the per-frame 'canvases' list."""
+    s = sprite(sprite_id)
+    if "canvases" in s: return [tuple(c) for c in s["canvases"]]
+    return [tuple(s["canvas"])] * len(s["frames"])
+
 def save_sprite(sprite_id: str, frames: list[Image.Image]) -> Path:
-    """Write sprites/<id>.png (frames left to right) after checking the canvas size."""
-    w, h = sprite(sprite_id)["canvas"]
-    for f in frames: assert f.size == (w, h), f"{sprite_id}: frame {f.size} != {(w, h)}"
+    """Write sprites/<id>.png (frames left to right, top-aligned) after checking frame count and sizes."""
+    sizes = canvases(sprite_id)
+    assert len(frames) == len(sizes), f"{sprite_id}: {len(frames)} frames, spec has {len(sizes)}"
+    for f, size in zip(frames, sizes): assert f.size == size, f"{sprite_id}: frame {f.size} != {size}"
     path = ROOT / "sprites" / f"{sprite_id}.png"
     path.parent.mkdir(exist_ok=True)
     strip(frames).save(path)
