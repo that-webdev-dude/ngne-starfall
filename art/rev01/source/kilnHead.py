@@ -1,0 +1,65 @@
+import sys; from pathlib import Path; sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools")); import pixlib
+
+# Kiln Serpent head, 65x47, pivot (32,23). Canvas keeps the source orientation (stack up, drill down);
+# the engine draws it rotated -90 degrees, so canvas +x (right) is screen top and canvas top is screen left.
+# Light therefore comes from canvas +x (the right cutter/arm is the lit, screen-top side) plus a frontal fill.
+# Parts: exhaust stack = rear coupling (top centre, glowing port), chest vent, amber core on the pivot,
+# fluted drill (bottom centre), shoulder pads, hazard-striped forearms, hydraulic rods, two hooked saw cutters
+# (same disc on both sides, not mirrored, so the light stays on +x).
+LEGEND = {
+    ".": None,
+    "o": ("outline", 0), "n": ("outline", 1),
+    "a": ("steel", 0), "b": ("steel", 1), "c": ("steel", 2), "d": ("steel", 3),
+    "1": ("rust", 0), "2": ("rust", 1), "3": ("rust", 2), "4": ("rust", 3),
+    "5": ("fire", 0), "6": ("fire", 1), "7": ("fire", 2), "8": ("fire", 3), "9": ("fire", 4),
+}
+ROWS = [
+    "...........................oabbbccccdo...........................",
+    "..........................oabbooooocddo..........................",
+    ".........................oabbobnnnnocddo.........................",
+    ".........................oabbob565nocddo.........................",
+    ".........................oabbobnnnnocddo.........................",
+    "...............oooooooooooaabbooooocdddooooooooooo...............",
+    "..............o22222222222naabbbcccdddn33333333333o..............",
+    ".............o222233333333nonnnnnnnnnon333333334444o.............",
+    "............o2222233333n2233bbbbcccdd3344n3333344444o............",
+    "...........o2222233333n2223333333333333444n3333344444o...........",
+    "..........o2222223333n22a233333333333334c44n3333444444o..........",
+    "..........o222222333n2222233nnnnnnnnn3344444n333444444o..........",
+    ".........oo222a23333n2222233bbbcccddd3344444n33334c444oo.........",
+    "........o22n22223333n2222233nnnnnnnnn3344444n33334444n44o........",
+    ".......o223n22223333n2222223bbbcccddd3444444n33334444n344o.......",
+    "......o2233nnnnnnnnnn2222223nnnnnnnnn3444444nnnnnnnnnn3344o......",
+    ".....o22333333334nnnn22222233333333333444444nnnn23333333344o.....",
+    "....o223333333334nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn233333333344o....",
+    "...o22nn44nn44334bbbb22222233333333333444444cccc23344nn44nn44o...",
+    "..o223n44nn44n334cccc22nnn2333abccd3334nnn44dddd233n44nn44n344o..",
+    "..o22344nn44nn334aaaa22aaa233an676nd334bbb44cccc233nn44nn44344o..",
+    "..o2234nn44nn4334nnnn22nnn23an67876nd34nnn44nnnn2334nn44nn4344o..",
+    "..o223nn44nn44334nnnn22aaa22a6789876d44bbb44nnnn23344nn44nn344o..",
+    "..o223n44nn44n334bbbb22nnn22a7899987d44nnn44cccc233n44nn44n344o..",
+    "..o22344nn44nn334cccc22aaa22a6789876d44bbb44dddd233nn44nn44344o..",
+    "..o2234nn44nn4334aaaa22nnn22an67876nd44nnn44cccc2334nn44nn4344o..",
+    "..o223nn44nn44334nnnn22222223an676nd34444444nnnn23344nn44nn344o..",
+    "..o22nnnnnnnnnnn4nnnno22222233abbcc33444444onnnn2nnnnnnnnnnn44o..",
+    "..o2233a3333a334onnnnoo2222233333333344444oonnnno233c3333c3344o..",
+    "...o22333333334oonnnno.o22223333333334444o.onnnnoo23333333344o...",
+    "...oc223333334dddoooo...o222233333334444o...oooocoo233333344do...",
+    "...obcaabbbccaado........oo2abbbcccdd4oo.......obcaabbbccaado....",
+    "...obabbbbbccccao..........onaaabbbcno.........obabbbbbccccao....",
+    "...oaabbbbbccccaao.........obnnccabddo.........oaabbbbbccccaao...",
+    "...oabbbbbdcccccado........onnbcaaddbo.........oabbbbbdcccccado..",
+    ".oooabbbbcddccccaddo........obbnacdbo........oooabbbbcddccccaddo.",
+    "obbbabbbccnddcccadddo.......obnnccbbo.......obbbabbbccnddcccadddo",
+    ".obbabbbbccdccccaooo........onnbcabdo........obbabbbbccdccccaooo.",
+    "..obabbbbbcbbcccao...........obbabdo..........obabbbbbcbbcccao...",
+    "...oaabbbbbbbbbaao...........obnaddo...........oaabbbbbbbbbaao...",
+    "....oabbbbbbbbbado...........onncdbo............oabbbbbbbbbado...",
+    "....obaabbbbbaacco............obcbo.............obaabbbbbaacco...",
+    "...obbbaaaaaaaooco............obabo............obbbaaaaaaaooco...",
+    "....oooooobcco..o.............onado.............oooooobcco..o....",
+    ".........obco..................obo...................obco........",
+    ".........obo....................o....................obo.........",
+    "..........o...........................................o..........",
+]
+pixlib.save_sprite("kilnHead", [pixlib.grid_image(ROWS, LEGEND)])
