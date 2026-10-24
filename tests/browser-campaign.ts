@@ -5,6 +5,7 @@ import { BrowserGame, type WorldAccess } from "@ngne/core";
 import { VIEW } from "../src/config/view.ts";
 import { STAGES } from "../src/config/stages.ts";
 import { createCampaign } from "../src/services/campaign.ts";
+import { installDisplay } from "../src/services/display.ts";
 import { createBotMemory, observeCampaign, decideCampaignKeys } from "./helpers/campaign-bot.ts";
 import type { Progress, ProgressCommand, Session } from "../src/world/session.ts";
 
@@ -54,7 +55,8 @@ app.game.prepare = (definition, options) => prepare(STAGES.some(stage => stage.i
   },
 } : definition, options);
 const campaign = createCampaign(session, app.audio, () => app.game);
-window.addEventListener("pagehide", () => { void app.dispose().catch(report); }, { once: true });
+const releaseDisplay = installDisplay(canvas);
+window.addEventListener("pagehide", () => { releaseDisplay(); void app.dispose().catch(report); }, { once: true });
 canvas.addEventListener("pointerdown", () => { canvas.focus(); void app.audio.unlock().catch(report); });
 try { await app.start(await app.game.prepare(campaign.title, { key: "verification-title" })); canvas.focus(); }
 catch (error) { report(error); output.textContent = JSON.stringify({ errors }); }

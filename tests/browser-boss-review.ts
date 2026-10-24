@@ -8,6 +8,7 @@ import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";
 import { createCombatSound } from "../src/services/sound.ts";
 import { stageAssets } from "../src/services/stage-assets.ts";
+import { installDisplay } from "../src/services/display.ts";
 import type { Progress, ProgressCommand, Session } from "../src/world/session.ts";
 const stageIndex = new URLSearchParams(location.search).get("stage") === "3" ? 2 : 1;
 const ending = new URLSearchParams(location.search).has("result");
@@ -25,6 +26,7 @@ let result: PreparedScene | undefined = ending ? await app.game.prepare(menuScen
 const actual = stageScene(session, { assets: stageAssets(STAGES[stageIndex]), sound: scene => createCombatSound(scene, app.audio, session.settings, stageIndex), take: purpose => { if (purpose !== "result") return; const candidate = result; result = undefined; return candidate; } }, stageIndex);
 await app.start(await app.game.prepare({ ...actual, setup(scene) {
   actual.setup(scene); session.run!.seconds = STAGES[stageIndex].bossAt - .2;
-  if (ending) { Object.assign(session.run!, { phase: "clear", score: 191550, kills: 104, banner: "STARFALL / VICTORY", bannerTime: 5 }); session.best = 191550; }
+  if (ending) { Object.assign(session.run!, { phase: "clear", score: 191550, kills: 104, banner: "STARFALL / VICTORY", bannerTime: 5, bannerKind: "sector" }); session.best = 191550; }
 } }, { key: "boss-presentation" }));
-window.addEventListener("pagehide", () => { void app.dispose(); }, { once: true });
+const releaseDisplay = installDisplay(canvas);
+window.addEventListener("pagehide", () => { releaseDisplay(); void app.dispose(); }, { once: true });

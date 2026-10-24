@@ -2,7 +2,9 @@ import type { Entity, SchemaQueryViews } from "@ngne/core";
 import { Beam, Bullet, Enemy, Pickup, Pose } from "../components/combat.ts";
 import { enemySpec, isBoss, isBossPart, isOrdinaryEnemy } from "../config/enemies.ts";
 import { COMBAT } from "../config/encounters.ts";
+import { fromLegacy as w } from "../config/view.ts";
 import { spawnRepair } from "../entities/combat.ts";
+import { EFFECT, killEffect } from "../render/player-fx-model.ts";
 import { segmentCircle } from "../world/patterns.ts";
 import type { CombatContext } from "./combat-context.ts";
 
@@ -13,9 +15,10 @@ export function installCombatCollision({ scene, run, sound, burst, stage, hostil
   const targets: { p: Views["pose"]; e: Views["enemy"]; row: number; entity: Entity }[] = [];
   const damagePlayer = () => {
     if (run.invulnerable > 0 || run.phase === "clear" || run.phase === "dead") return;
-    run.hull--; run.invulnerable = 1.2; run.combo = 1; run.comboTimer = 0; run.shake = 3.5; run.flash = 0.14;
-    scene.freeze(4); sound.damage(); burst(run.x, run.y, 0x83edff, 24, true);
-    if (run.hull <= 0) { run.phase = "dead"; run.shake = 6; sound.death(); burst(run.x, run.y, 0xffcc9a, 65, true); }
+    run.hull--; run.invulnerable = 1.2; run.combo = 1; run.comboTimer = 0; run.shake = w(3.5); run.flash = 0.14;
+    // No fireball on the player: the damage cue is playerFlash/playerCalm and death plays playerDeath (render/player-fx.ts).
+    scene.freeze(4); sound.damage(); burst(run.x, run.y, 0x83edff, 24);
+    if (run.hull <= 0) { run.phase = "dead"; run.shake = w(6); sound.death(); burst(run.x, run.y, 0xffcc9a, 65); }
   };
   scene.system(({ dt }) => {
     if (run.phase === "clear" || run.phase === "dead") return;
@@ -38,12 +41,12 @@ export function installCombatCollision({ scene, run, sound, burst, stage, hostil
             e.hp[er] -= b.damage[row]; e.flash[er] = 0.07;
             if (isBossPart(e.kind[er]) && boss) boss.e.hp[boss.row] -= b.damage[row] * 0.65;
             b.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); sound.hit();
-            burst(p.x[row], p.y[row], 0xffd9a5, 3); break;
+            burst(p.x[row], p.y[row], 0xffd9a5, 3, EFFECT.hitSpark); break;
           }
         } else if (segmentCircle(p.px[row], p.py[row], p.x[row], p.y[row], run.x, run.y, COMBAT.playerRadius + b.radius[row])) {
           b.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); damagePlayer();
         }
-        if (b.active[row] && (p.x[row] < -25 || p.x[row] > 505 || p.y[row] < -30 || p.y[row] > 300 || b.age[row] > 10)) {
+        if (b.active[row] && (p.x[row] < w(-25) || p.x[row] > w(505) || p.y[row] < w(-30) || p.y[row] > w(300) || b.age[row] > 10)) {
           b.active[row] = 0; scene.world.despawn(chunk.entityAt(row));
         }
       }
@@ -59,14 +62,14 @@ export function installCombatCollision({ scene, run, sound, burst, stage, hostil
         e.active[row] = 0; scene.world.despawn(entity);
         const kind = e.kind[row], points = enemySpec(kind).score * run.combo;
         run.score += points; run.kills++; run.combo = Math.min(COMBAT.maxChain, run.combo + 1); run.comboTimer = COMBAT.chainSeconds;
-        run.scorePops.push({ x: p.x[row] - 8, y: p.y[row] - 12, text: `+${points}`, life: 0.8 });
+        run.scorePops.push({ x: p.x[row] - w(8), y: p.y[row] - w(12), text: `+${points}`, life: 0.8 });
         const large = isBoss(kind) || isBossPart(kind);
-        burst(p.x[row], p.y[row], large ? 0xffc57d : 0xff9c7d, large ? 55 : 18, true);
-        sound.kill(large); run.shake = Math.max(run.shake, large ? 4 : 0.8);
+        burst(p.x[row], p.y[row], large ? 0xffc57d : 0xff9c7d, large ? 55 : 18, killEffect(kind));
+        sound.kill(large); run.shake = Math.max(run.shake, w(large ? 4 : 0.8));
         if (isBossPart(kind)) scene.freeze(3);
         if (isOrdinaryEnemy(kind) && drops.next() < 0.04) spawnRepair(scene.world, p.x[row], p.y[row]);
         if (isBoss(kind) && run.hull > 0) {
-          run.phase = "clear"; run.bossHealth = 0; run.banner = stage.index === 2 ? "STARFALL / VICTORY" : `${stage.name} SECURED`; run.bannerTime = 5; run.shake = 6; run.flash = 0.2;
+          run.phase = "clear"; run.bossHealth = 0; run.banner = stage.index === 2 ? "STARFALL / VICTORY" : `${stage.name} SECURED`; run.bannerTime = 5; run.bannerKind = "sector"; run.shake = w(6); run.flash = 0.2;
           run.score += stage.boss.clearBonus + run.hull * 500;
           run.bossDeathX = p.x[row]; run.bossDeathY = p.y[row]; scene.freeze(9);
           hostiles.clear({ enemies: true, playerBullets: true });
@@ -81,10 +84,10 @@ export function installCombatCollision({ scene, run, sound, burst, stage, hostil
         if (!item.active[row]) continue;
         p.px[row] = p.x[row]; p.py[row] = p.y[row]; item.age[row] += dt;
         const distance = Math.hypot(run.x - p.x[row], run.y - p.y[row]);
-        if (distance < 55) { p.x[row] += (run.x - p.x[row]) * dt * 4; p.y[row] += (run.y - p.y[row]) * dt * 4; }
-        else p.y[row] += dt * 25;
-        if (distance < 13) { run.hull = Math.min(5, run.hull + 1); run.score += 150; item.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); burst(p.x[row], p.y[row], 0x85f7af, 14); run.scorePops.push({ x: p.x[row] - 12, y: p.y[row] - 10, text: "REPAIR", life: 1 }); }
-        else if (p.y[row] > 290) { item.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); }
+        if (distance < w(55)) { p.x[row] += (run.x - p.x[row]) * dt * 4; p.y[row] += (run.y - p.y[row]) * dt * 4; }
+        else p.y[row] += dt * w(25);
+        if (distance < w(13)) { run.hull = Math.min(5, run.hull + 1); run.score += 150; item.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); burst(p.x[row], p.y[row], 0x85f7af, 14); run.scorePops.push({ x: p.x[row] - w(12), y: p.y[row] - w(10), text: "REPAIR", life: 1 }); }
+        else if (p.y[row] > w(290)) { item.active[row] = 0; scene.world.despawn(chunk.entityAt(row)); }
       }
     });
     // Borrowed columns stay within this update's commit epoch.

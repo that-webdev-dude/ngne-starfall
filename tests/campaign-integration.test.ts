@@ -3,11 +3,13 @@ import { strict as assert } from "node:assert";
 import { Game, emptyInput, type Asset, type PreparedScene, type SceneSetup, type WorldAccess } from "@ngne/core";
 import { Beam, Bullet, Enemy, Pose } from "../src/components/combat.ts";
 import { STAGES } from "../src/config/stages.ts";
-import { Kind } from "../src/config/enemies.ts";
+import { Kind, enemySpec } from "../src/config/enemies.ts";
+import { EMITTER_SOCKETS } from "../src/bosses/starfall-engine.ts";
+import { REV01_GAMEPLAY } from "../src/config/rev01-gameplay.ts";
+import { fromLegacy as w } from "../src/config/view.ts";
 import { spawnBeam, spawnBullet, spawnEnemy } from "../src/entities/combat.ts";
 import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";
-import { engineSockets } from "../src/services/campaign-assets.ts";
 import type { CombatSound } from "../src/systems/combat-context.ts";
 import type { Progress, ProgressCommand, RunState, Session } from "../src/world/session.ts";
 
@@ -56,7 +58,7 @@ function hostileCount(world: WorldAccess): number {
 
 const defeatedBoss: Action = (scene, run) => {
   run.phase = "boss";
-  spawnEnemy(scene.world, run, [Kind.Gatebreaker, Kind.KilnHead, Kind.StarfallEngine][run.stageIndex], 240, 65, { hp: 0 });
+  spawnEnemy(scene.world, run, [Kind.Gatebreaker, Kind.KilnHead, Kind.StarfallEngine][run.stageIndex], w(240), w(65), { hp: 0 });
 };
 
 test("each stage awards its clear and hull bonuses exactly once through actual boss death", async () => {
@@ -124,7 +126,7 @@ test("real result menus carry score across three stages, retry restores entry sc
 });
 
 test("later-stage pause freezes beams and resume or title replacement releases correct scene resources", async () => {
-  const h = await campaignFixture(2, 12000, (scene) => { spawnBeam(scene.world, 80); });
+  const h = await campaignFixture(2, 12000, (scene) => { spawnBeam(scene.world, w(80)); });
   try {
     h.candidates.set("pause", await h.game.prepare(menuScene("pause", h.session, h.take), { key: "pause" }));
     h.press("Escape");
@@ -150,7 +152,7 @@ test("later-stage pause freezes beams and resume or title replacement releases c
 
 test("later enemy families differ: delayed mine versus charged lane, with delayed beam damage and Nova cancellation", async () => {
   for (const kind of [Kind.Minelayer, Kind.Warden]) {
-    const h = await campaignFixture(1, 0, (scene, run) => { run.invulnerable = 0; spawnEnemy(scene.world, run, kind, 100, 65, { cooldown: 0 }); });
+    const h = await campaignFixture(1, 0, (scene, run) => { run.invulnerable = 0; spawnEnemy(scene.world, run, kind, w(100), w(65), { cooldown: 0 }); });
     try {
       h.ticks(1);
       assert.equal(hostileCount(h.world), 0, "neither family creates immediate damaging bullets");
@@ -180,7 +182,7 @@ test("mines damage on contact, can be shot down, and Nova suppresses a due deton
   for (const mode of ["contact", "shoot", "nova"]) {
     const h = await campaignFixture(1, 0, (scene, run) => {
       run.invulnerable = 0;
-      const x = mode === "contact" ? run.x : 100, y = mode === "contact" ? run.y : 140;
+      const x = mode === "contact" ? run.x : w(100), y = mode === "contact" ? run.y : w(140);
       spawnEnemy(scene.world, run, Kind.Mine, x, y, { cooldown: mode === "nova" ? 0 : 1.8 });
       if (mode === "shoot") for (let i = 0; i < 2; i++) spawnBullet(scene.world, x, y, 0, 0, 0);
     });
@@ -197,11 +199,12 @@ test("mines damage on contact, can be shot down, and Nova suppresses a due deton
 });
 
 test("expired beams and charging beams at stage clear release their entities", async () => {
-  const h = await campaignFixture(2, 0, (scene) => { spawnBeam(scene.world, 80, 12, 0.1, 0.1); });
+  const lane = REV01_GAMEPLAY.beamWidth.starfallEngine;
+  const h = await campaignFixture(2, 0, (scene) => { spawnBeam(scene.world, w(80), lane, 0.1, 0.1); });
   try {
     h.ticks(13);
     assert.equal(h.world.query(Beam).size, 0);
-    h.queue.push((scene, run) => { spawnBeam(scene.world, 80, 12, 10, 10); defeatedBoss(scene, run); });
+    h.queue.push((scene, run) => { spawnBeam(scene.world, w(80), lane, 10, 10); defeatedBoss(scene, run); });
     h.ticks(2);
     assert.equal(h.session.run!.phase, "clear");
     assert.equal(h.world.query(Beam).size, 0);
@@ -211,10 +214,10 @@ test("expired beams and charging beams at stage clear release their entities", a
 test("Kiln sections are destructible, transfer core damage and suppress their contribution to future rings", async () => {
   const h = await campaignFixture(1, 0, (scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, Kind.KilnHead, 275, 65, { hp: STAGES[1].boss.hp });
-    spawnEnemy(scene.world, run, Kind.KilnSegment, 227.55, 70.99, { hp: 1, pattern: 0 });
-    for (const pattern of [1, 2]) spawnEnemy(scene.world, run, Kind.KilnSegment, 240, -40, { hp: 55, pattern });
-    spawnBullet(scene.world, 227.55, 70.99, 0, 0, 0);
+    spawnEnemy(scene.world, run, Kind.KilnHead, w(275), w(65), { hp: STAGES[1].boss.hp });
+    spawnEnemy(scene.world, run, Kind.KilnSegment, w(227.55), w(70.99), { hp: 1, pattern: 0 });
+    for (const pattern of [1, 2]) spawnEnemy(scene.world, run, Kind.KilnSegment, w(240), w(-40), { hp: 55, pattern });
+    spawnBullet(scene.world, w(227.55), w(70.99), 0, 0, 0);
   });
   try {
     h.ticks(1);
@@ -231,7 +234,7 @@ test("Starfall Engine has three health phases and increasing charged lanes; emit
   for (const [hp, phase, beamCount] of [[STAGES[2].boss.hp, 1, 0], [STAGES[2].boss.hp * 2 / 3 - 1, 2, 1], [STAGES[2].boss.hp / 3 - 1, 3, 2]]) {
     const h = await campaignFixture(2, 0, (scene, run) => {
       run.phase = "boss";
-      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: Kind.StarfallEngine, hp, age: 7.2, fireIndex: 3 }));
+      scene.world.spawn(Pose.of({ x: w(240), y: w(65) }), Enemy.of({ kind: Kind.StarfallEngine, hp, age: 7.2, fireIndex: 3, radius: enemySpec(Kind.StarfallEngine).radius }));
     });
     try { h.ticks(1); assert.equal(h.session.run!.bossPhase, phase); assert.equal(h.world.query(Beam).size, beamCount); }
     finally { h.game.dispose(); }
@@ -239,8 +242,8 @@ test("Starfall Engine has three health phases and increasing charged lanes; emit
   for (const destroyed of [false, true]) {
     const h = await campaignFixture(2, 0, (scene, run) => {
       run.phase = "boss";
-      if (!destroyed) for (const [pattern, [sx, sy]] of [engineSockets().leftEmitter, engineSockets().rightEmitter].entries()) spawnEnemy(scene.world, run, Kind.EngineEmitter, 240 + sx, 65 + sy, { hp: 55, pattern });
-      scene.world.spawn(Pose.of({ x: 240, y: 65 }), Enemy.of({ kind: Kind.StarfallEngine, hp: STAGES[2].boss.hp / 3 - 1, age: 11.1, fireIndex: 6 }));
+      if (!destroyed) for (const [pattern, [sx, sy]] of EMITTER_SOCKETS.entries()) spawnEnemy(scene.world, run, Kind.EngineEmitter, w(240) + sx, w(65) + sy, { hp: 55, pattern });
+      scene.world.spawn(Pose.of({ x: w(240), y: w(65) }), Enemy.of({ kind: Kind.StarfallEngine, hp: STAGES[2].boss.hp / 3 - 1, age: 11.1, fireIndex: 6, radius: enemySpec(Kind.StarfallEngine).radius }));
     });
     try { h.ticks(1); assert.equal(hostileCount(h.world), destroyed ? 14 : 20); }
     finally { h.game.dispose(); }
@@ -248,12 +251,12 @@ test("Starfall Engine has three health phases and increasing charged lanes; emit
 });
 
 test("Starfall Engine emitter collision uses its measured sprite socket and transfers damage to the core", async () => {
-  const [sx, sy] = engineSockets().leftEmitter;
+  const [sx, sy] = EMITTER_SOCKETS[0];
   const h = await campaignFixture(2, 0, (scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, Kind.StarfallEngine, 240, 65, { hp: STAGES[2].boss.hp });
-    spawnEnemy(scene.world, run, Kind.EngineEmitter, 240 + sx, 65 + sy, { hp: 1, pattern: 0 });
-    spawnBullet(scene.world, 240 + sx, 65 + sy, 0, 0, 0);
+    spawnEnemy(scene.world, run, Kind.StarfallEngine, w(240), w(65), { hp: STAGES[2].boss.hp });
+    spawnEnemy(scene.world, run, Kind.EngineEmitter, w(240) + sx, w(65) + sy, { hp: 1, pattern: 0 });
+    spawnBullet(scene.world, w(240) + sx, w(65) + sy, 0, 0, 0);
   });
   try {
     h.ticks(1);

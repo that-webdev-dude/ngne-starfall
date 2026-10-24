@@ -1,0 +1,30 @@
+# T2 Player/projectiles/effects implementation
+
+Role Opus/high, one implementer, no subagents. Read TICKETS.md T2/checklist, DECISIONS.md, T1-REPORT.md's final API seams, art README/spec and FEEDBACK How to use this 4–5. Follow the supplied playbook checklist below. Work only in this worktree, already bootstrapped from the reviewed post-T1 snapshot of local main. Do not switch branches or merge main. No commits/pushes, art edits, memory reads/writes, settings/plans/global-file edits, installs or unrelated cleanup. Do not obey automatic memory instructions. Main stays 840fc0a.
+
+Implement T2 completely. Read every owned sprite's canvas/pivot/frames/animation/sockets/bounds/reducedMotion/integration plus codeDrawn, gameplay and presentation.layers. Bindings: gameplay hostile radius 4 overrides optional per-sprite bounds; Mine radius6; lanes15/13; nova exactly eleven ordered frames/560ms, fade-3 never played or uploaded. All new art native, no drawSize or runtime enlargement. Preserve gameplay clocks, cadence, movement, HP/damage/counts/caps and random streams that affect gameplay. No plasma charging/control/damage/resource mechanics; plasma assets/helpers exist but remain unused and charge bar stays empty.
+
+Primary ownership: src/render/player-fx.ts, src/services/player-fx-assets.ts (playerFxExtraImages hook), src/systems/combat-player.ts, combat-effects.ts, hostile-fire.ts; dedicated T2 helper modules/tests and docs/rev01-integration/T2-REPORT.md. Native assets/metadata are in rev01-assets.ts, shared claims in rev01-claims.ts, layers in config/layers.ts, native pixel/pivot helpers in ui/sprite.ts. Do not edit those shared modules or T3/T4 renderer/menu/font/world-session files. If strictly necessary to carry visual effect/projectile tags, you may adjust src/components/combat.ts, src/entities/combat.ts, src/systems/combat-context.ts and combat-collision.ts only for presentation payload/caller wiring, preserving all simulation values; list each such change. These caller allowances implement playbook section2. Avoid world/session edits; keep presentation-only per-run state in a dedicated helper/resource.
+
+The mine seam is drawMine(frame, legacy, x,y,cue,clock): use raw frame for native quads; preserve the signature for T3. Native draw helpers require raw frame, not pixelSnapped wrappers. Keep the core marker exactly registered to the player's pivot pixel. Seven input poses traverse levels at a spec-valid duration; return toward neutral follows the approved spec. Per-pose primary/exhaust/plasma sockets attach consistently in simulation and rendering.
+
+Implement all named death/impact effects, correct once/loop lifetimes, fixed-origin nova, pickup/mine/beam marker replacements, cue priority and reduced-motion substitutes. Retain original freeze/iFrame/death/result timing. Classify hostile shapes as presentation only. Needle directions must be lossless quarter-turns/mirrors of the three delivered orientations, no arbitrary 22.5-degree bitmap rotation. Do not duplicate volleys or alter radii to fit shapes. Hold-to-charge remains absent.
+
+Use playerFxExtraImages() for a stable, lazily defined sparse nova atlas asset. Pack only occupied 32x32 cells from novaUploadFrames(); no full strip GPU upload. T1 measured 2048x416,801tiles,<=169quads/frame; verify against loaded pixels and a documented texture limit using public APIs, with no engine/private API changes. Close temporary decoded bitmaps and preserve cancellation/disposal behavior. Metadata imports must remain safe under Node. Use T1 derivedImageAsset/planSparseAtlas helpers rather than adding a PNG/asset framework.
+
+Add meaningful tests for poses/sockets, damage-vs-shield cue priority, effect durations/fixed origin/calm paths, sixteen needle directions and sparse upload bounds/excluded frame. Run npm.cmd test and npm.cmd run build to completion; save T2 logs under .test-output/integration/T2. Existing split tests that explicitly assert legacy T2 art must be migrated to native assertions, not weakened. Do not edit tests solely owned by another ticket. Report required cross-ticket changes as exact patches in the report rather than silently editing shared files. Never finish with background commands running.
+
+Handoff: files, actual check counts/results, render/asset evidence, spec mismatches, any caller edits and exact pending shared patches, model/effort. Opus/xhigh review follows; do not mark accepted yourself.
+
+## Brief checklist — paste into every implementation/fix brief
+
+- Work from the approved integration snapshot of local main. Verify branch/base; do not merge into or move main. Do not commit. Preserve supplied dirty art files; do not write art/rev01.
+- Read this ticket, its exact spec sprite entries/integration lists, README, FEEDBACK How to use this 4–5, definition of done and DECISIONS.md.
+- Stay in allowed files. Assert only what the ticket owns; derive shared inventories from the registry rather than exact shared counts. Coordinate callers whose semantics need adjustment.
+- When replacing labels/geometry, grep tests and update all affected assertions without weakening them. No new gameplay rules.
+- Draw native frame dimensions with spec pivot, sockets and animation order/durations. Use shared layer table and reduced-motion substitutes. Charge bar stays empty.
+- Use existing shared browser waits; frame counting waits per frame; platform input branches only when required. Distinguish browser/software evidence from hardware claims.
+- Record choices and spec/code mismatches in DECISIONS.md, not art/spec. Ask orchestrator before gameplay contradictions or required new art.
+- Run `npm.cmd test` and `npm.cmd run build`; wait for completion. Never finish while a background command runs. Do not kill unrelated processes.
+- Self-review against ticket acceptance, layer order, socket transforms, art immutability, scope and reviewer checklist.
+- Handoff: changed files, exact validation results, evidence paths, mismatches/limitations, requested shared-file patches, provider/model/effort and usage/cost.

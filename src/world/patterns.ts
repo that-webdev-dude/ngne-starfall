@@ -1,3 +1,5 @@
+import { VIEW, fromLegacy } from "../config/view.ts";
+
 export interface Shot { vx: number; vy: number }
 export function fan(angle: number, count: number, spread: number, speed: number): Shot[] {
   return Array.from({ length: count }, (_, index) => {
@@ -17,8 +19,9 @@ export function segmentCircle(ax: number, ay: number, bx: number, by: number, cx
   const t = Math.max(0, Math.min(1, ((cx - ax) * dx + (cy - ay) * dy) / (dx * dx + dy * dy || 1)));
   return (ax + dx * t - cx) ** 2 + (ay + dy * t - cy) ** 2 <= radius * radius;
 }
-export function curtainPositions(gapCenter: number, width = 64, offset = 0): number[] {
+/** Curtain columns across the view; gapCenter, width and offset are world units (the legacy 12/24 grid at 4/3). */
+export function curtainPositions(gapCenter: number, width = fromLegacy(64), offset = 0): number[] {
   const result: number[] = [];
-  for (let x = 12 + offset; x < 480; x += 24) if (Math.abs(x - gapCenter) >= width / 2) result.push(x);
+  for (let x = fromLegacy(12) + offset; x < VIEW.width; x += fromLegacy(24)) if (Math.abs(x - gapCenter) >= width / 2) result.push(x);
   return result;
 }

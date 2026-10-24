@@ -2,6 +2,8 @@
 
 A standalone full-window arcade shoot-em-up built with **@ngne/core 0.3.0** and TypeScript. Three authored sectors lead from Orbital Breakwater through Furnace Belt to Midnight Citadel, with distinct bosses, destructible machinery, bullet patterns, mines and charged beams.
 
+The logical view is **640×360**, enlarged by an integer number of device pixels with DPR-aware CSS sizing. Spare space is letterboxed; windows below 640×360 device pixels clip the centred 1× canvas.
+
 ## Run
 
 Use Node.js 24 or newer and a WebGPU-capable desktop browser. Serve on localhost or HTTPS; opening `index.html` directly from disk does not work.
@@ -31,19 +33,28 @@ Each sector begins with full hull and Nova. Retry restores that sector's entry s
 
 ## Source layout
 
-`src/main.ts` wires the browser shell and campaign. `components/` contains ECS data schemas; `entities/` composes archetypes; `systems/` implements simulation/rendering; `scenes/` composes gameplay and menus. `config/` owns stage and balance data, `world/` owns non-ECS state and geometry, `assets/` holds raster/audio sources and metadata, `ui/` provides canvas text/sprite helpers, and `services/` owns assets, campaign preparation, audio, display and persistence.
+`src/main.ts` wires the browser shell and campaign. `components/` contains ECS schemas; `entities/` composes archetypes; `systems/` implements simulation; `render/` contains background, enemy, player/effect and HUD passes; `scenes/` composes gameplay and menus. `config/` owns stage/balance data, `world/` owns session state and geometry, `ui/` provides native font/sprite/menu helpers, and `services/` owns assets, campaign preparation, audio, display and persistence. Runtime artwork and frame/socket metadata come directly from `art/rev01/`; `src/assets/audio/` retains synthesized audio and provenance.
 
 ## Checks
 
 ```powershell
 npm.cmd test
-node --experimental-strip-types tests/run-campaign-bot.ts
+npm.cmd run build
+node --experimental-strip-types tests/run-campaign-bot.ts .test-output/campaign-bot.json 17 41 83
 ```
 
-The bot uses normal movement/fire/Nova inputs and exact read-only entity observations. It demonstrates reachable outcomes, not human difficulty or fun. `tests/browser-campaign.html` is a development-only rendered verification fixture using the production campaign composition; it is excluded from the production Vite build. The final report separates unit/integration tests, normal-rules runs, browser observations and human acceptance.
+Bot output goes explicitly into gitignored `.test-output/`. It uses normal movement/fire/Nova inputs and exact read-only entity observations, demonstrating reachability rather than human difficulty or fun.
+
+Development-only routes (use `npm.cmd run dev`, then open localhost):
+
+- `tests/browser-campaign.html`: rendered bot using production campaign composition.
+- `tests/browser-integration.html?stage=1&manual=1&calm=0`: ordinary production stage start; stages 1–3, motion off/on through `calm=0|1`, normal pause/settings/controls/results/retry routes.
+- `tests/browser-integration.html?stage=1&scenario=boss&calm=0&capture=1`: frozen presentation preset using real renderers/assets. Scenarios: `card`, `play`, `boss`, `pause`, `result`, `settings`, `controls`, `death`, `loss`, `nova`, `dense`, `title`. Presets seed clocks/entities/HP and do not establish reachability. H shows/hides diagnostics; O saves current native 640×360 canvas pixels as PNG. Full route options and evidence limits: `docs/rev01-integration/T5-REPORT.md`.
+
+Fixture code is excluded from the production Vite entry/build. Physical scaling, gamepad, motion/readability and human play checks are in `docs/rev01-integration/MANUAL-CHECKS.md`.
 
 ## Asset provenance
 
-Artwork consists of original AI-generated raster assets, with prompts, source references, measured frame/pivot data and handoffs under `art/` and `src/assets/`. The editable originals are raster PNGs rather than layered pixel-editor documents. Music and effects are original deterministic synthesis with no external samples; the generator and measured WAV metadata are under `src/assets/audio/`.
+The rev01 pixel-art pack is generated from palette-index grids/background generators under `art/rev01/source/`, with its specification, palette, review and tools beside it. Historical AI raster prompts/source references and handoffs remain under `art/`; superseded runtime rasters/metadata were removed. The read-only historical palette-sampling tool still expects those old inputs and cannot be rerun from this checkout. Rev01 rebuild/validation sources are retained. Music/effects are original deterministic synthesis with no external samples; the generator and WAV provenance remain under `src/assets/audio/`.
 
 NGNE is used through the pinned published package's public APIs. Its license is included with the dependency. No engine source modifications or publishing are part of this delivery.

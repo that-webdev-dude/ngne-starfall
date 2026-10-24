@@ -1,7 +1,8 @@
 import { pressed, type Asset, type PreparedScene, type SceneDefinition, type SceneSetup } from "@ngne/core";
 import { Flight } from "../components/flight.ts";
 import { Bullet, Enemy, Pose } from "../components/combat.ts";
-import { newRun, type Progress, type ProgressCommand, type Session } from "../world/session.ts";
+import { PLAYER_START, newRun, type Progress, type ProgressCommand, type Session } from "../world/session.ts";
+import { fromLegacy } from "../config/view.ts";
 import { createEffects, installCombatEffects } from "../systems/combat-effects.ts";
 import { installCombatPlayer } from "../systems/combat-player.ts";
 import { installCombatEnemies } from "../systems/combat-enemies.ts";
@@ -24,7 +25,7 @@ export function stageScene(session: Session, services: StageServices, stageIndex
     id: stage.id, assets: services.assets,
     setup(scene) {
       const run = scene.resource("run", newRun(stageIndex, entryScore)); run.banner = stage.name; session.run = run; session.screen = "playing";
-      scene.world.spawn(Flight.of({ x: 240, px: 240, y: 206, py: 206 }));
+      scene.world.spawn(Flight.of({ x: PLAYER_START.x, px: PLAYER_START.x, y: PLAYER_START.y, py: PLAYER_START.y }));
       const sound = services.sound(scene), base = { scene, run, session, sound, stage };
       const effects = { ...base, burst: createEffects(base), hostiles: createHostileFire(base) };
       const context = { ...effects, boss: stage.boss.create(effects) };
@@ -47,8 +48,8 @@ export function stageScene(session: Session, services: StageServices, stageIndex
           const cascade = [[0.2, -33, 3], [0.5, 33, 3], [0.8, -17, -7], [1.1, 19, 12], [1.45, 0, 0]];
           if (cascadeIndex < cascade.length && run.finishTimer >= cascade[cascadeIndex][0]) {
             const [, x, y] = cascade[cascadeIndex];
-            context.burst(run.bossDeathX + x, run.bossDeathY + y, 0xffc58d, cascadeIndex === 4 ? 90 : 30, true);
-            sound.kill(true); run.shake = cascadeIndex === 4 ? 5 : 2.5;
+            context.burst(run.bossDeathX + fromLegacy(x), run.bossDeathY + fromLegacy(y), 0xffc58d, cascadeIndex === 4 ? 90 : 30, true);
+            sound.kill(true); run.shake = fromLegacy(cascadeIndex === 4 ? 5 : 2.5);
             if (cascadeIndex === 4) sound.clear();
             cascadeIndex++;
           }

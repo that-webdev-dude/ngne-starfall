@@ -1,3 +1,5 @@
+import { REV01_GAMEPLAY } from "./rev01-gameplay.ts";
+
 /** Values stored in the `Enemy.kind` u8 column. */
 export const Kind = {
   Interceptor: 0, Gunship: 1, Sweeper: 2,
@@ -12,19 +14,21 @@ export type Kind = (typeof Kind)[keyof typeof Kind];
 export type EnemyRole = "ordinary" | "boss" | "part" | "mine";
 export interface EnemySpec { role: EnemyRole; hp: number; radius: number; cooldown: number; score: number }
 
+/** Collision radii follow the native rev01 art (spec `gameplay.enemyRadius`), not the 4/3 rule. */
+const R = REV01_GAMEPLAY.enemyRadius;
 const ENEMIES: Record<Kind, EnemySpec> = {
-  [Kind.Interceptor]: { role: "ordinary", hp: 3, radius: 12, cooldown: 1.6, score: 100 },
-  [Kind.Gunship]: { role: "ordinary", hp: 12, radius: 14, cooldown: 1.9, score: 300 },
-  [Kind.Sweeper]: { role: "ordinary", hp: 8, radius: 9, cooldown: 0.7, score: 200 },
-  [Kind.Gatebreaker]: { role: "boss", hp: 480, radius: 29, cooldown: 0.7, score: 5000 },
-  [Kind.GatebreakerTurret]: { role: "part", hp: 35, radius: 11, cooldown: 0.7, score: 650 },
-  [Kind.Minelayer]: { role: "ordinary", hp: 14, radius: 12, cooldown: 0.7, score: 350 },
-  [Kind.Warden]: { role: "ordinary", hp: 17, radius: 14, cooldown: 0.7, score: 400 },
-  [Kind.Mine]: { role: "mine", hp: 2, radius: 6, cooldown: 0.7, score: 50 },
-  [Kind.KilnHead]: { role: "boss", hp: 540, radius: 22, cooldown: 0.7, score: 6500 },
-  [Kind.KilnSegment]: { role: "part", hp: 55, radius: 14, cooldown: 0.7, score: 800 },
-  [Kind.StarfallEngine]: { role: "boss", hp: 600, radius: 28, cooldown: 0.7, score: 10000 },
-  [Kind.EngineEmitter]: { role: "part", hp: 55, radius: 10, cooldown: 0.7, score: 1000 },
+  [Kind.Interceptor]: { role: "ordinary", hp: 3, radius: R.Interceptor, cooldown: 1.6, score: 100 },
+  [Kind.Gunship]: { role: "ordinary", hp: 12, radius: R.Gunship, cooldown: 1.9, score: 300 },
+  [Kind.Sweeper]: { role: "ordinary", hp: 8, radius: R.Sweeper, cooldown: 0.7, score: 200 },
+  [Kind.Gatebreaker]: { role: "boss", hp: 480, radius: R.Gatebreaker, cooldown: 0.7, score: 5000 },
+  [Kind.GatebreakerTurret]: { role: "part", hp: 35, radius: R.GatebreakerTurret, cooldown: 0.7, score: 650 },
+  [Kind.Minelayer]: { role: "ordinary", hp: 14, radius: R.Minelayer, cooldown: 0.7, score: 350 },
+  [Kind.Warden]: { role: "ordinary", hp: 17, radius: R.Warden, cooldown: 0.7, score: 400 },
+  [Kind.Mine]: { role: "mine", hp: 2, radius: R.Mine, cooldown: 0.7, score: 50 },
+  [Kind.KilnHead]: { role: "boss", hp: 540, radius: R.KilnHead, cooldown: 0.7, score: 6500 },
+  [Kind.KilnSegment]: { role: "part", hp: 55, radius: R.KilnSegment, cooldown: 0.7, score: 800 },
+  [Kind.StarfallEngine]: { role: "boss", hp: 600, radius: R.StarfallEngine, cooldown: 0.7, score: 10000 },
+  [Kind.EngineEmitter]: { role: "part", hp: 55, radius: R.EngineEmitter, cooldown: 0.7, score: 1000 },
 };
 
 export function enemySpec(kind: number): EnemySpec {

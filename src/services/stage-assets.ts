@@ -1,28 +1,16 @@
 import type { Asset } from "@ngne/core";
 import type { StageConfig } from "../config/stages.ts";
-import { art, artImages, type ArtFrame } from "./art-assets.ts";
-import { campaignFrame, campaignImages } from "./campaign-assets.ts";
-import { combatImages } from "./combat-assets.ts";
+import { REV01_CLAIMS, rev01Sprite, type NativeFrame } from "./rev01-assets.ts";
+import { rev01StageImages } from "./rev01-claims.ts";
 import { combatAudioAssetsForStage } from "./sound.ts";
 
-const shared = [artImages.player, artImages.exhaust, artImages.enemy, artImages.explosion];
-const waveCraft = [combatImages.dart, combatImages.gunship];
-
-/** Per stage: the background it draws and the images its scene claims (shared, then stage-specific). */
-const STAGE_ART: Record<string, { background: ArtFrame; images: readonly Asset[] }> = {
-  "orbital-breakwater": { background: art.background, images: [...shared, artImages.background, ...waveCraft, combatImages.gatebreaker] },
-  "furnace-belt": { background: campaignFrame("furnaceBackground"), images: [...shared, ...waveCraft,
-    campaignImages.furnaceBackground, campaignImages.kilnHead, campaignImages.kilnSegment, campaignImages.minelayer, campaignImages.warden] },
-  "midnight-citadel": { background: campaignFrame("citadelBackground"), images: [...shared, ...waveCraft,
-    campaignImages.citadelBackground, campaignImages.starfallEngine, campaignImages.minelayer, campaignImages.warden] },
-};
-
-export function stageArt(stage: StageConfig): { background: ArtFrame; images: readonly Asset[] } {
-  const entry = STAGE_ART[stage.id];
-  if (!entry) throw new Error(`Missing stage artwork: ${stage.id}`);
-  return entry;
+/** Native frame and the registry-derived images claimed by this stage. No superseded raster definitions remain. */
+export function stageArt(stage: StageConfig): { background: NativeFrame; images: readonly Asset[] } {
+  const id = REV01_CLAIMS.backgrounds[stage.id as keyof typeof REV01_CLAIMS.backgrounds];
+  if (!id) throw new Error(`Missing stage artwork: ${stage.id}`);
+  return { background: rev01Sprite(id).frames[0], images: rev01StageImages(stage.id) };
 }
-/** Every asset a stage scene claims: its images, then its music and effects. */
+/** Every asset a stage scene claims: registry-derived rev01 images, then its music and effects. */
 export function stageAssets(stage: StageConfig): Asset[] {
   return [...stageArt(stage).images, ...combatAudioAssetsForStage(stage.index)];
 }

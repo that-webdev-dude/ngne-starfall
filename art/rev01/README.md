@@ -17,7 +17,7 @@ Scope of every approval so far: **stills only** (gates 1–3) and **stills + GIF
 | exhaust | Phase 3 build (5 frames) | owner, gate 3, 24 Oct 2026 | stills | short/medium/long unchanged |
 | primaryLance, hostileBead, hostileNeedle, hostileOrb | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; needle has 3 direction frames |
 | plasmaCharge, plasmaReady, plasmaMuzzle, plasmaShot, plasmaImpact | Phase 2 build | owner, gate 2, 24 Oct 2026 | stills | |
-| nova, novaCalm | Phase 2 build (12 + 2 frames) | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; staging decision open; gate 4: fade-2/3 never visible on screen (drop or re-stage, owner decision open) |
+| nova, novaCalm | Phase 2 build (12 + 2 frames) | owner, gate 2, 24 Oct 2026 | stills | study approved at gate 1; staging decision open; fade-3 dropped from playback, fade-2 kept (decided 24 Oct 2026) |
 | interceptor | Phase 3 build (idle / pulse / fire) | owner, gate 3, 24 Oct 2026 | stills | |
 | dart | Phase 3 build (idle / pulse / fire) | owner, gate 3, 24 Oct 2026 | stills | |
 | gunship | Phase 2 build (4 frames, canvas 39×35) | owner, gate 2, 24 Oct 2026 | stills | |
@@ -34,8 +34,8 @@ Scope of every approval so far: **stills only** (gates 1–3) and **stills + GIF
 | Motion-review fixes | gate 4: dart and interceptor fire flash (canvases 13×29, 27×25), plasmaReady 9×9/11×11, player bank-2 fuselage, starfallEngine surge-1..3, gunship fire follow-through, heavyBreakup frame 1, exhaust short row 4 | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
 | playerDeath | gate 4 build (8 frames) | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
 | playerCalm, plasmaReadyCalm | gate 4 build (reduced-motion cues) | owner, gate 4, 24 Oct 2026 | stills + GIFs | |
-| mine, pickup | gate 4 build (replace code-drawn) | owner, gate 4, 24 Oct 2026 | stills + GIFs | minelayer release frame shows the full-scale mine; mine radius 6 vs 7 open |
-| beamWarning | gate 4 build (replaces the code-drawn marker) | owner, gate 4, 24 Oct 2026 | stills + GIFs | odd lane widths open |
+| mine, pickup | gate 4 build (replace code-drawn) | owner, gate 4, 24 Oct 2026 | stills + GIFs | minelayer release frame shows the full-scale mine; mine radius 6 (decided 24 Oct 2026) |
+| beamWarning | gate 4 build (replaces the code-drawn marker) | owner, gate 4, 24 Oct 2026 | stills + GIFs | lanes 15 / 13 px at 640 (decided 24 Oct 2026) |
 | font, hudPip, novaBar, chargeBar, bossBar, bossBarMark, hudPlate, bannerPlate, hudCalm | gate 5 build (presentation) | owner, gate 5, 24 Oct 2026 | stills | hudPip full brightened in review; ringed charge-ready static approved |
 | menuPanel, panelRule, menuItem, optionToggle, optionMeter, stageCard, resultPlate | gate 5 build (presentation) | owner, gate 5, 24 Oct 2026 | stills | stage card 2.6 s, pips and groove kept |
 
@@ -191,7 +191,7 @@ Banking is **whole-body**: each of the seven poses is a solid hull rolling, re-l
 | plasmaMuzzle | once | 0–1 | 40, 50 |
 | plasmaShot | loop | 0–3 | 60 ×4 |
 | plasmaImpact | once | 0–5 | 40, 45, 55, 60, 65, 75 |
-| nova | once | ignite ×2, expand ×6, fade ×4 | 40 ×2, 50 ×6, 60 ×4 (620 total, proposal) |
+| nova | once | ignite ×2, expand ×6, fade ×3 (fade-3 not played) | 40 ×2, 50 ×6, 60 ×3 (560 total) |
 
 Rules: change only what moves between frames. Avoid pixels popping in and out *(book)*. Keep the silhouette continuous between adjacent bank poses so the roll reads as one object. No opaque pixel on a canvas edge row or column, so moving effects never look cropped; the only exception is a canvas that is exactly the sprite's shape (the 3×11 lance, the needle's head columns).
 
@@ -272,7 +272,7 @@ Screens: pause, settings, controls and result use a dim overlay (panel[0] at 85%
 - **Collision radii:** these follow the new art instead of the 4/3 rule:
   - player 5, plasma shot 5
   - interceptor 9, gunship 13, sweeper 8
-  - minelayer 11, warden 12, mine 7
+  - minelayer 11, warden 12, mine 6
   - Gatebreaker 42, turret 15
   - Kiln head 21, segment 14
   - Starfall Engine 38, emitter 13

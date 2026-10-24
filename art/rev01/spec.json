@@ -1,6 +1,6 @@
 {
   "version": "rev01",
-  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer. Gate 2 (owner, 24 Oct 2026): Phase 2 assets approved as stills; nova staging kept. Gate 3 (owner, 24 Oct 2026): Phase 3 assets and background tweaks approved as stills; the pass is complete. Completion pass (gate 4, approved by the owner 24 Oct 2026 as stills + GIFs): Kiln death states, player death, reduced-motion cue sprites, mine and pickup sprites, beam warning marker, motion review fixes. Entries added in this pass carry 'pass': 'gate 4'. Open owner decisions: nova fade-2/3 (never visible on screen), odd beam lane widths, mine radius 6 vs 7. Presentation pass (gate 5, approved by the owner 24 Oct 2026 as stills, including the ringed charge-ready static, low hull at hull <= 1 and the 2.6 s stage card): HUD, 5x7 font, charge/boss bars, pause/options, stage cards, result plates; entries carry 'pass': 'gate 5' and the top-level 'presentation' section holds layout, layer order and text colours.",
+  "revision": "rev01 pass 2 (revision brief: FEEDBACK.md). Proposals from FEEDBACK.md are the working defaults here: 7 bank poses on 31x33 with pivot (15,16); pose transitions of 40-65 ms; plasma charges while fire is held, about 0.9 s to full, releasing early fires nothing; nova 12 frames / 620 ms; 17 plasma effect frames; 7 flash counterparts; the proposed projectile sizes. Each is marked \"proposal\" where it appears. Gate 1 (owner, 24 Oct 2026): studies approved as stills; player candidate N1, round hostile orb, needle pre-baked at 0/22.5/45 degrees, nova stored as a sparse tile atlas by the consumer. Gate 2 (owner, 24 Oct 2026): Phase 2 assets approved as stills; nova staging kept. Gate 3 (owner, 24 Oct 2026): Phase 3 assets and background tweaks approved as stills; the pass is complete. Completion pass (gate 4, approved by the owner 24 Oct 2026 as stills + GIFs): Kiln death states, player death, reduced-motion cue sprites, mine and pickup sprites, beam warning marker, motion review fixes. Entries added in this pass carry 'pass': 'gate 4'. Gate-4 decisions (24 Oct 2026, delegated by the owner): nova fade-3 dropped from playback, fade-2 kept; beam lanes 15 / 13 px at 640; mine radius 6. Presentation pass (gate 5, approved by the owner 24 Oct 2026 as stills, including the ringed charge-ready static, low hull at hull <= 1 and the 2.6 s stage card): HUD, 5x7 font, charge/boss bars, pause/options, stage cards, result plates; entries carry 'pass': 'gate 5' and the top-level 'presentation' section holds layout, layer order and text colours.",
   "conventions": {
     "units": "pixels in the 640x360 logical view; 1 texel = 1 logical pixel, no runtime scaling",
     "origin": "top-left of each canvas, +x right, +y down",
@@ -1153,11 +1153,24 @@
           50,
           60,
           60,
-          60,
           60
         ],
-        "totalMs": 620,
-        "note": "proposal from FEEDBACK.md priority 3; the bullet-clear/damage event fires on trigger, not after the ignition frames"
+        "totalMs": 560,
+        "note": "proposal from FEEDBACK.md priority 3; the bullet-clear/damage event fires on trigger, not after the ignition frames",
+        "order": [
+          "ignite-0",
+          "ignite-1",
+          "expand-0",
+          "expand-1",
+          "expand-2",
+          "expand-3",
+          "expand-4",
+          "expand-5",
+          "fade-0",
+          "fade-1",
+          "fade-2"
+        ],
+        "decision": "decided 24 Oct 2026 (owner delegated to the orchestrator): fade-3 (r760) is dropped from playback: it lies beyond the farthest visible point from any legal origin (693.7 px), so it never shows on screen. fade-2 (r695) stays: it is the corner-reach frame for an origin near a bottom corner. The frame stays in the strip; consumers skip it and need not upload it to the atlas."
       },
       "layering": "above hulls, smoke and the explosion; below hostile bullet cores, the beam lane and the HUD; interior stays transparent",
       "reducedMotion": "a quieter alternative with an equally clear activation cue is delivered with the frames (Phase 2)",
@@ -2099,7 +2112,7 @@
       ],
       "role": "Minelayer mine: 13 px diamond (dark brass shell with an outline rim), 7 px core and 3 px hot centre, matching codeDrawn.mine; armed = the cue before it bursts (core shifts to fire[2]/fire[3] and four short spikes or marks stand off the diamond's points inside the 19x19 canvas), replacing the code's orbiting dots. Must match the mine shown in minelayer's release frame",
       "bounds": {
-        "damage": 7,
+        "damage": 6,
         "glow": 9
       },
       "animation": {
@@ -2943,7 +2956,12 @@
         "boundary": "orb[2] at 75%, dashed 6 on / 4 off, scrolling",
         "marker": "two stacked 11x7 down-triangles at the emitter end, orb[0] rim, upper orb[2], lower orb[3], blinking (gate 4: sprite beamWarning)"
       },
-      "proposal": "study B colour table; opacities to confirm in play"
+      "proposal": "study B colour table; opacities to confirm in play",
+      "widthsAt640": {
+        "starfallEngine": 15,
+        "warden": 13,
+        "decision": "decided 24 Oct 2026 (owner delegated to the orchestrator): odd widths so the lane centres on the odd 13 px beamWarning marker and its 1 px centre column; rounded down from 16 and 13.3 so a beam is never stricter than today at x4/3. Replaces spawnBeam widths 12 and 10."
+      }
     },
     "plasmaTrail": {
       "role": "fading particles behind plasmaShot",
@@ -3001,7 +3019,7 @@
       "GatebreakerTurret": 15,
       "Minelayer": 11,
       "Warden": 12,
-      "Mine": 7,
+      "Mine": 6,
       "KilnHead": 21,
       "KilnSegment": 14,
       "StarfallEngine": 38,
@@ -3010,7 +3028,8 @@
     "bossWeakpointScale": {
       "gatebreaker": 1.445,
       "starfallEngine": 1.375
-    }
+    },
+    "mineRadiusDecision": "decided 24 Oct 2026 (owner delegated to the orchestrator): 6, the diamond half-diagonal, so contact damage never comes from empty canvas corners (the radius also sets player contact via combat-collision.ts); shooting the mine stays easy with the bullet radius added"
   },
   "presentation": {
     "pass": "gate 5",

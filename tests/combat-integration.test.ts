@@ -3,15 +3,19 @@ import { strict as assert } from "node:assert";
 import { Game, emptyInput, type Asset, type PreparedScene, type SceneSetup, type WorldAccess } from "@ngne/core";
 import { Bullet, Enemy, Pose } from "../src/components/combat.ts";
 import { Flight } from "../src/components/flight.ts";
-import { BOSS } from "../src/config/boss-geometry.ts";
+import { TURRET_SOCKETS } from "../src/bosses/gatebreaker.ts";
 import { COMBAT, ENCOUNTERS } from "../src/config/encounters.ts";
-import { Kind } from "../src/config/enemies.ts";
+import { Kind, enemySpec } from "../src/config/enemies.ts";
+import { fromLegacy as w } from "../src/config/view.ts";
 import { STAGES } from "../src/config/stages.ts";
 import { spawnBullet, spawnEnemy } from "../src/entities/combat.ts";
 import { stageScene } from "../src/scenes/stage.ts";
 import { menuScene } from "../src/scenes/menu.ts";
 import type { CombatSound } from "../src/systems/combat-context.ts";
 import type { Progress, ProgressCommand, RunState, Session } from "../src/world/session.ts";
+import { rev01Sprite } from "../src/services/rev01-assets.ts";
+
+const NEUTRAL_MUZZLES = (rev01Sprite("player").spec.sockets as { primaryMuzzle: Record<string, [number, number][]> }).primaryMuzzle.neutral;
 
 type Setup = SceneSetup<Progress, ProgressCommand>;
 type Fixture = (scene: Setup, run: RunState) => void;
@@ -82,10 +86,10 @@ test("actual collision system applies one hit for simultaneous bullets and resto
 test("Nova clears hostile shots, preserves friendly shots, suppresses due enemy fire, and respects recharge", async () => {
   const h = await boot((scene, run) => {
     run.shotTimer = 100;
-    spawnBullet(scene.world, 10, 220, 0, 0, 0);
-    spawnBullet(scene.world, 70, 170, 0, 0, 1);
-    spawnBullet(scene.world, 80, 170, 0, 0, 1);
-    spawnEnemy(scene.world, run, Kind.Gunship, 130, 67, { hp: 20, cooldown: 0 });
+    spawnBullet(scene.world, w(10), w(220), 0, 0, 0);
+    spawnBullet(scene.world, w(70), w(170), 0, 0, 1);
+    spawnBullet(scene.world, w(80), w(170), 0, 0, 1);
+    spawnEnemy(scene.world, run, Kind.Gunship, w(130), w(67), { hp: 20, cooldown: 0 });
   });
   try {
     h.press("KeyB");
@@ -107,8 +111,8 @@ test("Nova clears hostile shots, preserves friendly shots, suppresses due enemy 
 });
 
 test("three enemy families emit distinct actual patterns", async () => {
-  for (const [kind, count, speed] of [[Kind.Interceptor, 1, 62], [Kind.Gunship, 5, 58], [Kind.Sweeper, 3, 48]] as const) {
-    const h = await boot((scene, run) => spawnEnemy(scene.world, run, kind, 100, 70, { cooldown: 0 }));
+  for (const [kind, count, speed] of [[Kind.Interceptor, 1, w(62)], [Kind.Gunship, 5, w(58)], [Kind.Sweeper, 3, w(48)]] as const) {
+    const h = await boot((scene, run) => spawnEnemy(scene.world, run, kind, w(100), w(70), { cooldown: 0 }));
     try {
       h.ticks(1);
       const shots = bullets(h.world).filter((b) => b.team);
@@ -122,8 +126,8 @@ test("three enemy families emit distinct actual patterns", async () => {
 test("boss warning retires wave enemies and bullets before carrier and two turrets arrive", async () => {
   const h = await boot((scene, run) => {
     run.seconds = 85.99;
-    spawnEnemy(scene.world, run, Kind.Gunship, 130, 67, { cooldown: 0 });
-    spawnBullet(scene.world, 70, 170, 0, 0, 1);
+    spawnEnemy(scene.world, run, Kind.Gunship, w(130), w(67), { cooldown: 0 });
+    spawnBullet(scene.world, w(70), w(170), 0, 0, 1);
   });
   try {
     h.ticks(1);
@@ -142,7 +146,7 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
   for (const [hp, count] of [[STAGES[0].boss.hp, 14], [STAGES[0].boss.hp / 2 - 1, 18]]) {
     const h = await boot((scene, run) => {
       run.phase = "boss";
-      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp, age: 11, fireIndex: 6 }));
+      scene.world.spawn(Pose.of({ x: w(240), y: w(67) }), Enemy.of({ kind: Kind.Gatebreaker, hp, age: 11, fireIndex: 6, radius: enemySpec(Kind.Gatebreaker).radius }));
     });
     try { h.ticks(1); assert.equal(bullets(h.world).filter((b) => b.team).length, count); }
     finally { h.game.dispose(); }
@@ -150,8 +154,8 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
   for (const alive of [true, false]) {
     const h = await boot((scene, run) => {
       run.phase = "boss";
-      if (alive) spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], { pattern: 0 });
-      scene.world.spawn(Pose.of({ x: 240, y: 67 }), Enemy.of({ kind: Kind.Gatebreaker, hp: STAGES[0].boss.hp, age: 3.4 }));
+      if (alive) spawnEnemy(scene.world, run, Kind.GatebreakerTurret, w(240) + TURRET_SOCKETS[0][0], w(67) + TURRET_SOCKETS[0][1], { pattern: 0 });
+      scene.world.spawn(Pose.of({ x: w(240), y: w(67) }), Enemy.of({ kind: Kind.Gatebreaker, hp: STAGES[0].boss.hp, age: 3.4, radius: enemySpec(Kind.Gatebreaker).radius }));
     });
     try { h.ticks(1); assert.equal(bullets(h.world).filter((b) => b.team).length, alive ? 7 : 0); }
     finally { h.game.dispose(); }
@@ -161,10 +165,10 @@ test("actual boss phase changes ring density and destroyed turret suppresses its
 test("turret damage transfers to the core, turret destruction persists, and carrier defeat finishes once", async () => {
   const h = await boot((scene, run) => {
     run.phase = "boss";
-    spawnEnemy(scene.world, run, Kind.Gatebreaker, 240, 67);
-    spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], { hp: 1, pattern: 0 });
-    spawnEnemy(scene.world, run, Kind.GatebreakerTurret, 240 + BOSS.rightTurret[0], 67 + BOSS.rightTurret[1], { pattern: 1 });
-    spawnBullet(scene.world, 240 + BOSS.leftTurret[0], 67 + BOSS.leftTurret[1], 0, 0, 0);
+    spawnEnemy(scene.world, run, Kind.Gatebreaker, w(240), w(67));
+    spawnEnemy(scene.world, run, Kind.GatebreakerTurret, w(240) + TURRET_SOCKETS[0][0], w(67) + TURRET_SOCKETS[0][1], { hp: 1, pattern: 0 });
+    spawnEnemy(scene.world, run, Kind.GatebreakerTurret, w(240) + TURRET_SOCKETS[1][0], w(67) + TURRET_SOCKETS[1][1], { pattern: 1 });
+    spawnBullet(scene.world, w(240) + TURRET_SOCKETS[0][0], w(67) + TURRET_SOCKETS[0][1], 0, 0, 0);
   });
   try {
     h.ticks(1);
@@ -230,7 +234,7 @@ test("actual pause blocks simulation; death result retries into a clean stage an
 });
 
 test("idle flight never fires even with an enemy available to target", async () => {
-  const h = await boot((scene, run) => spawnEnemy(scene.world, run, Kind.Gunship, 80, 140, { hp: 100, cooldown: 100 }));
+  const h = await boot((scene, run) => spawnEnemy(scene.world, run, Kind.Gunship, w(80), w(140), { hp: 100, cooldown: 100 }));
   try {
     h.ticks(90);
     assert.equal(h.calls.shoot ?? 0, 0);
@@ -240,17 +244,19 @@ test("idle flight never fires even with an enemy available to target", async () 
 
 test("held fire triggers share one cadence and always shoot straight up regardless of possible aim targets", async () => {
   for (const held of [["Space"], ["Pointer0"], ["Space", "Pointer0"], ["Pad2"]]) {
-    const h = await boot((scene, run) => spawnEnemy(scene.world, run, Kind.Gunship, 80, 140, { hp: 100, cooldown: 100 }));
+    const h = await boot((scene, run) => spawnEnemy(scene.world, run, Kind.Gunship, w(80), w(140), { hp: 100, cooldown: 100 }));
     try {
-      const input = { ...emptyInput(), held, axes: [0, 0, 1, 0], pointer: { ...emptyInput().pointer, active: true, x: 420, y: 230 } };
+      const input = { ...emptyInput(), held, axes: [0, 0, 1, 0], pointer: { ...emptyInput().pointer, active: true, x: w(420), y: w(230) } };
       for (let i = 0; i < 24; i++) h.game.tick(input);
       const shots = bullets(h.world).filter((bullet) => !bullet.team);
       assert.equal(h.calls.shoot, 3, `${held.join("+")} must retain the 0.14-second volley cadence`);
       assert.equal(shots.length, 6, "each volley must contain exactly two bolts");
+      for (const [dx] of NEUTRAL_MUZZLES) assert.equal(shots.filter((shot) => shot.x === h.session.run!.x + dx).length, 3, "one bolt per muzzle per volley");
       for (const shot of shots) {
         assert.equal(shot.vx, 0, "side enemies, pointer and right stick must not redirect fire");
-        assert.equal(shot.vy, -370);
-        assert.ok(shot.x === h.session.run!.x - 5 || shot.x === h.session.run!.x + 5);
+        assert.equal(shot.vy, -w(370));
+        // Spawned on a primary muzzle of the (still) neutral pose: spec player.sockets, offsets from the pivot.
+        assert.ok(NEUTRAL_MUZZLES.some(([dx]) => shot.x === h.session.run!.x + dx), `${shot.x} on a neutral primary muzzle`);
         assert.ok(shot.y < h.session.run!.y);
       }
       assert.equal(h.session.run!.nova, 1);
@@ -290,7 +296,9 @@ test("a directional tap between ticks moves the ship and settles as a small nudg
     assert.ok(run.x > xAfterTap, "release carries the ship forward");
     h.ticks(15);
     assert.equal(speed(), 0);
-    assert.ok(run.x - startX < 3, "a single tap stays a small, precise nudge");
+    assert.ok(run.x - startX < w(3), "a single tap stays a small, precise nudge");
+    // Baseline: one 15 px/s step then one decel step, 0.125 + 0.125 legacy px.
+    assert.ok(Math.abs(run.x - startX - w(0.25)) < 1e-9, "tap nudge equals the baseline at 4/3");
   } finally { h.game.dispose(); }
 });
 test("long idle does not accumulate cooldown debt or produce a catch-up burst", async () => {

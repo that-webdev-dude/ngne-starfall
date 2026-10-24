@@ -1,10 +1,10 @@
 :root { color-scheme: dark; background: #060d19; }
 * { box-sizing: border-box; }
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
-body { display: grid; place-items: center; background: #060d19; }
+body { position: relative; background: #060d19; }
+/* Box set by services/display.ts: 640x360 backing canvas at a whole device-pixel scale, centred, clipped below 1x. */
 #game {
-  display: block; width: min(100vw, calc(100dvh * 16 / 9));
-  height: min(100dvh, calc(100vw * 9 / 16));
+  position: absolute; display: block; left: 0; top: 0; width: 640px; height: 360px;
   image-rendering: pixelated; outline: none; touch-action: none;
 }
 #error { position: fixed; inset: auto 16px 16px; z-index: 10; padding: 16px; margin: 0; white-space: pre-wrap; background: #321626; color: #ffdddd; border: 1px solid #ff6888; }

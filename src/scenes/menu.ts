@@ -1,27 +1,72 @@
 import { pressed, type Frame, type PreparedScene, type SceneDefinition } from "@ngne/core";
-import { art, artAssets, animationIndex } from "../services/art-assets.ts";
+import { playbackFrame, poseSockets } from "../render/player-fx-model.ts";
+import { rev01ScreenImages } from "../services/rev01-claims.ts";
+import { rev01Image, rev01Sprite } from "../services/rev01-assets.ts";
 import { saveSettings } from "../services/storage.ts";
-import { text as bitmapText } from "../ui/bitmap-text.ts";
-import { drawSprite } from "../ui/sprite.ts";
+import { centredX, drawText } from "../ui/bitmap-text.ts";
+import { CENTRE_X, ITEM, LINE_STEP, SETTINGS_LABELS, hitItem, menuLayout, resultFrame, settingsControl, type MenuLayout, type Rect } from "../ui/menu-layout.ts";
+import { PRESENTATION, TEXT_COLOR, art, drawAt, drawNineSlice, drawThreeSlice, fillRect, paletteColor } from "../ui/presentation.ts";
+import { drawNative } from "../ui/sprite.ts";
 import type { Progress, ProgressCommand, Session } from "../world/session.ts";
 import { STAGES } from "../config/stages.ts";
+import { LAYER } from "../config/layers.ts";
+import { fromLegacy as w } from "../config/view.ts";
 
 export type MenuKind = "title" | "pause" | "result";
-function text(frame: Frame, value: string, x: number, y: number, color = 0xdde9e3, scale = 1): void {
-  bitmapText(frame, value, x, y, color, scale, 100);
+const text = (frame: Frame, value: string, left: number, top: number, color: number) => drawText(frame, value, left, top, color, LAYER.screenText);
+const centred = (frame: Frame, value: string, top: number, color: number) => text(frame, value, centredX(value, CENTRE_X), top, color);
+
+export const CONTROLS_LINES = ["WASD / ARROWS  MOVE WITH MOMENTUM", "HOLD LEFT MOUSE / SPACE  FIRE UP", "GAMEPAD LEFT STICK  MOVE", "HOLD PAD X  FIRE STRAIGHT UP", "B / PAD A  NOVA BLAST", "ESC / P / START  PAUSE", "F  FULLSCREEN", "BRIGHT CORE DOT  YOUR HITBOX"];
+
+/** One menuItem row: 3-slice plate (focused caps when selected), centred text or a settings label + control. */
+function drawItem(frame: Frame, rect: Rect, label: string, focused: boolean, control?: { kind: "meter" | "toggle"; frame: string }): void {
+  const slices = focused ? ["left-focused", "fill-focused", "right-focused"] as const : ["left", "fill", "right"] as const;
+  drawThreeSlice(frame, rev01Sprite("menuItem"), slices, rect.left, rect.top, rect.width, LAYER.screenItem);
+  const color = focused ? TEXT_COLOR.focused : TEXT_COLOR.label, row = rect.top + ITEM.textOffset;
+  if (!control) { centred(frame, label, row, color); return; }
+  text(frame, label, rect.left + ITEM.labelInset, row, color);
+  const image = art(control.kind === "meter" ? "optionMeter" : "optionToggle", control.frame);
+  drawAt(frame, image, ITEM.controlRight + 1 - image.width, rect.top + Math.floor((rect.height - image.height) / 2), LAYER.screenItemMark);
 }
+
+/** menuPanel with its centred heading and panelRule (x 212..428). */
+function drawPanel(frame: Frame, layout: MenuLayout, title?: string): void {
+  const box = layout.panel;
+  if (!box) return;
+  drawNineSlice(frame, box.left, box.top, box.width, box.height, LAYER.screenPanel);
+  if (title === undefined || layout.titleTop === undefined || layout.ruleTop === undefined) return;
+  centred(frame, title, layout.titleTop, TEXT_COLOR.heading);
+  drawThreeSlice(frame, rev01Sprite("panelRule"), ["left", "fill", "right"], 212, layout.ruleTop, 428 - 212 + 1, LAYER.screenPanel);
+}
+
+/**
+ * Title, pause/settings/controls and result screens on the rev01 menu kit (spec presentation.screens): 1x 5x7 text,
+ * 9-slice panels, menuItem rows whose rects are also the click areas (press and release on the same item),
+ * fixed settings labels with optionMeter/optionToggle controls, resultPlate titles. The title keeps its established
+ * composition and placement with native frames, font and item kit.
+ */
 export function menuScene(kind: MenuKind, session: Session, take: (purpose: string) => PreparedScene | undefined): SceneDefinition<Progress, ProgressCommand> {
   return {
-    id: `menu-${kind}`, blocksUpdateBelow: true, assets: kind === "title" ? artAssets : [],
+    // Pause/result draw over a stage scene, which already claims the rev01 screen kit (stage-assets.ts).
+    id: `menu-${kind}`, blocksUpdateBelow: true, assets: kind === "title" ? [rev01Image("breakwaterBackground"), rev01Image("player"), rev01Image("exhaust"), ...rev01ScreenImages()] : [],
     setup(scene) {
       session.screen = kind === "title" ? "title" : kind === "pause" ? "paused" : session.run?.phase === "clear" ? "clear" : "dead";
       if (kind === "pause") scene.defer(() => { if (session.screen === "paused") session.screen = "playing"; });
+      // Every title raster is a native frame.
+      scene.camera.pixelSnap = false;
       let selection = 0, page: "main" | "settings" | "controls" = "main", clock = 0, pending: string | undefined, previousAxis = 0;
-      const labels = () => page === "controls" ? ["BACK"] : page === "settings" ? [
-        `MUSIC ${Math.round(session.settings.music * 100)}`, `EFFECTS ${Math.round(session.settings.effects * 100)}`,
-        session.settings.muted ? "SOUND OFF" : "SOUND ON", session.settings.reducedMotion ? "REDUCED MOTION ON" : "REDUCED MOTION OFF", "BACK",
-      ] : kind === "title" ? ["LAUNCH CAMPAIGN", "SETTINGS", "CONTROLS"] : kind === "pause" ? ["RESUME FLIGHT", "SETTINGS", "CONTROLS", "RETURN TO TITLE"] : [session.run?.phase === "clear" ? session.run.stageIndex === 2 ? "PLAY AGAIN" : "NEXT SECTOR" : "RETRY SECTOR", "RETURN TO TITLE"];
-      const menuY = () => page === "settings" ? 145 : page === "controls" ? 223 : kind === "title" ? 184 : kind === "result" ? 190 : 161;
+      const labels = (): readonly string[] => page === "controls" ? ["BACK"] : page === "settings" ? SETTINGS_LABELS
+        : kind === "title" ? ["LAUNCH CAMPAIGN", "SETTINGS", "CONTROLS"] : kind === "pause" ? PRESENTATION.screens.pause.items
+        : [session.run?.phase === "clear" ? session.run.stageIndex === 2 ? "PLAY AGAIN" : "NEXT SECTOR" : "RETRY SECTOR", "RETURN TO TITLE"];
+      const stats = (): { text: string; color: number }[] => {
+        const run = session.run!;
+        const message = run.phase === "clear" ? run.stageIndex === 2 ? "ALL THREE SECTORS LIBERATED / CAMPAIGN COMPLETE" : `NEXT / ${STAGES[run.stageIndex + 1].name}` : `RETRY / ${STAGES[run.stageIndex].name}`;
+        const closing = run.phase === "clear" ? run.stageIndex === 2 ? "WELCOME HOME. YOU EARNED IT." : "SCORE BANKED / HULL AND NOVA RESTORED" : `SECTOR ENTRY SCORE ${run.entryScore}`;
+        return [{ text: `SCORE ${String(run.score).padStart(7, "0")}`, color: TEXT_COLOR.value }, { text: `KILLS ${run.kills}   BEST ${session.best}`, color: TEXT_COLOR.label },
+          { text: message, color: TEXT_COLOR.label }, { text: closing, color: TEXT_COLOR.label }];
+      };
+      const layout = (): MenuLayout => page === "controls" ? menuLayout("controls", 1) : page === "settings" ? menuLayout("panel", labels().length)
+        : kind === "title" ? menuLayout("title", labels().length) : kind === "result" ? menuLayout("result", labels().length, stats().length) : menuLayout("panel", labels().length);
       scene.system(({ dt, input, scenes }) => {
         clock += dt;
         if (pending) { const candidate = take(pending); if (candidate) scenes.set(candidate); return; }
@@ -30,10 +75,8 @@ export function menuScene(kind: MenuKind, session: Session, take: (purpose: stri
         if (pressed(input, "ArrowUp") || pressed(input, "KeyW") || pressed(input, "Pad12") || axis === -1 && previousAxis !== -1) selection = (selection + list.length - 1) % list.length;
         previousAxis = axis;
         let activate = pressed(input, "Enter") || pressed(input, "Space") || pressed(input, "Pad0");
-        for (const click of input.pointer.completed) for (let i = 0; i < list.length; i++) {
-          const y = menuY() + i * 19;
-          if (click.button === 0 && click.x >= 156 && click.x <= 324 && click.startX >= 156 && click.startX <= 324 && click.y >= y - 6 && click.y <= y + 9 && click.startY >= y - 6 && click.startY <= y + 9) { selection = i; activate = true; }
-        }
+        const items = layout().items;
+        for (const click of input.pointer.completed) { const hit = hitItem(items, click); if (hit >= 0) { selection = hit; activate = true; } }
         if (pressed(input, "Escape") || pressed(input, "Pad1")) {
           if (page !== "main") { page = "main"; selection = 0; }
           else if (kind === "pause") scenes.pop();
@@ -55,42 +98,35 @@ export function menuScene(kind: MenuKind, session: Session, take: (purpose: stri
       });
       scene.render((frame) => {
         if (kind === "title") {
-          drawSprite(frame, art.background, 240, 135, -10);
-          frame.rect(240, 135, 480, 270, 0x030c18, 0.44, 20, true);
-          const exhaust = art.exhaust[session.settings.reducedMotion ? 0 : animationIndex(clock, art.exhaustDurations, true)];
-          for (const [sx, sy] of art.exhaustSockets.neutral) drawSprite(frame, exhaust, 240 + sx, 126 + sy, 24);
-          drawSprite(frame, art.player.neutral, 240, 126, 25);
-        } else frame.rect(240, 135, 480, 270, 0x030b18, 0.85, 80, true);
+          const centre = w(240), playerY = w(126);
+          drawNative(frame, rev01Sprite("breakwaterBackground").frames[0], centre, 180, { layer: LAYER.background });
+          frame.rect(centre, 180, 640, 360, 0x030c18, 0.44, LAYER.backgroundTint, true);
+          const exhaust = session.settings.reducedMotion ? rev01Sprite("exhaust").frame("medium") : playbackFrame(rev01Sprite("exhaust"), clock)!;
+          for (const [sx, sy] of poseSockets(0).exhaust) drawNative(frame, exhaust, centre + sx, playerY + sy, { layer: LAYER.playerExhaust });
+          drawNative(frame, rev01Sprite("player").frame("neutral"), centre, playerY, { layer: LAYER.player });
+        } else fillRect(frame, 0, 0, 640, 360, paletteColor(PRESENTATION.screens.dim.fill), LAYER.screenDim, PRESENTATION.screens.dim.opacity);
+        const current = layout(), list = labels();
         if (kind === "title" && page === "main") {
-          text(frame, "STARFALL", 162, 53, 0x26445b, 5); text(frame, "STARFALL", 160, 51, 0xc7eeef, 5);
-          text(frame, "THREE SECTORS / ONE LAST FLIGHT", 182, 86, 0xd6b68f);
-          text(frame, "A PILOT. A NOVA. A SKY FULL OF TROUBLE.", 166, 163, 0x8aabbf);
+          // Pre-rev01 rows, 1x text (no runtime scaling): wordmark, tagline above the ship, line below it.
+          centred(frame, "STARFALL", 77, TEXT_COLOR.heading);
+          centred(frame, "THREE SECTORS / ONE LAST FLIGHT", 115, TEXT_COLOR.value);
+          centred(frame, "A PILOT. A NOVA. A SKY FULL OF TROUBLE.", 217, TEXT_COLOR.label);
+        } else if (kind === "result" && page === "main") {
+          const plate = PRESENTATION.screens.result.plate;
+          drawAt(frame, art("resultPlate", resultFrame(session.run!)), plate.x, plate.y, LAYER.screenPanel);
+          drawPanel(frame, current);
+          stats().forEach((line, i) => centred(frame, line.text, current.linesTop! + i * LINE_STEP, line.color));
         } else {
-          const title = page === "settings" ? "SETTINGS" : page === "controls" ? "FLIGHT CONTROLS" : kind === "pause" ? "FLIGHT PAUSED" : session.run?.phase === "clear" ? session.run.stageIndex === 2 ? "THE SKY IS YOURS" : "SECTOR SECURED" : "SIGNAL LOST";
-          text(frame, title, 240 - title.length * 4, 67, session.run?.phase === "dead" ? 0xffb4a7 : 0xc5ebee, 2);
+          const screens = PRESENTATION.screens;
+          drawPanel(frame, current, page === "settings" ? screens.settings.title : page === "controls" ? screens.controls.title : screens.pause.title);
         }
-        if (page === "main" && kind === "result") {
-          const run = session.run!;
-          const score = `SCORE ${String(run.score).padStart(7, "0")}`;
-          text(frame, score, 240 - score.length * 2, 106, 0xffd39c);
-          text(frame, `KILLS ${run.kills}   BEST ${session.best}`, 192, 124, 0xa1c5d2);
-          const message = run.phase === "clear" ? run.stageIndex === 2 ? "ALL THREE SECTORS LIBERATED / CAMPAIGN COMPLETE" : `NEXT / ${STAGES[run.stageIndex + 1].name}` : `RETRY / ${STAGES[run.stageIndex].name}`;
-          text(frame, message, 240 - message.length * 2, 148, 0x8cabc0);
-          if (run.phase === "clear") text(frame, run.stageIndex === 2 ? "WELCOME HOME. YOU EARNED IT." : "SCORE BANKED / HULL AND NOVA RESTORED", run.stageIndex === 2 ? 186 : 170, 163, 0xa5d8d3);
-          else text(frame, `SECTOR ENTRY SCORE ${run.entryScore}`, 188, 163, 0xa5bacd);
-        }
-        if (page === "controls") {
-          const lines = ["WASD / ARROWS  MOVE WITH MOMENTUM", "HOLD LEFT MOUSE / SPACE  FIRE UP", "GAMEPAD LEFT STICK  MOVE", "HOLD PAD X  FIRE STRAIGHT UP", "B / PAD A  NOVA BLAST", "ESC / P / START  PAUSE", "F  FULLSCREEN", "BRIGHT CORE DOT  YOUR HITBOX"];
-          lines.forEach((line, i) => text(frame, line, 167, 100 + i * 13, i === 7 ? 0xbaffdb : 0x9fbecd));
-        }
-        labels().forEach((label, i) => {
-          const y = menuY() + i * 19, focused = selection === i;
-          frame.rect(240, y + 2, 168, 15, focused ? 0x294555 : 0x0c1c2b, 0.94, 90, true);
-          if (focused) { frame.rect(156, y + 2, 2, 15, 0xffd197, 1, 91, true); frame.rect(324, y + 2, 2, 15, 0xffd197, 1, 91, true); }
-          const value = pending && i === selection ? "PREPARING FLIGHT..." : label;
-          text(frame, value, 240 - value.length * 2, y, focused ? 0xffe0b1 : 0x8dabbf);
+        if (page === "controls") CONTROLS_LINES.forEach((line, i) => text(frame, line, PRESENTATION.screens.controls.lineX, current.linesTop! + i * LINE_STEP, i === 7 ? TEXT_COLOR.heading : TEXT_COLOR.label));
+        current.items.forEach((rect, i) => {
+          const value = pending && i === selection ? "PREPARING FLIGHT..." : list[i];
+          drawItem(frame, rect, value, selection === i, page === "settings" ? settingsControl(session.settings, i) : undefined);
         });
-        text(frame, "ARROWS SELECT   ENTER CONFIRM", 186, 257, 0x637f95);
+        const footer = PRESENTATION.screens.footer;
+        text(frame, footer.text, centredX(footer.text, footer.centreX), footer.row, TEXT_COLOR.label);
       });
     },
   };
