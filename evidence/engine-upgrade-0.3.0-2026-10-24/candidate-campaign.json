@@ -1,0 +1,198 @@
+{
+  "evidenceClass": "Headless normal-rules campaign run using actual production stage and menu systems",
+  "command": "node --experimental-strip-types tests/run-campaign-bot.ts C:\\Users\\jfabi\\.codex\\worktrees\\ngne-030\\ngne-starfall\\evidence\\engine-upgrade-0.3.0-2026-10-24\\candidate-campaign.json 17 41 83",
+  "stageConfig": [
+    {
+      "id": "orbital-breakwater",
+      "bossAt": 90,
+      "bossHp": 480
+    },
+    {
+      "id": "furnace-belt",
+      "bossAt": 100,
+      "bossHp": 540
+    },
+    {
+      "id": "midnight-citadel",
+      "bossAt": 110,
+      "bossHp": 600
+    }
+  ],
+  "results": [
+    {
+      "seed": 17,
+      "outcome": "campaign-clear",
+      "stages": [
+        {
+          "stageIndex": 0,
+          "stage": "orbital-breakwater",
+          "outcome": "clear",
+          "seconds": 158.933,
+          "hull": 4,
+          "kills": 90,
+          "entryScore": 0,
+          "score": 56900,
+          "bossHealth": 0,
+          "bossStart": 90.017,
+          "maxBullets": 70,
+          "novas": 9
+        },
+        {
+          "stageIndex": 1,
+          "stage": "furnace-belt",
+          "outcome": "clear",
+          "seconds": 198.783,
+          "hull": 4,
+          "kills": 81,
+          "entryScore": 56900,
+          "score": 110950,
+          "bossHealth": 0,
+          "bossStart": 100.017,
+          "maxBullets": 67,
+          "novas": 13
+        },
+        {
+          "stageIndex": 2,
+          "stage": "midnight-citadel",
+          "outcome": "clear",
+          "seconds": 165.633,
+          "hull": 5,
+          "kills": 106,
+          "entryScore": 110950,
+          "score": 192450,
+          "bossHealth": 0,
+          "bossStart": 110.017,
+          "maxBullets": 68,
+          "novas": 11
+        }
+      ],
+      "terminalScreen": "clear",
+      "stageIndex": 2,
+      "progress": {
+        "best": 192450,
+        "runs": 3
+      },
+      "diagnostics": [],
+      "sceneCountBeforeDispose": 2
+    },
+    {
+      "seed": 41,
+      "outcome": "campaign-clear",
+      "stages": [
+        {
+          "stageIndex": 0,
+          "stage": "orbital-breakwater",
+          "outcome": "clear",
+          "seconds": 158.933,
+          "hull": 4,
+          "kills": 90,
+          "entryScore": 0,
+          "score": 56750,
+          "bossHealth": 0,
+          "bossStart": 90.017,
+          "maxBullets": 70,
+          "novas": 9
+        },
+        {
+          "stageIndex": 1,
+          "stage": "furnace-belt",
+          "outcome": "clear",
+          "seconds": 198.783,
+          "hull": 4,
+          "kills": 81,
+          "entryScore": 56750,
+          "score": 110950,
+          "bossHealth": 0,
+          "bossStart": 100.017,
+          "maxBullets": 67,
+          "novas": 13
+        },
+        {
+          "stageIndex": 2,
+          "stage": "midnight-citadel",
+          "outcome": "clear",
+          "seconds": 165.633,
+          "hull": 5,
+          "kills": 106,
+          "entryScore": 110950,
+          "score": 192750,
+          "bossHealth": 0,
+          "bossStart": 110.017,
+          "maxBullets": 68,
+          "novas": 11
+        }
+      ],
+      "terminalScreen": "clear",
+      "stageIndex": 2,
+      "progress": {
+        "best": 192750,
+        "runs": 3
+      },
+      "diagnostics": [],
+      "sceneCountBeforeDispose": 2
+    },
+    {
+      "seed": 83,
+      "outcome": "campaign-clear",
+      "stages": [
+        {
+          "stageIndex": 0,
+          "stage": "orbital-breakwater",
+          "outcome": "clear",
+          "seconds": 158.933,
+          "hull": 4,
+          "kills": 90,
+          "entryScore": 0,
+          "score": 56450,
+          "bossHealth": 0,
+          "bossStart": 90.017,
+          "maxBullets": 70,
+          "novas": 9
+        },
+        {
+          "stageIndex": 1,
+          "stage": "furnace-belt",
+          "outcome": "clear",
+          "seconds": 198.783,
+          "hull": 4,
+          "kills": 81,
+          "entryScore": 56450,
+          "score": 110200,
+          "bossHealth": 0,
+          "bossStart": 100.017,
+          "maxBullets": 67,
+          "novas": 13
+        },
+        {
+          "stageIndex": 2,
+          "stage": "midnight-citadel",
+          "outcome": "clear",
+          "seconds": 165.633,
+          "hull": 5,
+          "kills": 106,
+          "entryScore": 110200,
+          "score": 191850,
+          "bossHealth": 0,
+          "bossStart": 110.017,
+          "maxBullets": 68,
+          "novas": 11
+        }
+      ],
+      "terminalScreen": "clear",
+      "stageIndex": 2,
+      "progress": {
+        "best": 191850,
+        "runs": 3
+      },
+      "diagnostics": [],
+      "sceneCountBeforeDispose": 2
+    }
+  ],
+  "limitations": [
+    "No browser/GPU, decoded production assets or audible sound: empty fixture assets and stub sound.",
+    "Bot reads exact public ECS observations and predicts threats; this is reachability evidence, not human difficulty/fun acceptance.",
+    "Only ordinary held Space, arrows, KeyB and menu Enter inputs; no gameplay HP, timer, invulnerability, encounter or AI mutations.",
+    "Menu candidate preparation is a headless adapter matching production route semantics; actual stage/menu systems execute.",
+    "Simulation time is not a wall-time performance benchmark."
+  ]
+}

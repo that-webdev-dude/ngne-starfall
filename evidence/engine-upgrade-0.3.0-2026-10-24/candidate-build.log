@@ -1,0 +1,46 @@
+
+> starfall@0.1.0 build
+> npm run typecheck && vite build
+
+
+> starfall@0.1.0 typecheck
+> tsc --noEmit && tsc --noEmit -p tests
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 61 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                  0.72 kB │ gzip:  0.44 kB
+dist/assets/shot-ELoTeSYz.wav                    4.68 kB
+dist/assets/hit-_y1qaTop.wav                     5.34 kB
+dist/assets/damage-ChHVClRx.wav                 17.68 kB
+dist/assets/explosion-D3xtm9W6.wav              28.71 kB
+dist/assets/nova-BFDb8Qqp.wav                   39.73 kB
+dist/assets/warning-B9DTKQ06.wav                50.76 kB
+dist/assets/death-Btbdc2X5.wav                  55.17 kB
+dist/assets/clear-DOlcBUUD.wav                  66.19 kB
+dist/assets/dart-Ikk3epmN.png                  265.96 kB
+dist/assets/kiln-segment-CfB8MPCU.png          341.08 kB
+dist/assets/starfall-engine-DvPWMICR.wav       498.12 kB
+dist/assets/kiln-DJKZQdZ_.wav                  522.71 kB
+dist/assets/gatebreaker-B4TfYdVC.wav           549.86 kB
+dist/assets/minelayer-CpNoYKib.png             554.44 kB
+dist/assets/citadel-CyJqQ4_6.wav               564.52 kB
+dist/assets/furnace-jLwGkRwN.wav               579.99 kB
+dist/assets/breakwater-g0eMm0N0.wav            613.61 kB
+dist/assets/player-bank-K7R4xfvk.png           736.66 kB
+dist/assets/interceptor-dArMgajc.png           756.70 kB
+dist/assets/warden-D3b43ZZZ.png                761.35 kB
+dist/assets/exhaust-B4CFsxT9.png             1,006.22 kB
+dist/assets/gunship-Dd1MowuZ.png             1,123.91 kB
+dist/assets/gatebreaker-DxZcbMiC.png         1,175.51 kB
+dist/assets/explosion-CQlIvxA1.png           1,386.75 kB
+dist/assets/starfall-engine-CWHvAkPh.png     1,461.88 kB
+dist/assets/kiln-head-BUF4xvF3.png           1,689.09 kB
+dist/assets/orbital-breakwater-Bxbull8Y.png  2,100.64 kB
+dist/assets/citadel-background-BPHQfIRS.png  2,232.55 kB
+dist/assets/furnace-background-78GAiBrC.png  2,459.22 kB
+dist/assets/index-Dqze09Fd.css                   0.48 kB │ gzip:  0.33 kB
+dist/assets/index-CA5y3hmj.js                  127.41 kB │ gzip: 42.52 kB
+✓ built in 450ms

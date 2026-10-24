@@ -11,7 +11,7 @@
     "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
   "dependencies": {
-    "@ngne/core": "0.2.2"
+    "@ngne/core": "0.3.0"
   },
   "devDependencies": {
     "@types/node": "24.19.1",

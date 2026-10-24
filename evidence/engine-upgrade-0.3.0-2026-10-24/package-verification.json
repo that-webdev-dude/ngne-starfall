@@ -1,0 +1,234 @@
+{
+  "version": "0.3.0",
+  "tarballSha256": "5d43cad5577fcd6bc40c0030415cf24a7b52a53200ff867733a8ffe3b9d9dfeb",
+  "tarballIntegrity": "sha512-LHmm8cPStMbFHWYVwUOFvt0BX4ex2GH6tB3zsp+7QXLcPurtmohE2jcVtVrGwpxz1pxjpk5sE9gBgAQXCpRLcg==",
+  "publishedChecksumMatches": true,
+  "registryAndLockIntegrityMatch": true,
+  "installedMatchesRegistryTarball": true,
+  "files": [
+    {
+      "name": "LICENSE",
+      "sha256": "267aed9fab02e34166e807f5051d05bf0eb6039e341f5bd39610cebca1f377ed"
+    },
+    {
+      "name": "README.md",
+      "sha256": "5122b7ad95c9f81f21d8eb4c810126d79e33a2f612de50374e8d1e8eeb47309b"
+    },
+    {
+      "name": "dist/engine/assets.d.ts",
+      "sha256": "e87420e3d7ed18749e22269446436288cf4c1afd2c2f112320c2c83eeddba643"
+    },
+    {
+      "name": "dist/engine/assets.js",
+      "sha256": "7a0ec4d2d3a7e463e9762dc1c7283150fda1d02b439d21bbcdc071d14a765c7a"
+    },
+    {
+      "name": "dist/engine/audio.d.ts",
+      "sha256": "02b6b5a9aa09681975e72292e82c4f4491b691a9ab5b91d4691bbe4df64e054a"
+    },
+    {
+      "name": "dist/engine/audio.js",
+      "sha256": "3ff9b77c8a8f158e159bbae69091ef92129cc398ae06b0567d3dd56c245e666a"
+    },
+    {
+      "name": "dist/engine/browser.d.ts",
+      "sha256": "cd1c6eb4a4f449490fe6906b6d126058df5f550f4e095d7403b8b0233dc860c8"
+    },
+    {
+      "name": "dist/engine/browser.js",
+      "sha256": "6dcc174329e048845945cbff0dbbfa6a64adef585b2f1b70df380edc9da5619e"
+    },
+    {
+      "name": "dist/engine/ecs.d.ts",
+      "sha256": "13efeee1aebbbedee42dddeb03d1313659ddd3f12516256f2453103b9fa90d7f"
+    },
+    {
+      "name": "dist/engine/ecs.js",
+      "sha256": "ba0cc7382e9678af2ed3c27464f57b9314045df51bb335bb0723ddba3ecc9d66"
+    },
+    {
+      "name": "dist/engine/gpu-context.d.ts",
+      "sha256": "77b2af81c1c10dc1f10b4df465fd234b2b06ac9387f920c08b3e86b0ea92046e"
+    },
+    {
+      "name": "dist/engine/gpu-context.js",
+      "sha256": "35f70fc5ba1568ae1346117a8767050a6c3f1e3b5e0d3acf9312d06c77a931e7"
+    },
+    {
+      "name": "dist/engine/index.d.ts",
+      "sha256": "153846d52fe00aa52e6366cc190a57324066e3e4cd80a503e4914acfc5de453e"
+    },
+    {
+      "name": "dist/engine/index.js",
+      "sha256": "54c963ba87f42945230fbf0128c34322bcb3102f8ba5d8e8c780b2eaa7ea5966"
+    },
+    {
+      "name": "dist/engine/input.d.ts",
+      "sha256": "ef6b2d9d94a3e308238e731ccfc195847e2808c613413345b08ec49f116d948f"
+    },
+    {
+      "name": "dist/engine/input.js",
+      "sha256": "f8f6912afeea55e1c7c2724ffad24178a7e36e0923c4c855b6b9cb8a21cf7935"
+    },
+    {
+      "name": "dist/engine/inspection.d.ts",
+      "sha256": "e1958e8d54e155c6cc76cf876e61ad85917b782adade2810e7dd5b07376fc3d3"
+    },
+    {
+      "name": "dist/engine/inspection.js",
+      "sha256": "3f13e1d25da6d0251516e24f3755e3787d103f22a640e6932136596b5e1e4efd"
+    },
+    {
+      "name": "dist/engine/primitives.d.ts",
+      "sha256": "441d272e48bc7e6149aa7f705abecfe1facfef62d77082ce4a58881308e3879a"
+    },
+    {
+      "name": "dist/engine/primitives.js",
+      "sha256": "96ac05c745a84055871a7f4d29517e6e77439c1e90db76d7e7e6b2fea16eb983"
+    },
+    {
+      "name": "dist/engine/quad-layout.d.ts",
+      "sha256": "5626d1717c15cb69aa788f8e83d6b327bc91fd20e39989c23a9821d578a2344d"
+    },
+    {
+      "name": "dist/engine/quad-layout.js",
+      "sha256": "fba934afe8b918ea3e38107d1b0898a56fbc45a906caf4358548649f71a89368"
+    },
+    {
+      "name": "dist/engine/quad-renderer.d.ts",
+      "sha256": "eb15488587a7d65d8862170e72617b6f266fde2555ad43a0868ca147dcd01f0c"
+    },
+    {
+      "name": "dist/engine/quad-renderer.js",
+      "sha256": "c9d57e248f89f77ab17e0f3e1035f513b77247aaa9b47042bae48f610214f1f0"
+    },
+    {
+      "name": "dist/engine/quad-shader.d.ts",
+      "sha256": "78dd0210ffdef96f27f155454d5e808207504f65017e88182c7ece81a9374cd6"
+    },
+    {
+      "name": "dist/engine/quad-shader.js",
+      "sha256": "da21febc09f16019fb6252d43f8d55a65bbdac4951f6e0311d3555ec85006a3f"
+    },
+    {
+      "name": "dist/engine/renderer-host.d.ts",
+      "sha256": "21fb54868375631b5bfea6d5319dca676741ce60f711365b2cc44f8e6c450e30"
+    },
+    {
+      "name": "dist/engine/renderer-host.js",
+      "sha256": "2d50df6a0db35e5a47b42ae81f0fefe3b168c686e92c38ad1be73ef467e51a34"
+    },
+    {
+      "name": "dist/engine/renderer.d.ts",
+      "sha256": "f8606042c0105c80f79e86c40c1df50072b10e28fc60c531a8738f74f7b709f0"
+    },
+    {
+      "name": "dist/engine/renderer.js",
+      "sha256": "e860521e0bfe1685b81ce8a206058a2d4d4bf207fcc6d6012523b0fd07a9cf7e"
+    },
+    {
+      "name": "dist/engine/resource-inspection.d.ts",
+      "sha256": "c49630d11631cd520f1cd37465b73db6aed62d7ee338964200d997fec46ba96b"
+    },
+    {
+      "name": "dist/engine/resource-inspection.js",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "name": "dist/engine/resource-registry.d.ts",
+      "sha256": "61b8f542476c8d5fe91e9d14cc40c675ac5435e4c3b8231cbceb7c917f787ce1"
+    },
+    {
+      "name": "dist/engine/resource-registry.js",
+      "sha256": "d47f516b6a42292e181a54e8dedb9aea688e25c5f716c134d7c2870bbd721196"
+    },
+    {
+      "name": "dist/engine/scene.d.ts",
+      "sha256": "c05dc441071ceee199d8fcf553796dc6bc8a1237c601c25a01e15ef906b9f146"
+    },
+    {
+      "name": "dist/engine/scene.js",
+      "sha256": "9e500fb2de67c213761f1f5eb2ce1b1a631ba6d626ca0bbfca69f11319423086"
+    },
+    {
+      "name": "dist/engine/texture-assets.d.ts",
+      "sha256": "0a495e75273b8b84c9fcd3ea0a793d5fb7f55502705140c485b7ab3dae1ed54a"
+    },
+    {
+      "name": "dist/engine/texture-assets.js",
+      "sha256": "24dd4217b835f504ed05692befd8d58f3008a0149d6e8d8e5f31c8087bb1c9b4"
+    },
+    {
+      "name": "dist/engine/webgpu-renderer.d.ts",
+      "sha256": "9a9ca4745ab6f8c5c75de23436a4a13b46564daadff9499d1b30928f996e80d0"
+    },
+    {
+      "name": "dist/engine/webgpu-renderer.js",
+      "sha256": "41e39a393f29e9d15667229701d141bad21699fe9c4084635224e627ce8b5ce7"
+    },
+    {
+      "name": "dist/engine/webgpu-runtime.d.ts",
+      "sha256": "1776e2ff19f6a30943854e7ff3744baed37f20e5c66c5ca74be8a59ee071c80a"
+    },
+    {
+      "name": "dist/engine/webgpu-runtime.js",
+      "sha256": "de595e30f67bcbceee8829f1802495130734358c2cdd4d4dbcbc4639485c2d5c"
+    },
+    {
+      "name": "dist/preview/browser.js",
+      "sha256": "0fde3f9f9459e38b52c5a5cdc7327c4bd9e888cc1400116cbafddaf090486839"
+    },
+    {
+      "name": "dist/preview/cli.js",
+      "sha256": "3b39f7fab6d8cb6974adc8c04578a3260b386f38a704b10675c9c73fc90f9120"
+    },
+    {
+      "name": "dist/preview/host.js",
+      "sha256": "f24082754ff318c2f0a4481f9c10904bf946497652fdcb6c682d0278ce6c01b2"
+    },
+    {
+      "name": "dist/preview/index.html",
+      "sha256": "9186d69156247a0a8870c8898c780159d6c098df981e6a154d669d767ffd51b8"
+    },
+    {
+      "name": "dist/preview/inspection.js",
+      "sha256": "9bc88e74cb45bc1f0b7881528079182266eafeb12309ed3178c24325315a85d5"
+    },
+    {
+      "name": "dist/preview/model.js",
+      "sha256": "2b23007f7cfa95f7ad4ca640d2ba302080e8650f6880991ba205623618b769af"
+    },
+    {
+      "name": "dist/preview/playback.js",
+      "sha256": "69f59d032fa8df759dcf842cf25acba934be77f3da7ff0ca4c689bcf3a71fa51"
+    },
+    {
+      "name": "docs/architecture.md",
+      "sha256": "3fdb5c1abb68c4d1fe8b30058ce9f07698d4ca56ee686d34899e8e65001596bc"
+    },
+    {
+      "name": "docs/contracts/NGNE.md",
+      "sha256": "28fb1c7ba9af0e74fa36ed63817cacb618af7889d6495af1feaba161d103115f"
+    },
+    {
+      "name": "docs/contracts/browser-and-presentation.md",
+      "sha256": "a7739a552b40137d82d28fcefb4b6bc7051f735911556aa28277ff44c754ed14"
+    },
+    {
+      "name": "docs/contracts/ownership-and-inspection.md",
+      "sha256": "d438b0cb31540bf70b8307aca13891dd482d4c8d2307a623cb86bdc61753327a"
+    },
+    {
+      "name": "docs/contracts/simulation.md",
+      "sha256": "e8e647d3a4a2bdb8eae7cde81000c2ad5213ce49ca5fd5265e1296c9e4ecfb1d"
+    },
+    {
+      "name": "docs/guide.md",
+      "sha256": "fb878ed639eecc94317e9b23bdddb4845db52b88b2d3e9815eec9c6f3d94033f"
+    },
+    {
+      "name": "package.json",
+      "sha256": "44a5b41cb891151a6bb3174e0bbfe7515bf4bc386b85bd95272680355cda1c07"
+    }
+  ]
+}

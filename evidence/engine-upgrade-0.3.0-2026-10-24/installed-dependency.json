@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "name": "starfall",
+  "dependencies": {
+    "@ngne/core": {
+      "version": "0.3.0",
+      "resolved": "https://registry.npmjs.org/@ngne/core/-/core-0.3.0.tgz",
+      "overridden": false
+    }
+  }
+}

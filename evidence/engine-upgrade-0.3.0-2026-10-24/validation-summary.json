@@ -1,0 +1,66 @@
+{
+  "acceptedAgainstBaseline": true,
+  "fullGameTestSuitePassed": false,
+  "baselineReconstruction": {
+    "pinnedCommit": "e288ffe837582bc0e3a1d79628781f1eafd1fae1",
+    "simulatedMigratedHead": "0.3.0",
+    "acceptanceTestsPassed": 2,
+    "acceptanceTestsFailed": 0,
+    "commitsCreated": 0
+  },
+  "tests": {
+    "tests": 39,
+    "pass": 37,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "existingFailures": [
+    "release glides a visible but short distance, then settles exactly",
+    "full-speed reversal overshoots less than three pixels"
+  ],
+  "packageVerifierRegressionTests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "packageFiles": 56,
+  "packageArchiveSha256": "5d43cad5577fcd6bc40c0030415cf24a7b52a53200ff867733a8ffe3b9d9dfeb",
+  "campaignSeeds": [
+    17,
+    41,
+    83
+  ],
+  "exactCampaignMatch": true,
+  "deterministicBrowserStateAndPngMatch": true,
+  "productionBuilds": [
+    {
+      "variant": "baseline",
+      "version": "0.2.2",
+      "sourceRevision": "e288ffe837582bc0e3a1d79628781f1eafd1fae1",
+      "outputRoot": ".test-output/ngne-030/baseline-source-vqZK7o/dist",
+      "files": 33,
+      "smokeUrls": [
+        "/production/baseline/"
+      ]
+    },
+    {
+      "variant": "candidate",
+      "version": "0.3.0",
+      "sourceRevision": "e288ffe837582bc0e3a1d79628781f1eafd1fae1",
+      "outputRoot": "dist",
+      "files": 33,
+      "smokeUrls": [
+        "/production/candidate/",
+        "/"
+      ]
+    }
+  ],
+  "servedBytesMatchBuildInventories": true,
+  "cleanupPassed": true,
+  "limitations": [
+    "Two pre-existing movement tests remain failing.",
+    "HEAD advancement is simulated in acceptance; real Git reads and tar extraction use the pinned commit. No commit or ref mutation was performed.",
+    "Headless Chrome on one Windows machine; no new device-loss, audible audio, physical-controller or broad device acceptance."
+  ]
+}

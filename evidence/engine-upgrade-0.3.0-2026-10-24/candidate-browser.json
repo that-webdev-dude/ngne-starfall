@@ -1,0 +1,636 @@
+{
+  "variant": "candidate",
+  "campaign": {
+    "version": "0.3.0",
+    "seed": 17,
+    "width": 480,
+    "height": 270,
+    "tick": 1799,
+    "state": {
+      "stageIndex": 0,
+      "entryScore": 0,
+      "phase": "waves",
+      "seconds": 29.86666666666625,
+      "score": 5300,
+      "hull": 5,
+      "combo": 3,
+      "comboTimer": 0.4166666666666687,
+      "nova": 0.5655555555555547,
+      "invulnerable": 0,
+      "shotTimer": 0.09333333333334165,
+      "waveIndex": 9,
+      "x": 146.51252083173333,
+      "y": 170.50126265847086,
+      "bossHealth": 0,
+      "bossMax": 1,
+      "kills": 18,
+      "shake": 0,
+      "flash": 0,
+      "effectClock": 29.94999999999958,
+      "banner": "ORBITAL BREAKWATER",
+      "bannerTime": 0,
+      "finishTimer": 0,
+      "finished": false,
+      "nextId": 30,
+      "scorePops": [],
+      "novaRing": 8.58333333333334,
+      "bossDeathX": 240,
+      "bossDeathY": 67,
+      "bossPhase": 1
+    },
+    "progress": {
+      "best": 0,
+      "runs": 0
+    },
+    "history": [
+      {
+        "event": "phase",
+        "screen": "title"
+      },
+      {
+        "event": "stage-start",
+        "stage": 0,
+        "entryScore": 0
+      },
+      {
+        "event": "phase",
+        "stage": 0,
+        "phase": "waves",
+        "screen": "playing",
+        "seconds": 0,
+        "score": 0,
+        "hull": 5
+      }
+    ],
+    "errors": [],
+    "frameHash": "8df14ea",
+    "frameCount": 888
+  },
+  "framePngSha256": "d08b4f1f42bdde88f472d89ab9a8b19419b4ccfd30ecc370547dbfda0433e070",
+  "browserErrors": [],
+  "production": {
+    "artifact": {
+      "variant": "candidate",
+      "version": "0.3.0",
+      "command": "npm.cmd run build",
+      "configuration": "vite.config.ts",
+      "configurationSha256": "ff7631bd8ad34b58580aa0a55c98a514ee5bb0d922c94ea38e68f6ed455ca2e6",
+      "sourceRevision": "e288ffe837582bc0e3a1d79628781f1eafd1fae1",
+      "sourceRoot": ".",
+      "outputRoot": "dist",
+      "files": [
+        {
+          "name": "LICENSE-NGNE.txt",
+          "bytes": 1073,
+          "sha256": "267aed9fab02e34166e807f5051d05bf0eb6039e341f5bd39610cebca1f377ed"
+        },
+        {
+          "name": "assets/breakwater-g0eMm0N0.wav",
+          "bytes": 613610,
+          "sha256": "4f1b5ea79b2ea673e98c54e43b967dd3095553e4c523da5b6b5bf9969c9759b2"
+        },
+        {
+          "name": "assets/citadel-CyJqQ4_6.wav",
+          "bytes": 564524,
+          "sha256": "3b150803c0ae879c76d6b220d7964aed669cdd5c998ed08ae98e2234f574388a"
+        },
+        {
+          "name": "assets/citadel-background-BPHQfIRS.png",
+          "bytes": 2232550,
+          "sha256": "0fdc1973046608a3a47d708a465576358d7979076c44cf22746186a1a36b7117"
+        },
+        {
+          "name": "assets/clear-DOlcBUUD.wav",
+          "bytes": 66194,
+          "sha256": "4ce5fa8846ffc66af19c5189e27f87045e11d9eda22063155a7f22901f96e21d"
+        },
+        {
+          "name": "assets/damage-ChHVClRx.wav",
+          "bytes": 17684,
+          "sha256": "6ab16c676e554189c586297d381dd5745b316cfe79cc862b3180c06322b2ca00"
+        },
+        {
+          "name": "assets/dart-Ikk3epmN.png",
+          "bytes": 265961,
+          "sha256": "7ebf4ff70972106215942bb5d5c45cfc5b0e87814f0251c1eed065f8a9216f82"
+        },
+        {
+          "name": "assets/death-Btbdc2X5.wav",
+          "bytes": 55170,
+          "sha256": "9ce3454a9ea5873ef1713b55d1419b84d1461f95f9633fc567715ea3d5020130"
+        },
+        {
+          "name": "assets/exhaust-B4CFsxT9.png",
+          "bytes": 1006215,
+          "sha256": "d890079cb7a98b963ebbf89b4ba9e51e45ab5ceb0047abdf044183d8c4d6eca2"
+        },
+        {
+          "name": "assets/explosion-CQlIvxA1.png",
+          "bytes": 1386749,
+          "sha256": "20f169de56673e6d21de83770a1d3812173327666cfe1433b3401d51de97c6de"
+        },
+        {
+          "name": "assets/explosion-D3xtm9W6.wav",
+          "bytes": 28710,
+          "sha256": "772ceecc17531fa97a524e2f4da3cb9b140a49153a894ce3a9c29a964546af75"
+        },
+        {
+          "name": "assets/furnace-background-78GAiBrC.png",
+          "bytes": 2459219,
+          "sha256": "d55a957a24a8cf875d5c7218dd6fbb9791bfd255bca67fd59b96687c0cb78f48"
+        },
+        {
+          "name": "assets/furnace-jLwGkRwN.wav",
+          "bytes": 579990,
+          "sha256": "d8ef82f413d3cd0a5e7a30faacda52b9f976c32b164586e9fc20d1f1a2e328bf"
+        },
+        {
+          "name": "assets/gatebreaker-B4TfYdVC.wav",
+          "bytes": 549864,
+          "sha256": "5357a10c2a7fde5c1c657752cb230cc830d93efbc4497922991e8e9c3f21d3c9"
+        },
+        {
+          "name": "assets/gatebreaker-DxZcbMiC.png",
+          "bytes": 1175505,
+          "sha256": "377ecc0978a0c5ed5d6dd49a239dfd13c51075dc2c76111293eaabe53cbb264a"
+        },
+        {
+          "name": "assets/gunship-Dd1MowuZ.png",
+          "bytes": 1123905,
+          "sha256": "3d06a4a422e2b9683b90536f2b492f6c5bd71cd6b75d03543c54f56e5ae25a1e"
+        },
+        {
+          "name": "assets/hit-_y1qaTop.wav",
+          "bytes": 5336,
+          "sha256": "a2604ea2edea81c43648a8ee2cd57412b44946d8783c6325a797c3b4fc487abc"
+        },
+        {
+          "name": "assets/index-CA5y3hmj.js",
+          "bytes": 127409,
+          "sha256": "d7397aec847821bfbc13d05e2b8ec9011cdefd3886b241ea36c257e02f382e5c"
+        },
+        {
+          "name": "assets/index-Dqze09Fd.css",
+          "bytes": 477,
+          "sha256": "f8bf3efa1422d59ff6a7834ffd9d21ca4cdb1534dd9e5487dfb534cff1e55651"
+        },
+        {
+          "name": "assets/interceptor-dArMgajc.png",
+          "bytes": 756695,
+          "sha256": "5e5ad6e641dad53369c5e77171e2b3bf58e93688bd5b1678500c7683d5692219"
+        },
+        {
+          "name": "assets/kiln-DJKZQdZ_.wav",
+          "bytes": 522712,
+          "sha256": "b7b8038610bf964b9af43c2cb6b39fd65c204d235f44bb3d6024941d99711087"
+        },
+        {
+          "name": "assets/kiln-head-BUF4xvF3.png",
+          "bytes": 1689087,
+          "sha256": "416bdf69a1c14fa13639e45dae62d46734fe336d746168fcba509abdf583b6cc"
+        },
+        {
+          "name": "assets/kiln-segment-CfB8MPCU.png",
+          "bytes": 341075,
+          "sha256": "5809df190313904f3b72db56336620e3521e9366ca7ee28505362b5d5328c0e9"
+        },
+        {
+          "name": "assets/minelayer-CpNoYKib.png",
+          "bytes": 554436,
+          "sha256": "323a9ee8b0939c949af4547abd1d83458805729ce8503a21b92c14599c546385"
+        },
+        {
+          "name": "assets/nova-BFDb8Qqp.wav",
+          "bytes": 39734,
+          "sha256": "b97b9a7b5ae096825fac9ca2eb5d9e9b651ca6a216ce3ca5a02fc59c054deee7"
+        },
+        {
+          "name": "assets/orbital-breakwater-Bxbull8Y.png",
+          "bytes": 2100636,
+          "sha256": "8fb53a7b2ef33a985fd347f2d9833d3c05ab43fd3779ad700bc6056a12db2eed"
+        },
+        {
+          "name": "assets/player-bank-K7R4xfvk.png",
+          "bytes": 736655,
+          "sha256": "5c2993b3c5c525051fe1a6c5a9156c0b55d6f3de36ab0bdfaa41124785d9d200"
+        },
+        {
+          "name": "assets/shot-ELoTeSYz.wav",
+          "bytes": 4676,
+          "sha256": "e953bb192291a15dcd20f1336233d44e3538571e204e063bf57e5904832ccb5f"
+        },
+        {
+          "name": "assets/starfall-engine-CWHvAkPh.png",
+          "bytes": 1461880,
+          "sha256": "145b5590d2f7f82c4b89e37e5201ddd681c5363dce7c4695c62594434c5dae32"
+        },
+        {
+          "name": "assets/starfall-engine-DvPWMICR.wav",
+          "bytes": 498116,
+          "sha256": "e43dff237c58c42bd95451ccbe8dbd1151d76a9573faed9bba25d0af0cb74d04"
+        },
+        {
+          "name": "assets/warden-D3b43ZZZ.png",
+          "bytes": 761345,
+          "sha256": "69e401a94c3614628e47c4d99bdf810bef0206b617ba9f7634c58f95543c1763"
+        },
+        {
+          "name": "assets/warning-B9DTKQ06.wav",
+          "bytes": 50760,
+          "sha256": "ca32a8c4e8d5cefc22a97a73dbf563d874acf5a9832c6b4621601c9b924f6511"
+        },
+        {
+          "name": "index.html",
+          "bytes": 718,
+          "sha256": "39e1db5b33ec716bd7a5b1642b2a204b224ffb7f275246bea3b711136c8d87c1"
+        }
+      ]
+    },
+    "smokes": [
+      {
+        "routeName": "nested",
+        "url": "/production/candidate/",
+        "screens": [
+          {
+            "ready": "true",
+            "screen": "title",
+            "label": "Starfall. title. Enter or click Launch Campaign to begin. FPS 60. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "playing",
+            "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.0. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 240.0, 206.0. FPS 118. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "paused",
+            "label": "Starfall. paused. Stage 1: ORBITAL BREAKWATER. Time 0.8. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 283.8, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "playing",
+            "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.9. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 283.8, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "title",
+            "label": "Starfall. title. Enter or click Launch Campaign to begin. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "playing",
+            "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.0. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 240.0, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          }
+        ],
+        "movement": {
+          "ready": "true",
+          "screen": "playing",
+          "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.8. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 283.8, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+          "error": "",
+          "width": 480,
+          "height": 270
+        },
+        "keyboardFire": "Space held 250ms; no diagnostics",
+        "pointerLaunch": true,
+        "servedFiles": [
+          {
+            "url": "/production/candidate/",
+            "variant": "candidate",
+            "file": "dist/index.html",
+            "sha256": "39e1db5b33ec716bd7a5b1642b2a204b224ffb7f275246bea3b711136c8d87c1"
+          },
+          {
+            "url": "/production/candidate/assets/index-CA5y3hmj.js",
+            "variant": "candidate",
+            "file": "dist/assets/index-CA5y3hmj.js",
+            "sha256": "d7397aec847821bfbc13d05e2b8ec9011cdefd3886b241ea36c257e02f382e5c"
+          },
+          {
+            "url": "/production/candidate/assets/index-Dqze09Fd.css",
+            "variant": "candidate",
+            "file": "dist/assets/index-Dqze09Fd.css",
+            "sha256": "f8bf3efa1422d59ff6a7834ffd9d21ca4cdb1534dd9e5487dfb534cff1e55651"
+          },
+          {
+            "url": "/production/candidate/assets/player-bank-K7R4xfvk.png",
+            "variant": "candidate",
+            "file": "dist/assets/player-bank-K7R4xfvk.png",
+            "sha256": "5c2993b3c5c525051fe1a6c5a9156c0b55d6f3de36ab0bdfaa41124785d9d200"
+          },
+          {
+            "url": "/production/candidate/assets/exhaust-B4CFsxT9.png",
+            "variant": "candidate",
+            "file": "dist/assets/exhaust-B4CFsxT9.png",
+            "sha256": "d890079cb7a98b963ebbf89b4ba9e51e45ab5ceb0047abdf044183d8c4d6eca2"
+          },
+          {
+            "url": "/production/candidate/assets/interceptor-dArMgajc.png",
+            "variant": "candidate",
+            "file": "dist/assets/interceptor-dArMgajc.png",
+            "sha256": "5e5ad6e641dad53369c5e77171e2b3bf58e93688bd5b1678500c7683d5692219"
+          },
+          {
+            "url": "/production/candidate/assets/explosion-CQlIvxA1.png",
+            "variant": "candidate",
+            "file": "dist/assets/explosion-CQlIvxA1.png",
+            "sha256": "20f169de56673e6d21de83770a1d3812173327666cfe1433b3401d51de97c6de"
+          },
+          {
+            "url": "/production/candidate/assets/orbital-breakwater-Bxbull8Y.png",
+            "variant": "candidate",
+            "file": "dist/assets/orbital-breakwater-Bxbull8Y.png",
+            "sha256": "8fb53a7b2ef33a985fd347f2d9833d3c05ab43fd3779ad700bc6056a12db2eed"
+          },
+          {
+            "url": "/production/candidate/assets/dart-Ikk3epmN.png",
+            "variant": "candidate",
+            "file": "dist/assets/dart-Ikk3epmN.png",
+            "sha256": "7ebf4ff70972106215942bb5d5c45cfc5b0e87814f0251c1eed065f8a9216f82"
+          },
+          {
+            "url": "/production/candidate/assets/gunship-Dd1MowuZ.png",
+            "variant": "candidate",
+            "file": "dist/assets/gunship-Dd1MowuZ.png",
+            "sha256": "3d06a4a422e2b9683b90536f2b492f6c5bd71cd6b75d03543c54f56e5ae25a1e"
+          },
+          {
+            "url": "/production/candidate/assets/gatebreaker-DxZcbMiC.png",
+            "variant": "candidate",
+            "file": "dist/assets/gatebreaker-DxZcbMiC.png",
+            "sha256": "377ecc0978a0c5ed5d6dd49a239dfd13c51075dc2c76111293eaabe53cbb264a"
+          },
+          {
+            "url": "/production/candidate/assets/breakwater-g0eMm0N0.wav",
+            "variant": "candidate",
+            "file": "dist/assets/breakwater-g0eMm0N0.wav",
+            "sha256": "4f1b5ea79b2ea673e98c54e43b967dd3095553e4c523da5b6b5bf9969c9759b2"
+          },
+          {
+            "url": "/production/candidate/assets/gatebreaker-B4TfYdVC.wav",
+            "variant": "candidate",
+            "file": "dist/assets/gatebreaker-B4TfYdVC.wav",
+            "sha256": "5357a10c2a7fde5c1c657752cb230cc830d93efbc4497922991e8e9c3f21d3c9"
+          },
+          {
+            "url": "/production/candidate/assets/shot-ELoTeSYz.wav",
+            "variant": "candidate",
+            "file": "dist/assets/shot-ELoTeSYz.wav",
+            "sha256": "e953bb192291a15dcd20f1336233d44e3538571e204e063bf57e5904832ccb5f"
+          },
+          {
+            "url": "/production/candidate/assets/hit-_y1qaTop.wav",
+            "variant": "candidate",
+            "file": "dist/assets/hit-_y1qaTop.wav",
+            "sha256": "a2604ea2edea81c43648a8ee2cd57412b44946d8783c6325a797c3b4fc487abc"
+          },
+          {
+            "url": "/production/candidate/assets/explosion-D3xtm9W6.wav",
+            "variant": "candidate",
+            "file": "dist/assets/explosion-D3xtm9W6.wav",
+            "sha256": "772ceecc17531fa97a524e2f4da3cb9b140a49153a894ce3a9c29a964546af75"
+          },
+          {
+            "url": "/production/candidate/assets/nova-BFDb8Qqp.wav",
+            "variant": "candidate",
+            "file": "dist/assets/nova-BFDb8Qqp.wav",
+            "sha256": "b97b9a7b5ae096825fac9ca2eb5d9e9b651ca6a216ce3ca5a02fc59c054deee7"
+          },
+          {
+            "url": "/production/candidate/assets/damage-ChHVClRx.wav",
+            "variant": "candidate",
+            "file": "dist/assets/damage-ChHVClRx.wav",
+            "sha256": "6ab16c676e554189c586297d381dd5745b316cfe79cc862b3180c06322b2ca00"
+          },
+          {
+            "url": "/production/candidate/assets/warning-B9DTKQ06.wav",
+            "variant": "candidate",
+            "file": "dist/assets/warning-B9DTKQ06.wav",
+            "sha256": "ca32a8c4e8d5cefc22a97a73dbf563d874acf5a9832c6b4621601c9b924f6511"
+          },
+          {
+            "url": "/production/candidate/assets/clear-DOlcBUUD.wav",
+            "variant": "candidate",
+            "file": "dist/assets/clear-DOlcBUUD.wav",
+            "sha256": "4ce5fa8846ffc66af19c5189e27f87045e11d9eda22063155a7f22901f96e21d"
+          },
+          {
+            "url": "/production/candidate/assets/death-Btbdc2X5.wav",
+            "variant": "candidate",
+            "file": "dist/assets/death-Btbdc2X5.wav",
+            "sha256": "9ce3454a9ea5873ef1713b55d1419b84d1461f95f9633fc567715ea3d5020130"
+          }
+        ]
+      },
+      {
+        "routeName": "root",
+        "url": "/",
+        "screens": [
+          {
+            "ready": "true",
+            "screen": "title",
+            "label": "Starfall. title. Enter or click Launch Campaign to begin. FPS 60. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "playing",
+            "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.1. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 240.0, 206.0. FPS 132. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "paused",
+            "label": "Starfall. paused. Stage 1: ORBITAL BREAKWATER. Time 0.9. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 286.7, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "playing",
+            "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 1.0. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 286.7, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "title",
+            "label": "Starfall. title. Enter or click Launch Campaign to begin. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          },
+          {
+            "ready": "true",
+            "screen": "playing",
+            "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.1. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 240.0, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+            "error": "",
+            "width": 480,
+            "height": 270
+          }
+        ],
+        "movement": {
+          "ready": "true",
+          "screen": "playing",
+          "label": "Starfall. playing. Stage 1: ORBITAL BREAKWATER. Time 0.9. Hull 5. Score 0. Kills 0. Phase waves. Boss 0. Nova 100 percent. Position 286.7, 206.0. FPS 144. WASD, arrows or gamepad left stick move. Hold left mouse, Space or gamepad X to fire straight up. B or gamepad A Nova. Escape pause. F fullscreen.",
+          "error": "",
+          "width": 480,
+          "height": 270
+        },
+        "keyboardFire": "Space held 250ms; no diagnostics",
+        "pointerLaunch": true,
+        "servedFiles": [
+          {
+            "url": "/",
+            "variant": "candidate",
+            "file": "dist/index.html",
+            "sha256": "39e1db5b33ec716bd7a5b1642b2a204b224ffb7f275246bea3b711136c8d87c1"
+          },
+          {
+            "url": "/assets/index-CA5y3hmj.js",
+            "variant": "candidate",
+            "file": "dist/assets/index-CA5y3hmj.js",
+            "sha256": "d7397aec847821bfbc13d05e2b8ec9011cdefd3886b241ea36c257e02f382e5c"
+          },
+          {
+            "url": "/assets/index-Dqze09Fd.css",
+            "variant": "candidate",
+            "file": "dist/assets/index-Dqze09Fd.css",
+            "sha256": "f8bf3efa1422d59ff6a7834ffd9d21ca4cdb1534dd9e5487dfb534cff1e55651"
+          },
+          {
+            "url": "/assets/player-bank-K7R4xfvk.png",
+            "variant": "candidate",
+            "file": "dist/assets/player-bank-K7R4xfvk.png",
+            "sha256": "5c2993b3c5c525051fe1a6c5a9156c0b55d6f3de36ab0bdfaa41124785d9d200"
+          },
+          {
+            "url": "/assets/exhaust-B4CFsxT9.png",
+            "variant": "candidate",
+            "file": "dist/assets/exhaust-B4CFsxT9.png",
+            "sha256": "d890079cb7a98b963ebbf89b4ba9e51e45ab5ceb0047abdf044183d8c4d6eca2"
+          },
+          {
+            "url": "/assets/interceptor-dArMgajc.png",
+            "variant": "candidate",
+            "file": "dist/assets/interceptor-dArMgajc.png",
+            "sha256": "5e5ad6e641dad53369c5e77171e2b3bf58e93688bd5b1678500c7683d5692219"
+          },
+          {
+            "url": "/assets/explosion-CQlIvxA1.png",
+            "variant": "candidate",
+            "file": "dist/assets/explosion-CQlIvxA1.png",
+            "sha256": "20f169de56673e6d21de83770a1d3812173327666cfe1433b3401d51de97c6de"
+          },
+          {
+            "url": "/assets/orbital-breakwater-Bxbull8Y.png",
+            "variant": "candidate",
+            "file": "dist/assets/orbital-breakwater-Bxbull8Y.png",
+            "sha256": "8fb53a7b2ef33a985fd347f2d9833d3c05ab43fd3779ad700bc6056a12db2eed"
+          },
+          {
+            "url": "/assets/dart-Ikk3epmN.png",
+            "variant": "candidate",
+            "file": "dist/assets/dart-Ikk3epmN.png",
+            "sha256": "7ebf4ff70972106215942bb5d5c45cfc5b0e87814f0251c1eed065f8a9216f82"
+          },
+          {
+            "url": "/assets/gunship-Dd1MowuZ.png",
+            "variant": "candidate",
+            "file": "dist/assets/gunship-Dd1MowuZ.png",
+            "sha256": "3d06a4a422e2b9683b90536f2b492f6c5bd71cd6b75d03543c54f56e5ae25a1e"
+          },
+          {
+            "url": "/assets/gatebreaker-DxZcbMiC.png",
+            "variant": "candidate",
+            "file": "dist/assets/gatebreaker-DxZcbMiC.png",
+            "sha256": "377ecc0978a0c5ed5d6dd49a239dfd13c51075dc2c76111293eaabe53cbb264a"
+          },
+          {
+            "url": "/assets/breakwater-g0eMm0N0.wav",
+            "variant": "candidate",
+            "file": "dist/assets/breakwater-g0eMm0N0.wav",
+            "sha256": "4f1b5ea79b2ea673e98c54e43b967dd3095553e4c523da5b6b5bf9969c9759b2"
+          },
+          {
+            "url": "/assets/gatebreaker-B4TfYdVC.wav",
+            "variant": "candidate",
+            "file": "dist/assets/gatebreaker-B4TfYdVC.wav",
+            "sha256": "5357a10c2a7fde5c1c657752cb230cc830d93efbc4497922991e8e9c3f21d3c9"
+          },
+          {
+            "url": "/assets/shot-ELoTeSYz.wav",
+            "variant": "candidate",
+            "file": "dist/assets/shot-ELoTeSYz.wav",
+            "sha256": "e953bb192291a15dcd20f1336233d44e3538571e204e063bf57e5904832ccb5f"
+          },
+          {
+            "url": "/assets/hit-_y1qaTop.wav",
+            "variant": "candidate",
+            "file": "dist/assets/hit-_y1qaTop.wav",
+            "sha256": "a2604ea2edea81c43648a8ee2cd57412b44946d8783c6325a797c3b4fc487abc"
+          },
+          {
+            "url": "/assets/explosion-D3xtm9W6.wav",
+            "variant": "candidate",
+            "file": "dist/assets/explosion-D3xtm9W6.wav",
+            "sha256": "772ceecc17531fa97a524e2f4da3cb9b140a49153a894ce3a9c29a964546af75"
+          },
+          {
+            "url": "/assets/nova-BFDb8Qqp.wav",
+            "variant": "candidate",
+            "file": "dist/assets/nova-BFDb8Qqp.wav",
+            "sha256": "b97b9a7b5ae096825fac9ca2eb5d9e9b651ca6a216ce3ca5a02fc59c054deee7"
+          },
+          {
+            "url": "/assets/damage-ChHVClRx.wav",
+            "variant": "candidate",
+            "file": "dist/assets/damage-ChHVClRx.wav",
+            "sha256": "6ab16c676e554189c586297d381dd5745b316cfe79cc862b3180c06322b2ca00"
+          },
+          {
+            "url": "/assets/warning-B9DTKQ06.wav",
+            "variant": "candidate",
+            "file": "dist/assets/warning-B9DTKQ06.wav",
+            "sha256": "ca32a8c4e8d5cefc22a97a73dbf563d874acf5a9832c6b4621601c9b924f6511"
+          },
+          {
+            "url": "/assets/clear-DOlcBUUD.wav",
+            "variant": "candidate",
+            "file": "dist/assets/clear-DOlcBUUD.wav",
+            "sha256": "4ce5fa8846ffc66af19c5189e27f87045e11d9eda22063155a7f22901f96e21d"
+          },
+          {
+            "url": "/assets/death-Btbdc2X5.wav",
+            "variant": "candidate",
+            "file": "dist/assets/death-Btbdc2X5.wav",
+            "sha256": "9ce3454a9ea5873ef1713b55d1419b84d1461f95f9633fc567715ea3d5020130"
+          }
+        ]
+      }
+    ]
+  }
+}
