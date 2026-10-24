@@ -99,7 +99,9 @@ BANK_LEFT_1 = [
 ]
 
 # bank-left-2: left pod 4 px wide (cols 4-9), outer flank (a) showing, head facet c; slot 1 px;
-# canopy and prow 1 px left, fuselage right flank (cols 17-18) appears lit while the tops drop to b;
+# canopy and prow 1 px left, fuselage right flank (cols 17-18) appears lit while the tops drop to b,
+# except the raised-side top facet (col 16, rows 6-19: c / steel 3 / steel 2) which still holds the
+# light, so the fuselage relights over the 3->2 and 2->1 steps instead of all at once (no mid-roll pulse);
 # raised pod moves 1 px in and widens to 8 px (cols 22-29), wing root 2 px.
 BANK_LEFT_2 = [
     "...............................",  # 0
@@ -108,20 +110,20 @@ BANK_LEFT_2 = [
     "............O343O..............",  # 3
     ".......OOO.Ob2o2dO....OOO......",  # 4
     ".......O3O.Ob232cdO...O3O......",  # 5
-    "......O43O.Ob121bccO..O44O.....",  # 6
-    ".....Oc32O.ObbbbbccO..O23dO....",  # 7
+    "......O43O.Ob121cccO..O44O.....",  # 6
+    ".....Oc32O.ObbbbcccO..O23dO....",  # 7
     "....Occ32O.OoooooccO..O23ddO...",  # 8
     "....Oab32O.OokKkKccO..O23cddO..",  # 9
     "....Oab21O.OokkkkccO..O12cccdO.",  # 10
     "....OabooOOOcdddcbbOO.OoocccdO.",  # 11
-    "....OabbbObObbbbbccOcOobbccccO.",  # 12
-    "....OabbbOaObbbbbccObcobbccccO.",  # 13
-    "....OabbboaObbbbbccObbobbbcccO.",  # 14
-    "....OabbboaObbbbbccObbobbbcccO.",  # 15
+    "....OabbbObObbbbcccOcOobbccccO.",  # 12
+    "....OabbbOaObbbbcccObcobbccccO.",  # 13
+    "....OabbboaObbbbcccObbobbbcccO.",  # 14
+    "....OabbboaObbbbcccObbobbbcccO.",  # 15
     "....OabbboaOaaaaaaaObbobbbcccO.",  # 16
-    "....OabbboaO2222233ObbobbbcccO.",  # 17
-    "....O2343oaO2222233Oabo234443O.",  # 18
-    "....O1222oOO1111122OOao123332O.",  # 19
+    "....OabbboaO2222333ObbobbbcccO.",  # 17
+    "....O2343oaO2222333Oabo234443O.",  # 18
+    "....O1222oOO1111222OOao123332O.",  # 19
     "....Oo111o.Oa22233O..OOo1111oO.",  # 20
     "....OaabbO.Oa22233O...OaabbccO.",  # 21
     "....OaabbO.Oa11122O...OaabbccO.",  # 22

@@ -9,8 +9,13 @@ import sys; from pathlib import Path; sys.path.insert(0, str(Path(__file__).reso
 # 21-23, between the frame outlines at x11/x17; the leaves meet at the x14 seam). The
 # leaves slide outward under the frame; the shadowed upper lip of the opening is outline[1].
 #   open    = each leaf slides 1 px: 3 px gap (x13-15), lip on row 21, fire[2] glow below.
-#   release = leaves fully retracted (5 px gap): the top half of a mine (diamond, centre
-#             (14, 23)) in brass[1] rim / brass[2] core / fire[3] centre against the dark bay interior (outline[1]).
+#   release = leaves fully retracted (5 px gap) and the mine dropping out of the bay at the
+#             same scale as source/mine.py (idle frame, centre (14, 23) = the mineRelease
+#             socket), cropped by the hull: its core shows through the open doors (rows 21-23)
+#             and its lower half hangs between the claws (rows 25-28); the hull lip on row 24
+#             and the canvas edge hide the rest. Every visible pixel equals the mine sprite's,
+#             except that the detonator's fire[1] reads fire[2] in the bay (the bay glow; the
+#             minelayer's 14-colour budget has no fire[1]).
 # The three mines in the recess are lamps and never change.
 LEGEND = {
     ".": None,
@@ -67,10 +72,16 @@ OPEN = door(HALF, [
     "1ff",  # 23
 ])
 RELEASE = door(HALF, [
-    "oob",  # 21 lip | mine tip
-    "obc",  # 22 bay interior | rim, core
-    "bcF",  # 23 rim, core, centre (14, 23); the lip outline below hides the lower half
+    "cac",  # 21 mine row 7: upper shell, shadowed core lip, core floor
+    "aff",  # 22 mine row 8: core lip, detonator (fire[1] -> fire[2] in the bay)
+    "cfF",  # 23 mine row 9: core floor, detonator, centre (14, 23)
 ])
+RELEASE[25:29] = [  # mine rows 11-14 below the hull lip, between the claws
+    "......O332Oaacc",  # 25 claw outline x10 doubles as the mine's rim
+    ".....O32O..Oaac",  # 26
+    ".....O21O...Oaa",  # 27
+    "......OO.....Oa",  # 28 canvas edge crops the mine's bottom tip (row 29)
+]
 
 def mirror(half): return [r + r[-2::-1] for r in half]
 
