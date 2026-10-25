@@ -4,6 +4,20 @@ A standalone full-window arcade shoot-em-up built with **@ngne/core 0.3.0** and 
 
 The logical view is **640×360**, enlarged by an integer number of device pixels with DPR-aware CSS sizing. Spare space is letterboxed; windows below 640×360 device pixels clip the centred 1× canvas.
 
+## Gameplay
+
+Real gameplay captured in Chrome/WebGPU, with the campaign bot using normal movement, fire and Nova controls. Click an image to view the original PNG. [Capture notes](docs/screenshots/README.md).
+
+[![Starfall Engine firing violet rings and projectile curtains in Midnight Citadel](docs/screenshots/midnight-citadel-starfall-engine.png)](docs/screenshots/midnight-citadel-starfall-engine.png)
+
+**Starfall Engine · Midnight Citadel**
+
+| Orbital Breakwater                                                                                                                                                                    | Gatebreaker                                                                                                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [<img src="docs/screenshots/orbital-breakwater-combat.png" width="320" alt="Enemy formations and crossfire over Orbital Breakwater">](docs/screenshots/orbital-breakwater-combat.png) | [<img src="docs/screenshots/orbital-breakwater-gatebreaker.png" width="320" alt="Fighting Gatebreaker through rings of violet projectiles">](docs/screenshots/orbital-breakwater-gatebreaker.png) |
+| **Kiln Serpent · Furnace Belt**                                                                                                                                                       | **Nova · Midnight Citadel**                                                                                                                                                                       |
+| [<img src="docs/screenshots/furnace-belt-kiln-serpent.png" width="320" alt="The segmented Kiln Serpent firing across Furnace Belt">](docs/screenshots/furnace-belt-kiln-serpent.png)  | [<img src="docs/screenshots/midnight-citadel-nova.png" width="320" alt="A Nova blast destroying enemy formations in Midnight Citadel">](docs/screenshots/midnight-citadel-nova.png)               |
+
 ## Run
 
 Use Node.js 24 or newer and a WebGPU-capable desktop browser. Serve on localhost or HTTPS; opening `index.html` directly from disk does not work.
