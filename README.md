@@ -1,5 +1,7 @@
 # Starfall
 
+**[Play Starfall](https://that-webdev-dude.github.io/ngne-starfall/)** — requires a WebGPU-capable desktop browser.
+
 A standalone full-window arcade shoot-em-up built with **@ngne/core 0.3.0** and TypeScript. Three authored sectors lead from Orbital Breakwater through Furnace Belt to Midnight Citadel, with distinct bosses, destructible machinery, bullet patterns, mines and charged beams.
 
 The logical view is **640×360**, enlarged by an integer number of device pixels with DPR-aware CSS sizing. Spare space is letterboxed; windows below 640×360 device pixels clip the centred 1× canvas.
@@ -29,6 +31,10 @@ npm.cmd run preview -- --port 4173 --strictPort
 ```
 
 Open **http://127.0.0.1:4173/**. The built site is in `dist/`; it uses relative asset URLs and can be served from a subdirectory. For development, use `npm.cmd run dev`.
+
+## GitHub Pages
+
+Select **GitHub Actions** under **Settings → Pages → Build and deployment → Source** before the first deployment. The `Deploy Starfall to GitHub Pages` workflow builds and deploys `dist/` on pushes to `main`; it can also be run manually from the Actions tab with `main` selected.
 
 ## Controls
 
