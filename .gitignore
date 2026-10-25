@@ -12,6 +12,7 @@ dist/
 /docs/rev01-integration/
 /evidence/
 /artifacts/
+/art/rev01/
 
 # Python art-tool caches
 __pycache__/
