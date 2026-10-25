@@ -1,9 +1,0 @@
-{
-  "version": "0.2.1",
-  "label": "Starfall / @ngne/core 0.2.1",
-  "seed": 17,
-  "warmupFrames": 600,
-  "sampledFrames": 1200,
-  "fixedStepSeconds": 0.016666666666666666,
-  "source": "Existing tests/browser-campaign.ts with build-only scheduler/telemetry; production files unchanged"
-}

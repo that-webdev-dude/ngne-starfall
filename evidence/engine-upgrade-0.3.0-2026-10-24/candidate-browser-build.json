@@ -1,8 +1,0 @@
-{
-  "version": "0.3.0",
-  "variant": "candidate",
-  "seed": 17,
-  "frames": 1800,
-  "stepSeconds": 0.016666666666666666,
-  "source": "Existing tests/browser-campaign.ts with build-only public scheduler instrumentation; non-shipping fixture only; production smoke serves the separate npm build dist"
-}

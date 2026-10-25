@@ -8,7 +8,7 @@ import type { CombatSound } from "../src/systems/combat-context.ts";
 import type { Progress, ProgressCommand, Session } from "../src/world/session.ts";
 import { createBotMemory, decideCampaignKeys, observeCampaign } from "./helpers/campaign-bot.ts";
 
-const output = process.argv[2] ?? "artifacts/campaign-testing/headless-bot.json";
+const output = process.argv[2] ?? ".test-output/campaign-bot.json";
 const seeds = process.argv.slice(3).map(Number);
 if (seeds.length === 0) seeds.push(17, 41, 83);
 const results: unknown[] = [];

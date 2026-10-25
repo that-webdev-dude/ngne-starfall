@@ -1,3 +1,18 @@
 node_modules/
 dist/
 .test-output/
+
+# Local agent configuration and historical project records
+/.claude/
+/.codex/
+/skills.json
+/gamedevs-state.json
+/starfall-concept.json
+/GAMEDEV-REPORT.md
+/docs/rev01-integration/
+/evidence/
+/artifacts/
+
+# Python art-tool caches
+__pycache__/
+*.py[cod]

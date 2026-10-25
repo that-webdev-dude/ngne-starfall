@@ -43,18 +43,18 @@ npm.cmd run build
 node --experimental-strip-types tests/run-campaign-bot.ts .test-output/campaign-bot.json 17 41 83
 ```
 
-Bot output goes explicitly into gitignored `.test-output/`. It uses normal movement/fire/Nova inputs and exact read-only entity observations, demonstrating reachability rather than human difficulty or fun.
+Bot output defaults to gitignored `.test-output/campaign-bot.json`. It uses normal movement/fire/Nova inputs and exact read-only entity observations, demonstrating reachability rather than human difficulty or fun.
 
 Development-only routes (use `npm.cmd run dev`, then open localhost):
 
 - `tests/browser-campaign.html`: rendered bot using production campaign composition.
 - `tests/browser-integration.html?stage=1&manual=1&calm=0`: ordinary production stage start; stages 1–3, motion off/on through `calm=0|1`, normal pause/settings/controls/results/retry routes.
-- `tests/browser-integration.html?stage=1&scenario=boss&calm=0&capture=1`: frozen presentation preset using real renderers/assets. Scenarios: `card`, `play`, `boss`, `pause`, `result`, `settings`, `controls`, `death`, `loss`, `nova`, `dense`, `title`. Presets seed clocks/entities/HP and do not establish reachability. H shows/hides diagnostics; O saves current native 640×360 canvas pixels as PNG. Full route options and evidence limits: `docs/rev01-integration/T5-REPORT.md`.
+- `tests/browser-integration.html?stage=1&scenario=boss&calm=0&capture=1`: frozen presentation preset using real renderers/assets. Presets seed clocks/entities/HP and do not establish reachability. H shows/hides diagnostics; O saves current native 640×360 canvas pixels as PNG.
 
-Fixture code is excluded from the production Vite entry/build. Physical scaling, gamepad, motion/readability and human play checks are in `docs/rev01-integration/MANUAL-CHECKS.md`.
+Fixture code is excluded from the production Vite entry/build. See [Testing](docs/testing.md) for route options, manual checks, current integration decisions and known limitations.
 
 ## Asset provenance
 
-The rev01 pixel-art pack is generated from palette-index grids/background generators under `art/rev01/source/`, with its specification, palette, review and tools beside it. Historical AI raster prompts/source references and handoffs remain under `art/`; superseded runtime rasters/metadata were removed. The read-only historical palette-sampling tool still expects those old inputs and cannot be rerun from this checkout. Rev01 rebuild/validation sources are retained. Music/effects are original deterministic synthesis with no external samples; the generator and WAV provenance remain under `src/assets/audio/`.
+The rev01 pixel-art pack is generated from palette-index grids/background generators under `art/rev01/source/`, with its specification, palette, review and tools beside it. Superseded raster artwork, prompts and handoffs have been removed. The historical `sample_colors.py` helper expects those removed inputs; use the current rebuild/validation tools described in the [art documentation](art/rev01/README.md). Music/effects are original deterministic synthesis with no external samples; the generator and WAV provenance remain under `src/assets/audio/`.
 
 NGNE is used through the pinned published package's public APIs. Its license is included with the dependency. No engine source modifications or publishing are part of this delivery.
