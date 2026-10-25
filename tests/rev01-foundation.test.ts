@@ -38,7 +38,7 @@ const ids = Object.keys(REV01_URLS) as Rev01Id[];
 const pathOf = (id: Rev01Id) => fileURLToPath(REV01_URLS[id]);
 
 test("JSON import attributes load the read-only spec under Node, identical to a direct import", async () => {
-    const direct = (await import("../art/rev01/spec.json", { with: { type: "json" } })).default;
+    const direct = (await import("../src/assets/spec.json", { with: { type: "json" } })).default;
     assert.deepEqual(REV01_SPEC, direct);
     assert.deepEqual(REV01_SPEC.viewport.logical, [VIEW.width, VIEW.height]);
     assert.deepEqual(

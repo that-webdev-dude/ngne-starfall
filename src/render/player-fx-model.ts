@@ -9,7 +9,7 @@ import {
 
 /**
  * T2 presentation model: player poses and sockets, cue priority, effect kinds and lifetimes, hostile shapes,
- * needle directions, beam-lane bands and nova timing, all read from art/rev01/spec.json. Pure and Node-safe
+ * needle directions, beam-lane bands and nova timing, all read from src/assets/spec.json. Pure and Node-safe
  * (metadata only), so the simulation, the renderer and tests share one definition.
  */
 

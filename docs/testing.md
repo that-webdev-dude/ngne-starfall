@@ -64,7 +64,7 @@ Record stage, scale, DPR, reduced-motion setting, device/browser, gamepad availa
 
 ## Current integration decisions
 
-- Runtime PNGs and metadata come directly from `art/rev01/`. Per-pose player muzzle sockets determine actual shot origins; hostile shot/mine-release/boss-part sockets determine spawn/collider geometry. Those geometry changes were intentional; counts, timings, velocities, damage and HP were preserved apart from explicitly specified spatial changes.
+- Runtime PNGs come from `src/assets/sprites/` and `src/assets/backgrounds/`; metadata and specified gameplay values come from `src/assets/spec.json`. Tests use these same assets, so the authoring archive is optional for builds and tests. Per-pose player muzzle sockets determine actual shot origins; hostile shot/mine-release/boss-part sockets determine spawn/collider geometry. Those geometry changes were intentional; counts, timings, velocities, damage and HP were preserved apart from explicitly specified spatial changes.
 - Nova plays 11 frames over 560 ms; `fade-3` is excluded from playback/upload. Beam lane widths are 15/13 px for Engine/Warden, mine radius is 6, low hull means hull ≤ 1, and the stage card lasts 2.6 seconds.
 - Plasma hold/charge/release gameplay is unimplemented and its HUD bar stays empty. Charge controls, damage/resource/boss rules, optional tall mode and further title redesign remain owner decisions.
 - Runtime backgrounds retain the 17% tint and starfield, so raw art can appear brighter than the game.
@@ -73,4 +73,4 @@ Record stage, scale, DPR, reduced-motion setting, device/browser, gamepad availa
 
 - A pause tap during Nova hit-stop can be consumed; repeating it after the freeze pauses. This predates the revised-art integration.
 - Interceptor/Kiln head attack cues retain code-drawn elements. The damaged Gatebreaker core composites existing art, Kiln section fans retain head-relative origins, and the title wordmark remains small at native font size.
-- The historical palette sampler under `art/rev01/tools/` requires removed legacy inputs. Current source generators and rebuild validation remain available; see the art README.
+- Artwork regeneration requires the original authoring archive; exported runtime assets alone do not include its generators, palette or validation tools. The archive's historical palette sampler requires removed legacy inputs.

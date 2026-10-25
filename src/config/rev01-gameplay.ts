@@ -1,4 +1,4 @@
-import spec from "../../art/rev01/spec.json" with { type: "json" };
+import spec from "../assets/spec.json" with { type: "json" };
 
 /**
  * Gameplay numbers the rev01 spec sets explicitly instead of the uniform 4/3 world migration

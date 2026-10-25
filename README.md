@@ -33,7 +33,7 @@ Each sector begins with full hull and Nova. Retry restores that sector's entry s
 
 ## Source layout
 
-`src/main.ts` wires the browser shell and campaign. `components/` contains ECS schemas; `entities/` composes archetypes; `systems/` implements simulation; `render/` contains background, enemy, player/effect and HUD passes; `scenes/` composes gameplay and menus. `config/` owns stage/balance data, `world/` owns session state and geometry, `ui/` provides native font/sprite/menu helpers, and `services/` owns assets, campaign preparation, audio, display and persistence. Runtime artwork and frame/socket metadata come directly from `art/rev01/`; `src/assets/audio/` retains synthesized audio and provenance.
+`src/main.ts` wires the browser shell and campaign. `components/` contains ECS schemas; `entities/` composes archetypes; `systems/` implements simulation; `render/` contains background, enemy, player/effect and HUD passes; `scenes/` composes gameplay and menus. `config/` owns stage/balance data, `world/` owns session state and geometry, `ui/` provides native font/sprite/menu helpers, and `services/` owns assets, campaign preparation, audio, display and persistence. Runtime artwork lives in `src/assets/sprites/` and `src/assets/backgrounds/`; frame/socket metadata and specified gameplay values come from `src/assets/spec.json`. `src/assets/audio/` retains synthesized audio and provenance.
 
 ## Checks
 
@@ -55,6 +55,6 @@ Fixture code is excluded from the production Vite entry/build. See [Testing](doc
 
 ## Asset provenance
 
-The rev01 pixel-art pack is generated from palette-index grids/background generators under `art/rev01/source/`, with its specification, palette, review and tools beside it. Superseded raster artwork, prompts and handoffs have been removed. The historical `sample_colors.py` helper expects those removed inputs; use the current rebuild/validation tools described in the [art documentation](art/rev01/README.md). Music/effects are original deterministic synthesis with no external samples; the generator and WAV provenance remain under `src/assets/audio/`.
+The rev01 pixel-art pack was generated from palette-index grids and background generators. Its exported PNGs and specification are maintained under `src/assets/`; builds and tests need no separate authoring archive. Keep the original generators, palette, review and art tools in an archive if future artwork regeneration is needed. Music/effects are original deterministic synthesis with no external samples; the generator and WAV provenance remain under `src/assets/audio/`.
 
 NGNE is used through the pinned published package's public APIs. Its license is included with the dependency. No engine source modifications or publishing are part of this delivery.

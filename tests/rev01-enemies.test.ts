@@ -54,7 +54,7 @@ import type { CombatSound } from "../src/systems/combat-context.ts";
 import { ENEMY_MUZZLES, GUNSHIP_TIMING } from "../src/systems/combat-enemies.ts";
 import { fan } from "../src/world/patterns.ts";
 import type { Progress, ProgressCommand, RunState, Session } from "../src/world/session.ts";
-import spec from "../art/rev01/spec.json" with { type: "json" };
+import spec from "../src/assets/spec.json" with { type: "json" };
 import { decodePng } from "./helpers/png.ts";
 
 /**
@@ -641,7 +641,7 @@ test("Gatebreaker: hull wreck/telegraph states, flipped turret sockets, turret t
     assert.deepEqual(gatebreakerHull(max / 3, 2), { frame: "wreck-2", coreTelegraph: true });
     // The wreck frames keep idle's core pixels inside the telegraph's 13x13 core box, and telegraph differs from idle only there,
     // so wreck + that box is exactly "wreck with the core cue" (no invented pixels).
-    const png = decodePng("art/rev01/sprites/gatebreaker.png"),
+    const png = decodePng("src/assets/sprites/gatebreaker.png"),
         hull = rev01Sprite("gatebreaker");
     const pixel = (name: string, x: number, y: number) => {
         const f = hull.frame(name),
