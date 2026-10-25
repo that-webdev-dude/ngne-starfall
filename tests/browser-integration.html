@@ -1,23 +1,74 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><title>Starfall integration fixture</title>
-<style>
-#fixture-controls { position:fixed; top:8px; left:8px; z-index:20; max-width:610px; padding:8px; font:12px monospace; color:#e0e9ed; background:#060d19e8; border:1px solid #78909a }
-#fixture-status { white-space:pre-wrap; margin:5px 0 0; font:inherit }
-html.capture #fixture-controls { display:none }
-html.capture #fixture-status-only { position:fixed; width:1px; height:1px; overflow:hidden; clip-path:inset(50%) }
-#fixture-status-only { display:none }
-html.capture #fixture-status-only { display:block }
-button, select { font:inherit }
-</style></head><body>
-<canvas id="game" tabindex="0" aria-label="Loading Starfall integration fixture"></canvas>
-<aside id="fixture-controls" aria-label="Development fixture controls">
-<label>Stage <select id="stage"><option>1</option><option>2</option><option>3</option></select></label>
-<label>Scenario <select id="scenario"></select></label>
-<label><input id="calm" type="checkbox"> Reduced motion</label>
-<button id="load">LOAD PRESET</button><button id="manual">PLAY STAGE</button><button id="save">SAVE FRAME (O)</button>
-<p>PRESETS seed clocks/entities/HP for presentation. PLAY STAGE starts ordinary rules. H hides diagnostics. O saves the current native 640×360 PNG. capture=1 hides this panel; H restores it.</p>
-<pre id="fixture-status" role="status" aria-live="polite">LOADING</pre>
-</aside>
-<output id="fixture-status-only" role="status" aria-live="polite">LOADING</output>
-<script type="module" src="./browser-integration.ts"></script>
-</body></html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Starfall integration fixture</title>
+        <style>
+            #fixture-controls {
+                position: fixed;
+                top: 8px;
+                left: 8px;
+                z-index: 20;
+                max-width: 610px;
+                padding: 8px;
+                font: 12px monospace;
+                color: #e0e9ed;
+                background: #060d19e8;
+                border: 1px solid #78909a;
+            }
+            #fixture-status {
+                white-space: pre-wrap;
+                margin: 5px 0 0;
+                font: inherit;
+            }
+            html.capture #fixture-controls {
+                display: none;
+            }
+            html.capture #fixture-status-only {
+                position: fixed;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip-path: inset(50%);
+            }
+            #fixture-status-only {
+                display: none;
+            }
+            html.capture #fixture-status-only {
+                display: block;
+            }
+            button,
+            select {
+                font: inherit;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="game" tabindex="0" aria-label="Loading Starfall integration fixture"></canvas>
+        <aside id="fixture-controls" aria-label="Development fixture controls">
+            <label
+                >Stage
+                <select id="stage">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                </select></label
+            >
+            <label
+                >Scenario
+                <select id="scenario"></select
+            ></label>
+            <label><input id="calm" type="checkbox" /> Reduced motion</label>
+            <button id="load">LOAD PRESET</button><button id="manual">PLAY STAGE</button
+            ><button id="save">SAVE FRAME (O)</button>
+            <p>
+                PRESETS seed clocks/entities/HP for presentation. PLAY STAGE starts ordinary rules.
+                H hides diagnostics. O saves the current native 640×360 PNG. capture=1 hides this
+                panel; H restores it.
+            </p>
+            <pre id="fixture-status" role="status" aria-live="polite">LOADING</pre>
+        </aside>
+        <output id="fixture-status-only" role="status" aria-live="polite">LOADING</output>
+        <script type="module" src="./browser-integration.ts"></script>
+    </body>
+</html>

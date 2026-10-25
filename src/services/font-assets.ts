@@ -12,5 +12,5 @@ export const FONT_MASK_TEXTURE = "rev01-font-mask";
  */
 let font: ImageAsset | undefined;
 export function fontImage(): ImageAsset {
-  return font ??= derivedImageAsset(FONT_MASK_TEXTURE, REV01_URLS.font, maskPixels);
+    return (font ??= derivedImageAsset(FONT_MASK_TEXTURE, REV01_URLS.font, maskPixels));
 }

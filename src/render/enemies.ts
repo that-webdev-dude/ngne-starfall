@@ -15,25 +15,52 @@ import { drawMine } from "./player-fx.ts";
  * boss's own render (hull, parts, husks, telegraphs, defeat). Boss and part kinds are drawn only by their boss.
  */
 export const createEnemyRender: RenderPassFactory = ({ scene, run, session, boss }) => {
-  const enemies = scene.world.query(Pose, Enemy);
-  const sprites = new Map<number, NativeSprite>(Object.entries(ORDINARY_SPRITES).map(([kind, id]) => [Number(kind), rev01Sprite(id!)]));
-  return (frame, alpha, legacy) => {
-    const reduced = session.settings.reducedMotion;
-    enemies.eachChunk((chunk) => {
-      const p = chunk.views.pose, e = chunk.views.enemy;
-      for (let row = 0; row < chunk.count; row++) {
-        if (!e.active[row]) continue;
-        const x = lerp(p.px[row], p.x[row], alpha), y = lerp(p.py[row], p.y[row], alpha), kind = e.kind[row];
-        // Native frame and legacy wrapper both pass through: T2's native mine quads must not go through legacy rounding.
-        if (kind === Kind.Mine) { drawMine(frame, legacy, x, y, Boolean(e.cue[row]), run.effectClock); continue; }
-        const sprite = sprites.get(kind);
-        if (!sprite) continue;
-        const name = ordinaryFrame(kind, { age: e.age[row], cue: e.cue[row], cooldown: e.cooldown[row], fireIndex: e.fireIndex[row] }, reduced);
-        drawNative(frame, sprite.frame(name), x, y, { layer: LAYER.enemy, color: hitColor(e.flash[row], reduced) });
-        // The interceptor's aim telegraph has no frame in the art: keep the code cue, now at its spec muzzle.
-        if (kind === Kind.Interceptor && e.cue[row]) drawAttackCue(legacy, x + ENEMY_MUZZLES.interceptor[0], y + ENEMY_MUZZLES.interceptor[1], run.effectClock, reduced);
-      }
-    });
-    boss.render(frame, alpha, legacy);
-  };
+    const enemies = scene.world.query(Pose, Enemy);
+    const sprites = new Map<number, NativeSprite>(
+        Object.entries(ORDINARY_SPRITES).map(([kind, id]) => [Number(kind), rev01Sprite(id!)]),
+    );
+    return (frame, alpha, legacy) => {
+        const reduced = session.settings.reducedMotion;
+        enemies.eachChunk((chunk) => {
+            const p = chunk.views.pose,
+                e = chunk.views.enemy;
+            for (let row = 0; row < chunk.count; row++) {
+                if (!e.active[row]) continue;
+                const x = lerp(p.px[row], p.x[row], alpha),
+                    y = lerp(p.py[row], p.y[row], alpha),
+                    kind = e.kind[row];
+                // Native frame and legacy wrapper both pass through: T2's native mine quads must not go through legacy rounding.
+                if (kind === Kind.Mine) {
+                    drawMine(frame, legacy, x, y, Boolean(e.cue[row]), run.effectClock);
+                    continue;
+                }
+                const sprite = sprites.get(kind);
+                if (!sprite) continue;
+                const name = ordinaryFrame(
+                    kind,
+                    {
+                        age: e.age[row],
+                        cue: e.cue[row],
+                        cooldown: e.cooldown[row],
+                        fireIndex: e.fireIndex[row],
+                    },
+                    reduced,
+                );
+                drawNative(frame, sprite.frame(name), x, y, {
+                    layer: LAYER.enemy,
+                    color: hitColor(e.flash[row], reduced),
+                });
+                // The interceptor's aim telegraph has no frame in the art: keep the code cue, now at its spec muzzle.
+                if (kind === Kind.Interceptor && e.cue[row])
+                    drawAttackCue(
+                        legacy,
+                        x + ENEMY_MUZZLES.interceptor[0],
+                        y + ENEMY_MUZZLES.interceptor[1],
+                        run.effectClock,
+                        reduced,
+                    );
+            }
+        });
+        boss.render(frame, alpha, legacy);
+    };
 };

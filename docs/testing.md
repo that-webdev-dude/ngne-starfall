@@ -18,25 +18,25 @@ Generated test output belongs in gitignored `.test-output/`. Build output belong
 
 Start `npm.cmd run dev -- --port 5173 --strictPort`. Open the routes below at `http://127.0.0.1:5173/`. These fixtures are excluded from the production entry/build.
 
-| Route | Purpose |
-| --- | --- |
-| `/tests/browser-campaign.html` | Rendered bot using production campaign composition. |
-| `/tests/browser-boss-review.html` | Targeted boss presentation fixture. |
-| `/tests/browser-integration.html?stage=1&manual=1&calm=0` | Ordinary production stage beginning, normal controls/rules and sound after interaction. |
-| `/tests/browser-integration.html?stage=1&scenario=boss&calm=0&capture=1` | Seeded, frozen presentation using production scenes, renderers and assets. |
+| Route                                                                    | Purpose                                                                                 |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `/tests/browser-campaign.html`                                           | Rendered bot using production campaign composition.                                     |
+| `/tests/browser-boss-review.html`                                        | Targeted boss presentation fixture.                                                     |
+| `/tests/browser-integration.html?stage=1&manual=1&calm=0`                | Ordinary production stage beginning, normal controls/rules and sound after interaction. |
+| `/tests/browser-integration.html?stage=1&scenario=boss&calm=0&capture=1` | Seeded, frozen presentation using production scenes, renderers and assets.              |
 
 Integration route options:
 
-| Parameter | Values and behavior |
-| --- | --- |
-| `stage` | `1`, `2`, `3`: Breakwater, Furnace, Citadel. |
-| `manual` | `1` starts ordinary play; PLAY STAGE does the same. LOAD PRESET seeds presentation state instead. |
-| `calm` | `0` normal motion; `1` reduced motion. Manual play also permits changing it in Settings. |
+| Parameter  | Values and behavior                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------------- |
+| `stage`    | `1`, `2`, `3`: Breakwater, Furnace, Citadel.                                                                  |
+| `manual`   | `1` starts ordinary play; PLAY STAGE does the same. LOAD PRESET seeds presentation state instead.             |
+| `calm`     | `0` normal motion; `1` reduced motion. Manual play also permits changing it in Settings.                      |
 | `scenario` | `card`, `play`, `boss`, `pause`, `result`, `settings`, `controls`, `death`, `loss`, `nova`, `dense`, `title`. |
-| `capture` | `1` hides fixture controls and freezes presentation presets. Manual play still advances normally. |
-| `pose` | `-3` through `3`, default `0`: player bank pose in presets. |
-| `novaTime` | `0` through `0.559` seconds, default `0.23`: preset Nova time. |
-| `variant` | Boss presets: `intact`, `parts` (default: damaged hull/one destroyed part), `phase`, `cue`, `defeat`. |
+| `capture`  | `1` hides fixture controls and freezes presentation presets. Manual play still advances normally.             |
+| `pose`     | `-3` through `3`, default `0`: player bank pose in presets.                                                   |
+| `novaTime` | `0` through `0.559` seconds, default `0.23`: preset Nova time.                                                |
+| `variant`  | Boss presets: `intact`, `parts` (default: damaged hull/one destroyed part), `phase`, `cue`, `defeat`.         |
 
 Presets seed clocks, populations and HP. Their images do not establish ordinary-rules reachability or animation continuity. For a compact presentation matrix, use all three stages × `card`, `play`, `boss`, `pause`, `result` × scales 1 and 2; supplement with normal/calm Nova, dense combat, player poses and menu/death states.
 
@@ -52,11 +52,11 @@ For each stage, play at scales 2 and 3 with reduced motion both off and on. Use 
 
 Use movement, held primary fire, Nova, damage/repair, pause, pointer navigation, Settings, Controls, retry and results. Repeat movement/fire/Nova/pause on a physical gamepad if available; record unavailable hardware explicitly. Listen to music/effects and their mix through play and pause.
 
-| Stage | Checks |
-| --- | --- |
+| Stage                 | Checks                                                                                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1: Orbital Breakwater | Seven bank poses retain core/exhaust/muzzle alignment; Gatebreaker turrets show firing/disabled states; collision feel and primary cadence are acceptable. |
-| 2: Furnace Belt | Mines, pickups and beam warnings remain legible; Kiln links/rotation/damaged head read consistently; destroyed segment husks neither collide nor fire. |
-| 3: Midnight Citadel | Engine phases, attached emitters, disabled machinery and defeat remain distinct during dense patterns; final result and replay work. |
+| 2: Furnace Belt       | Mines, pickups and beam warnings remain legible; Kiln links/rotation/damaged head read consistently; destroyed segment husks neither collide nor fire.     |
+| 3: Midnight Citadel   | Engine phases, attached emitters, disabled machinery and defeat remain distinct during dense patterns; final result and replay work.                       |
 
 Across all stages, inspect crisp pixels, letterboxing, text/card/result readability, menu hit areas and low-hull cues. Threats, lanes and the player core must remain readable over HUD/Nova/explosions. Reduced motion should provide understandable static cues without blinking. Check the dimmed HUD/footer overlap in menus.
 

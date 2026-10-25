@@ -1,132 +1,132 @@
 {
-  "source": "Original deterministic synthesis in generate.mjs; no external samples or melody sources.",
-  "format": "mono PCM16 WAV",
-  "files": [
-    {
-      "name": "breakwater.wav",
-      "seconds": 13.913061224489796,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.88,
-      "rms": 0.1321856668018969,
-      "bytes": 613610
-    },
-    {
-      "name": "gatebreaker.wav",
-      "seconds": 12.467573696145125,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.88,
-      "rms": 0.14620841277805274,
-      "bytes": 549864
-    },
-    {
-      "name": "shot.wav",
-      "seconds": 0.10503401360544218,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.66,
-      "rms": 0.14868884145185624,
-      "bytes": 4676
-    },
-    {
-      "name": "hit.wav",
-      "seconds": 0.12,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.68,
-      "rms": 0.1033910223388184,
-      "bytes": 5336
-    },
-    {
-      "name": "explosion.wav",
-      "seconds": 0.6500226757369615,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.92,
-      "rms": 0.14591708857018906,
-      "bytes": 28710
-    },
-    {
-      "name": "nova.wav",
-      "seconds": 0.9,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.9,
-      "rms": 0.18715939116110528,
-      "bytes": 39734
-    },
-    {
-      "name": "damage.wav",
-      "seconds": 0.4,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.8,
-      "rms": 0.1629187910807838,
-      "bytes": 17684
-    },
-    {
-      "name": "warning.wav",
-      "seconds": 1.1500226757369614,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.75,
-      "rms": 0.29482376955697137,
-      "bytes": 50760
-    },
-    {
-      "name": "clear.wav",
-      "seconds": 1.5,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.82,
-      "rms": 0.19661107454793175,
-      "bytes": 66194
-    },
-    {
-      "name": "death.wav",
-      "seconds": 1.2500226757369615,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.78,
-      "rms": 0.2349103732942878,
-      "bytes": 55170
-    },
-    {
-      "name": "furnace.wav",
-      "seconds": 13.150702947845804,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.88,
-      "rms": 0.15109595767940537,
-      "bytes": 579990
-    },
-    {
-      "name": "kiln.wav",
-      "seconds": 11.8518820861678,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.88,
-      "rms": 0.16227701739516145,
-      "bytes": 522712
-    },
-    {
-      "name": "citadel.wav",
-      "seconds": 12.8,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.88,
-      "rms": 0.13949041660328462,
-      "bytes": 564524
-    },
-    {
-      "name": "starfall-engine.wav",
-      "seconds": 11.294149659863946,
-      "rate": 22050,
-      "channels": 1,
-      "peak": 0.88,
-      "rms": 0.1511012343815912,
-      "bytes": 498116
-    }
-  ]
+    "source": "Original deterministic synthesis in generate.mjs; no external samples or melody sources.",
+    "format": "mono PCM16 WAV",
+    "files": [
+        {
+            "name": "breakwater.wav",
+            "seconds": 13.913061224489796,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.88,
+            "rms": 0.1321856668018969,
+            "bytes": 613610
+        },
+        {
+            "name": "gatebreaker.wav",
+            "seconds": 12.467573696145125,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.88,
+            "rms": 0.14620841277805274,
+            "bytes": 549864
+        },
+        {
+            "name": "shot.wav",
+            "seconds": 0.10503401360544218,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.66,
+            "rms": 0.14868884145185624,
+            "bytes": 4676
+        },
+        {
+            "name": "hit.wav",
+            "seconds": 0.12,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.68,
+            "rms": 0.1033910223388184,
+            "bytes": 5336
+        },
+        {
+            "name": "explosion.wav",
+            "seconds": 0.6500226757369615,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.92,
+            "rms": 0.14591708857018906,
+            "bytes": 28710
+        },
+        {
+            "name": "nova.wav",
+            "seconds": 0.9,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.9,
+            "rms": 0.18715939116110528,
+            "bytes": 39734
+        },
+        {
+            "name": "damage.wav",
+            "seconds": 0.4,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.8,
+            "rms": 0.1629187910807838,
+            "bytes": 17684
+        },
+        {
+            "name": "warning.wav",
+            "seconds": 1.1500226757369614,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.75,
+            "rms": 0.29482376955697137,
+            "bytes": 50760
+        },
+        {
+            "name": "clear.wav",
+            "seconds": 1.5,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.82,
+            "rms": 0.19661107454793175,
+            "bytes": 66194
+        },
+        {
+            "name": "death.wav",
+            "seconds": 1.2500226757369615,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.78,
+            "rms": 0.2349103732942878,
+            "bytes": 55170
+        },
+        {
+            "name": "furnace.wav",
+            "seconds": 13.150702947845804,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.88,
+            "rms": 0.15109595767940537,
+            "bytes": 579990
+        },
+        {
+            "name": "kiln.wav",
+            "seconds": 11.8518820861678,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.88,
+            "rms": 0.16227701739516145,
+            "bytes": 522712
+        },
+        {
+            "name": "citadel.wav",
+            "seconds": 12.8,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.88,
+            "rms": 0.13949041660328462,
+            "bytes": 564524
+        },
+        {
+            "name": "starfall-engine.wav",
+            "seconds": 11.294149659863946,
+            "rate": 22050,
+            "channels": 1,
+            "peak": 0.88,
+            "rms": 0.1511012343815912,
+            "bytes": 498116
+        }
+    ]
 }

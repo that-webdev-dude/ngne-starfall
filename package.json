@@ -1,24 +1,26 @@
 {
-  "name": "starfall",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "npm run typecheck && vite build",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tests",
-    "preview": "vite preview --host 127.0.0.1",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
-  },
-  "dependencies": {
-    "@ngne/core": "0.3.0"
-  },
-  "devDependencies": {
-    "@types/node": "24.19.1",
-    "typescript": "5.9.3",
-    "vite": "7.3.1"
-  },
-  "engines": {
-    "node": ">=24"
-  }
+    "name": "starfall",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "format": "prettier --write .",
+        "dev": "vite --host 127.0.0.1",
+        "build": "npm run typecheck && vite build",
+        "typecheck": "tsc --noEmit && tsc --noEmit -p tests",
+        "preview": "vite preview --host 127.0.0.1",
+        "test": "node --experimental-strip-types --test tests/*.test.ts"
+    },
+    "dependencies": {
+        "@ngne/core": "0.3.0"
+    },
+    "devDependencies": {
+        "@types/node": "24.19.1",
+        "prettier": "^3.9.10",
+        "typescript": "5.9.3",
+        "vite": "7.3.1"
+    },
+    "engines": {
+        "node": ">=24"
+    }
 }

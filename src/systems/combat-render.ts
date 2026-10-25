@@ -11,11 +11,16 @@ import type { CombatContext } from "./combat-context.ts";
  * draw order matches the pre-split renderer and the shared layer table decides stacking.
  */
 export function installCombatRender(context: CombatContext): void {
-  const passes: RenderPass[] = [createBackgroundRender(context), createEnemyRender(context), createPlayerFxRender(context), createHudRender(context)];
-  // Native frames need whole-pixel edges; code-drawn geometry keeps its existing rounded centres.
-  context.scene.camera.pixelSnap = false;
-  context.scene.render((frame, alpha) => {
-    const legacy = pixelSnapped(frame);
-    for (const pass of passes) pass(frame, alpha, legacy);
-  });
+    const passes: RenderPass[] = [
+        createBackgroundRender(context),
+        createEnemyRender(context),
+        createPlayerFxRender(context),
+        createHudRender(context),
+    ];
+    // Native frames need whole-pixel edges; code-drawn geometry keeps its existing rounded centres.
+    context.scene.camera.pixelSnap = false;
+    context.scene.render((frame, alpha) => {
+        const legacy = pixelSnapped(frame);
+        for (const pass of passes) pass(frame, alpha, legacy);
+    });
 }

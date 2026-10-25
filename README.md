@@ -18,14 +18,14 @@ Open **http://127.0.0.1:4173/**. The built site is in `dist/`; it uses relative 
 
 ## Controls
 
-| Action | Keyboard / mouse | Standard gamepad mapping |
-| --- | --- | --- |
-| Move | WASD or arrows | Left stick |
-| Shoot straight upward | Hold Space or left mouse | Hold X |
-| Nova | B | A |
-| Pause | Escape or P | Start |
-| Fullscreen | F | — |
-| Menu navigation | Arrows, Enter or click | D-pad, A |
+| Action                | Keyboard / mouse         | Standard gamepad mapping |
+| --------------------- | ------------------------ | ------------------------ |
+| Move                  | WASD or arrows           | Left stick               |
+| Shoot straight upward | Hold Space or left mouse | Hold X                   |
+| Nova                  | B                        | A                        |
+| Pause                 | Escape or P              | Start                    |
+| Fullscreen            | F                        | —                        |
+| Menu navigation       | Arrows, Enter or click   | D-pad, A                 |
 
 Holding both fire inputs keeps one firing cadence. Nova clears hostile projectiles and beams, damages enemies, and recharges in 15 seconds. The bright center dot marks the player's small hitbox. Movement accelerates and coasts on release; the ship banks with horizontal input.
 

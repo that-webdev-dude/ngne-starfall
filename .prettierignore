@@ -1,0 +1,8 @@
+dist/
+node_modules/
+.test-output/
+.npm-cache/
+package-lock.json
+docs/assets/
+art/rev01/
+LICENSE
