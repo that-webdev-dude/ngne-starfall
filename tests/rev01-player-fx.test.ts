@@ -21,7 +21,7 @@ import { LAYER } from "../src/config/layers.ts";
 import { STAGES } from "../src/config/stages.ts";
 import { FLIGHT, fromLegacy as w } from "../src/config/view.ts";
 import { spawnBullet, spawnEnemy, spawnRepair } from "../src/entities/combat.ts";
-import { drawBeamLane, drawPlayer, needleQuad } from "../src/render/player-fx.ts";
+import { drawBeamLane, drawNova, drawPlayer, needleQuad } from "../src/render/player-fx.ts";
 import {
     CALM_HIT_SECONDS,
     DAMAGE_FLASH_SECONDS,
@@ -62,6 +62,7 @@ import { PLAYER_DEATH_SECONDS, playerFxState } from "../src/systems/player-fx-st
 import { approach } from "../src/utils/motion.ts";
 import type { Progress, ProgressCommand, RunState, Session } from "../src/world/session.ts";
 import { decodePng } from "./helpers/png.ts";
+import { blank, rasterize } from "./helpers/software-frame.ts";
 
 const DT = 1 / 60;
 const novaPath = fileURLToPath(REV01_URLS.nova),
@@ -914,7 +915,7 @@ test("nova: 11 ordered frames / 560 ms from the trigger position while the ship 
     }
 });
 
-test("nova sparse atlas: only occupied 32x32 cells of the 11 played frames, from loaded pixels, fade-3 excluded, within the WebGPU default limit", () => {
+test("nova sparse atlas: exact retained pixels, source unchanged, fade-3 excluded, within the device limit", () => {
     const { pixels, plan } = packNovaAtlas(novaStrip),
         frames = novaUploadFrames(),
         fade3 = rev01Sprite("nova").frame("fade-3");
@@ -925,8 +926,8 @@ test("nova sparse atlas: only occupied 32x32 cells of the 11 played frames, from
             plan.tiles.length,
             Math.max(...plan.frameTiles.map((list) => list.length)),
         ],
-        [2048, 416, 801, 169],
-        "T1-measured plan",
+        [2048, 224, 396, 69],
+        "measured post-dissipation plan",
     );
     assert.ok(
         plan.width <= WEBGPU_DEFAULT_MAX_TEXTURE_DIMENSION_2D &&
@@ -935,7 +936,7 @@ test("nova sparse atlas: only occupied 32x32 cells of the 11 played frames, from
     assert.equal(WEBGPU_DEFAULT_MAX_TEXTURE_DIMENSION_2D, 8192);
     assert.deepEqual(
         [pixels.width, pixels.height, pixels.data.length],
-        [2048, 416, 2048 * 416 * 4],
+        [2048, 224, 2048 * 224 * 4],
     );
     assert.equal(plan.frameTiles.length, 11);
     assert.ok(
@@ -943,43 +944,153 @@ test("nova sparse atlas: only occupied 32x32 cells of the 11 played frames, from
         "no texel of fade-3 is uploaded",
     );
     const alpha = (x: number, y: number) => novaStrip.data[(y * novaStrip.width + x) * 4 + 3];
-    let opaque = 0,
-        copied = 0,
+    let copied = 0,
         mismatched = 0,
         empty = 0;
-    for (const frame of frames)
+    const sourceCounts = frames.map((frame) => {
+        let count = 0;
         for (let y = 0; y < frame.height; y++)
-            for (let x = 0; x < frame.width; x++) if (alpha(frame.x + x, frame.y + y)) opaque++;
+            for (let x = 0; x < frame.width; x++) if (alpha(frame.x + x, frame.y + y)) count++;
+        return count;
+    });
+    const copiedCounts = frames.map(() => 0);
     for (const tile of plan.tiles) {
         let any = false;
         for (let y = 0; y < tile.height; y++)
             for (let x = 0; x < tile.width; x++) {
                 const from = ((tile.sy + y) * novaStrip.width + tile.sx + x) * 4,
                     to = ((tile.dy + y) * pixels.width + tile.dx + x) * 4;
-                for (let c = 0; c < 4; c++)
-                    if (pixels.data[to + c] !== novaStrip.data[from + c]) mismatched++;
-                if (novaStrip.data[from + 3]) {
+                if (pixels.data[to + 3]) {
+                    for (let c = 0; c < 4; c++)
+                        if (pixels.data[to + c] !== novaStrip.data[from + c]) mismatched++;
                     any = true;
                     copied++;
+                    copiedCounts[tile.frame]++;
                 }
             }
         if (!any) empty++;
     }
-    assert.deepEqual([mismatched, empty], [0, 0], "tiles are exact copies of occupied cells only");
-    assert.equal(
-        copied,
-        opaque,
-        "every opaque texel of every played frame is in the atlas, exactly",
+    assert.deepEqual(
+        [mismatched, empty],
+        [0, 0],
+        "retained texels are exact RGBA copies; no empty tiles",
     );
+    assert.deepEqual(
+        copiedCounts.slice(0, 4),
+        sourceCounts.slice(0, 4),
+        "ignition and first two rings preserved pixel for pixel",
+    );
+    assert.deepEqual(
+        copiedCounts,
+        [89, 221, 1219, 4752, 5456, 3507, 2624, 2298, 1244, 441, 290],
+        "reviewed cutout pixel counts: no missing or duplicate surviving pixels",
+    );
+    assert.ok(copiedCounts.slice(4).every((count, index) => count < sourceCounts[index + 4]));
     let atlasOpaque = 0;
     for (let i = 3; i < pixels.data.length; i += 4) if (pixels.data[i]) atlasOpaque++;
-    assert.equal(atlasOpaque, opaque, "nothing else in the atlas");
+    assert.equal(atlasOpaque, copied, "nothing else in the atlas");
+    assert.deepEqual(novaStrip, decodePng(novaPath), "the loaded source strip was not mutated");
     assert.throws(
         () => packNovaAtlas(novaStrip, 256),
         /maxTextureDimension2D/,
         "plan rejected above the device limit",
     );
     assert.throws(() => packNovaAtlas({ ...novaStrip, width: 100 }), /nova strip/);
+});
+
+test("nova dissipation: thinner bands and widening gaps on-screen; every surviving pixel draws without tile seams at four origins", () => {
+    const { pixels, plan } = packNovaAtlas(novaStrip);
+    const frames = novaUploadFrames();
+    const spec = rev01Sprite("nova").spec.dissipation as {
+        bandPx: number[];
+        arcCoverage: number[];
+        sectors: number;
+    };
+    assert.equal(spec.bandPx.length, rev01Sprite("nova").frames.length);
+    assert.equal(spec.arcCoverage.length, spec.bandPx.length);
+    assert.ok(spec.bandPx.every((width) => Number.isInteger(width) && width >= 0));
+    assert.ok(spec.arcCoverage.every((coverage) => coverage > 0 && coverage <= 1));
+    assert.ok(Number.isInteger(spec.sectors) && spec.sectors > 0);
+    const texels = frames.map((_, index) => {
+        const points: { x: number; y: number; rgba: Uint8ClampedArray }[] = [];
+        for (const slot of plan.frameTiles[index]) {
+            const tile = plan.tiles[slot];
+            for (let y = 0; y < tile.height; y++)
+                for (let x = 0; x < tile.width; x++) {
+                    const offset = ((tile.dy + y) * pixels.width + tile.dx + x) * 4;
+                    if (pixels.data[offset + 3])
+                        points.push({
+                            x: tile.offsetX + x,
+                            y: tile.offsetY + y,
+                            rgba: pixels.data.subarray(offset, offset + 4),
+                        });
+                }
+        }
+        return points;
+    });
+    const coverage = (index: number) =>
+        new Set(
+            texels[index].map(({ x, y }) =>
+                Math.floor(((Math.atan2(y, x) + Math.PI) * 180) / Math.PI),
+            ),
+        ).size / 360;
+    assert.ok(coverage(3) > 0.99, "r95 is a coherent activation ring");
+    assert.ok(
+        coverage(5) < 0.8 && coverage(5) > 0.5,
+        "r235 has visible gaps, not just a thinner solid band",
+    );
+    assert.ok(
+        coverage(6) < coverage(5) && coverage(7) < coverage(6),
+        "gaps grow during visible outward travel",
+    );
+    for (const [index, radius, band] of [
+        [4, 160, 5],
+        [5, 235, 3],
+        [6, 320, 2],
+        [9, 590, 1],
+    ])
+        assert.ok(
+            texels[index].every(
+                ({ x, y }) => Math.hypot(x, y) >= radius - band && Math.hypot(x, y) <= radius + 0.5,
+            ),
+            `frame ${index}: narrowed band, transparent interior`,
+        );
+    for (const [ox, oy] of [
+        [320, 180],
+        [320, 270],
+        [24, 180],
+        [24, 319],
+    ]) {
+        for (let index = 0; index < frames.length; index++) {
+            const expected = blank(640, 360, 0),
+                actual = blank(640, 360, 0);
+            let visible = 0;
+            for (const pixel of texels[index]) {
+                const x = ox + pixel.x,
+                    y = oy + pixel.y;
+                if (x >= 0 && x < 640 && y >= 0 && y < 360) {
+                    expected.data.set(pixel.rgba, (y * 640 + x) * 4);
+                    visible++;
+                }
+            }
+            if (index >= 3 && index <= 6)
+                assert.ok(
+                    visible > 100,
+                    `origin ${ox},${oy}: coherent, thin and broken stages all visible`,
+                );
+            const frame = nativeFrame();
+            drawNova(frame, { atlasFrame: index }, ox + 0.75, oy + 0.25, plan);
+            assert.equal(
+                rasterize(actual, frame, (id) => (id === NOVA_ATLAS_ID ? pixels : undefined)).size,
+                0,
+            );
+            assert.deepEqual(
+                actual.data,
+                expected.data,
+                `${frames[index].name} at ${ox},${oy}: exact screen pixels across every tile boundary`,
+            );
+        }
+    }
 });
 
 test("nova atlas asset: stable lazy definition; the load fetches the strip, closes the decoded bitmap, uploads only the atlas and honours abort", async () => {
@@ -1075,11 +1186,11 @@ test("nova atlas asset: stable lazy definition; the load fetches the strip, clos
         );
         assert.deepEqual(
             [bitmap.width, bitmap.height],
-            [2048, 416],
+            [2048, 224],
             "the full 7766x1545 strip never becomes a texture",
         );
         assert.deepEqual(bitmap.data, packNovaAtlas(novaStrip).pixels.data);
-        assert.equal(asset.estimateBytes?.(bitmap as unknown as ImageBitmap), 2048 * 416 * 4);
+        assert.equal(asset.estimateBytes?.(bitmap as unknown as ImageBitmap), 2048 * 224 * 4);
         assert.deepEqual(
             novaAtlasPlan(),
             packNovaAtlas(novaStrip).plan,
@@ -1208,7 +1319,7 @@ test("hostile shapes are presentation only: every emitter colour has one role, o
             .map((entry) => readFileSync(`${entry.parentPath}/${entry.name}`, "utf8"));
     const colours = new Set<number>();
     for (const text of source(fileURLToPath(new URL("../src", import.meta.url))))
-        for (const match of text.matchAll(/\bemit\([^;]*?(0x[0-9a-fA-F]{6})\)/g))
+        for (const match of text.matchAll(/\bemit\([^;]*?(0x[0-9a-fA-F]{6})\s*,?\s*\)/g))
             colours.add(parseInt(match[1], 16));
     assert.ok(colours.size >= 10, `${colours.size} emitter colours`);
     assert.deepEqual(

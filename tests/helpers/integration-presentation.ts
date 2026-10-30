@@ -35,6 +35,8 @@ export interface PresentationOptions {
     pose: number;
     novaTime: number;
     variant: string;
+    novaOrigin?: readonly [number, number];
+    novaPlayback?: boolean;
 }
 export interface PresentationState {
     frozen: boolean;
@@ -124,8 +126,8 @@ export function presentationStage(
                 scene.world.query(Flight).eachChunk(({ views, count }) => {
                     const p = views.flight;
                     for (let row = 0; row < count; row++) {
-                        p.x[row] = p.px[row] = run.x = 320;
-                        p.y[row] = p.py[row] = run.y = 270;
+                        p.x[row] = p.px[row] = run.x = options.novaOrigin?.[0] ?? 320;
+                        p.y[row] = p.py[row] = run.y = options.novaOrigin?.[1] ?? 270;
                         p.vx[row] = p.vy[row] = 0;
                         p.bank[row] = p.previousBank[row] = options.pose / 3;
                     }
@@ -224,9 +226,13 @@ export function presentationStage(
                     for (let row = 0; row < count; row++) views.beam.age[row] = 0.25;
                 });
                 if (["nova", "dense"].includes(options.scenario)) {
-                    run.novaRing = options.novaTime;
-                    startNovaFx(run);
-                    run.nova = 0.3;
+                    if (options.novaPlayback) {
+                        run.nova = 1; // Press B through normal input to trigger the production effect.
+                    } else {
+                        run.novaRing = options.novaTime;
+                        startNovaFx(run);
+                        run.nova = 0.3;
+                    }
                 }
                 if (options.scenario === "dense" || options.variant === "damage") {
                     fx.damageClock = run.effectClock - 0.05;

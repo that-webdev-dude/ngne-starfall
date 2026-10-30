@@ -1120,7 +1120,7 @@
         ]
       ],
       "radii": {
-        "note": "proposal: outer ring radius per frame, px from the origin. Canvas = 2R+3 for ignite/expand frames (1 px margin) and 2(R+12)+1 for fade frames (embers drift up to 10 px outward). Band width: 4 px at r10, 5 at r40, 8 at r110, 9 from r200 on, as 1 px white front + 1-2 yellow + gold body + 1-2 orange, with inner tabs up to 3 px (study C)",
+        "note": "Source-strip outer radii in logical pixels; frame canvases and radii are unchanged. Runtime dissipation narrows the source bands starting at expand-2 (r160), before the normal ring leaves typical views; see dissipation.",
         "outer": [
           6,
           10,
@@ -1137,7 +1137,7 @@
         ],
         "requiredMax": 694,
         "derivation": "farthest visible corner from any legal player position: player clamp [24..616]x[57..319] in the 640x360 view (the 480x270 clamp scaled by 4/3); the worst case is a low origin to a top corner, (24,319) to (640,0) = 693.7 px, so fade-2 (r695) is the corner-reach frame",
-        "staging": "re-staged after Phase 2 build 1: from the screen centre the farthest visible point is ~406 px, so the coherent ring now ends at r410 (expand-5) and thinning starts on screen; the corner reach (690) falls on fade-2, so fade-2 keeps ~40% of the circumference with its front intact on the kept arcs. Trade-off recorded for gate 2: from a central origin the farthest visible point is ~406-452 px, so the fade frames (r500+) are seen only when the player is near an edge or corner; thinning from r300-400 would show dissipation in normal play but weaken the corner reach"
+        "staging": "Issue #3: coherent ignition/r40/r95; r160 thins to 5 px, r235 breaks into arcs at 3 px, r320/r410 shrink to 2 px remnants. Farther frames keep progressively shorter arcs at r500/r590/r695 for edge/corner origins. This supersedes the former off-screen-fade trade-off: visible dissipation no longer waits for r500. Corner reach is sparse residual energy, not a solid band."
       },
       "origin": "fixed at the player position when the nova is triggered; the ring does not follow the ship",
       "animation": {
@@ -1174,8 +1174,40 @@
       },
       "layering": "above hulls, smoke and the explosion; below hostile bullet cores, the beam lane and the HUD; interior stays transparent",
       "reducedMotion": "a quieter alternative with an equally clear activation cue is delivered with the frames (Phase 2)",
-      "storage": "gate 1 decision: delivered as full frames in the strip; the consumer packs them into a sparse 32x32 tile atlas (only non-empty tiles, with offsets), about 1.7 M texels",
-      "fade": "fade-0 (r500) keeps ~75% of the circumference with chunks up to 5-6 px under an intact white front; fade-1 (r590) ~55%, chunks up to 4 px; fade-2 (r690) ~40%, chunks up to 3 px, front intact on kept arcs; fade-3 (r760) ~20%, mostly embers"
+      "storage": "Source full-frame PNG, derived once at load into a sparse 32x32 tile atlas after the dissipation cutout. Only surviving occupied cells upload; original coordinates and pivots are preserved.",
+      "fade": "Runtime normal-motion cutout: r235/r320/r410 arcCoverage 0.85/0.65/0.45; r500/r590/r695 0.30/0.20/0.12, intersected with the source breakup. Bands 3/2/2/2/1/1 px respectively. See dissipation for exact per-frame values. The unmodified source PNG contains the older thick rings and later fade artwork.",
+      "dissipation": {
+        "bandPx": [
+          0,
+          0,
+          0,
+          0,
+          5,
+          3,
+          2,
+          2,
+          2,
+          1,
+          1,
+          1
+        ],
+        "arcCoverage": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          0.85,
+          0.65,
+          0.45,
+          0.3,
+          0.2,
+          0.12,
+          0.06
+        ],
+        "sectors": 32,
+        "note": "Runtime atlas cutout, indexed by source frame: bandPx 0 preserves source pixels; positive values retain only the outer band. Arc widths vary from 60% to 100% of arcCoverage inside 32 stable sectors; their centres stay on the same rays. Binary alpha; every retained texel is copied exactly. Applied once by packNovaAtlas, before sparse tile selection; nova.png remains the source strip. No private authoring archive is required."
+      }
     },
     {
       "id": "novaCalm",

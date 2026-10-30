@@ -36,9 +36,15 @@ Integration route options:
 | `capture`  | `1` hides fixture controls and freezes presentation presets. Manual play still advances normally.             |
 | `pose`     | `-3` through `3`, default `0`: player bank pose in presets.                                                   |
 | `novaTime` | `0` through `0.559` seconds, default `0.23`: preset Nova time.                                                |
+| `novaOrigin` | `centre` (320,180), `lower` (320,270; default), `edge` (24,180), `corner` (24,319); Nova preset only. |
+| `novaPlayback` | `1` with `scenario=nova`: seeded live review with Nova charged; press B, then move. Uses production input, hit-stop and playback. `capture=1` hides controls but does not freeze this route. |
 | `variant`  | Boss presets: `intact`, `parts` (default: damaged hull/one destroyed part), `phase`, `cue`, `defeat`.         |
 
 Presets seed clocks, populations and HP. Their images do not establish ordinary-rules reachability or animation continuity. For a compact presentation matrix, use all three stages × `card`, `play`, `boss`, `pause`, `result` × scales 1 and 2; supplement with normal/calm Nova, dense combat, player poses and menu/death states.
+
+For Nova dissipation, run `node --experimental-strip-types --test --test-name-pattern=nova tests/rev01-player-fx.test.ts`, then the full tests and build. Review `?scenario=nova&novaPlayback=1&novaOrigin=centre&calm=0&capture=1` on the integration route; press B and move with D. Reload for another activation. Repeat with `lower`, `edge`, and `corner` at native 640×360 and integer-scaled 1280×720 presentation. These are seeded positions/populations, but activation and animation use ordinary production systems. Keep the manual route for normal play/reachability checks.
+
+The expected progression is a coherent r95 ring (150 ms), a thinner r160 ring (200 ms), broken r235 arcs (250 ms), and sparse r320 remnants (300 ms). Edge/corner origins also show the outward tail at 350/410/470 ms. Use `novaTime` at those values without `novaPlayback` for frozen inspection; repeat `calm=1` to check the separate static cue. Inspect the live transition as well as stills, keep a recording or frame sequence, and report browser results separately from deterministic tests. Check the stationary trigger origin while moving, transparent interior, layering, and tile joins.
 
 The diagnostic panel reports `LOADING`, `READY` after actual production GPU rendering, or `ERROR`. Confirm `NORMAL RULES / ordinary stage beginning` for play checks; presets say `SEEDED PRESENTATION / not reachability evidence`. Check backing size `[640,360]`, DPR, actual CSS dimensions and integer scale `k`. Nonfatal overload/dropped-tick diagnostics are recorded separately from fatal errors; retain both when reporting problems. Adapter identity is unavailable through the public API.
 
@@ -66,6 +72,7 @@ Record stage, scale, DPR, reduced-motion setting, device/browser, gamepad availa
 
 - Runtime PNGs come from `src/assets/sprites/` and `src/assets/backgrounds/`; metadata and specified gameplay values come from `src/assets/spec.json`. Tests use these same assets, so the authoring archive is optional for builds and tests. Per-pose player muzzle sockets determine actual shot origins; hostile shot/mine-release/boss-part sockets determine spawn/collider geometry. Those geometry changes were intentional; counts, timings, velocities, damage and HP were preserved apart from explicitly specified spatial changes.
 - Nova plays 11 frames over 560 ms; `fade-3` is excluded from playback/upload. Beam lane widths are 15/13 px for Engine/Warden, mine radius is 6, low hull means hull ≤ 1, and the stage card lasts 2.6 seconds.
+- Nova's source PNG retains the original artwork. `packNovaAtlas` applies the spec's binary dissipation cutout once during loading: thinning begins at r160, breakup at r235, and increasingly sparse arcs continue to r695. The former r500-only/off-screen fade staging is superseded. Retained colors and source coordinates are exact; no runtime resampling or per-tick masking is used. The resulting atlas is 2048×224 with 396 occupied tiles. Ignition, reduced motion, the fixed origin, timing and gameplay are unchanged; source regeneration is unnecessary.
 - Plasma hold/charge/release gameplay is unimplemented and its HUD bar stays empty. Charge controls, damage/resource/boss rules, optional tall mode and further title redesign remain owner decisions.
 - Runtime backgrounds retain the 17% tint and starfield, so raw art can appear brighter than the game.
 

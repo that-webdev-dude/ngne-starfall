@@ -29,6 +29,16 @@ const scenario = requested as IntegrationScenario,
     calm = params.get("calm") === "1";
 const pose = Math.max(-3, Math.min(3, Math.round(Number(params.get("pose") || 0))));
 const novaTime = Math.max(0, Math.min(0.559, Number(params.get("novaTime") || 0.23)));
+const novaOrigins = {
+    centre: [320, 180],
+    lower: [320, 270],
+    edge: [24, 180],
+    corner: [24, 319],
+} as const;
+const originName = params.get("novaOrigin") || "lower";
+if (!(originName in novaOrigins)) throw new Error("Invalid novaOrigin");
+const novaOrigin = novaOrigins[originName as keyof typeof novaOrigins];
+const novaPlayback = !manual && scenario === "nova" && params.get("novaPlayback") === "1";
 const variant = params.get("variant") || "parts";
 const canvas = document.querySelector<HTMLCanvasElement>("#game")!;
 const status = document.querySelector<HTMLPreElement>("#fixture-status")!;
@@ -49,6 +59,10 @@ let ready = false,
     ducked = false;
 let initialTextureIds: readonly string[] | undefined;
 const report = (error: unknown) => {
+    if (error instanceof AggregateError) {
+        for (const cause of error.errors) report(cause);
+        return;
+    }
     // BrowserGame reports dropped fixed ticks as a nonfatal structured diagnostic. Preserve resize/host
     // overload evidence without misclassifying it as a failed renderer or asset load.
     if (
@@ -114,7 +128,11 @@ function updateStatus() {
         setup: manual
             ? "NORMAL RULES / ordinary stage beginning"
             : "SEEDED PRESENTATION / not reachability evidence",
-        frozen: !manual && (capture || scenario !== "title"),
+        frozen: !manual && !novaPlayback && (capture || scenario !== "title"),
+        novaOrigin: scenario === "nova" ? novaOrigin : undefined,
+        novaPlayback,
+        novaTime: session.run?.novaRing,
+        player: session.run ? [session.run.x, session.run.y] : undefined,
         calm: session.settings.reducedMotion,
         screen: session.screen,
         phase: session.run?.phase,
@@ -222,7 +240,13 @@ try {
     if (manual)
         await app.start(await app.game.prepare(actual, { key: `manual-stage-${stageIndex + 1}` }));
     else {
-        const preset = presentationStage(actual, session, { scenario, pose, novaTime, variant });
+        const preset = presentationStage(actual, session, {
+            scenario,
+            pose,
+            novaTime,
+            variant,
+            ...(scenario === "nova" ? { novaOrigin, novaPlayback } : {}),
+        });
         const title = menuScene("title", session, take);
         await app.game.start(
             await app.game.prepare(
@@ -267,8 +291,9 @@ try {
         // A public blocking scene makes suspended production scenes render at alpha=1, including Kiln's
         // private husk history. Gating updates alone would leave that history dependent on rAF alpha.
         if (
-            capture ||
-            !["pause", "settings", "controls", "result", "loss", "title"].includes(scenario)
+            !novaPlayback &&
+            (capture ||
+                !["pause", "settings", "controls", "result", "loss", "title"].includes(scenario))
         ) {
             app.game.push(
                 await app.game.prepare(
@@ -278,6 +303,7 @@ try {
             );
             app.game.tick(emptyInput());
         }
+        if (novaPlayback) preset.state.frozen = false;
         app.game.stop();
         await app.start();
     }
